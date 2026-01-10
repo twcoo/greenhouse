@@ -1,0 +1,12 @@
+services:
+  app:
+    build: 
+      context: ./ 
+      dockerfile: ./dockerfiles/Dockerfile.app
+    container_name: greenhouse-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/
+    env_file: .env
+    restart: on-failure:5
