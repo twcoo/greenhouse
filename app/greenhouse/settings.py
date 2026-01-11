@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 
+import dj_database_url
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -76,12 +77,15 @@ WSGI_APPLICATION = "greenhouse.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+DB_USER = config("APP_DB_USER", cast=str)
+DB_PASSWORD = config("APP_DB_PASSWORD", cast=str)
+DB_HOST = config("APP_DB_HOST", cast=str)
+DB_NAME = config("APP_DB_NAME", cast=str)
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"postgres://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
+    )
 }
 
 
