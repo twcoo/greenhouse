@@ -60,4 +60,5 @@ COPY .env /app
 USER user
 
 # Start Django server
-CMD ["sh", "-c", "python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py initial_setup  && \
+  python manage.py runserver 0.0.0.0:8000"]
