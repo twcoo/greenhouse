@@ -8,3 +8,4 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs) -> None:
         call_command("makemigrations", "--noinput")
         call_command("migrate")
+        call_command("create_super_user")

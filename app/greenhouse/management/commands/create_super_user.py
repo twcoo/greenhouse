@@ -1,0 +1,23 @@
+from decouple import config
+from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
+from loguru import logger
+
+
+class Command(BaseCommand):
+    help = "Create a superuser if one does not exist"
+
+    def handle(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+        User = get_user_model()
+
+        email = config("APP_SUPERUSER_EMAIL")
+        username = config("APP_SUPERUSER_USERNAME")
+        password = config("APP_SUPERUSER_PASSWORD")
+
+        if not User.objects.filter(email=email).exists():
+            User.objects.create_superuser(
+                email=email, username=username, password=password
+            )
+            logger.info(f'Superuser "{email}" created.')
+        else:
+            logger.info(f'Superuser "{email}" already exists.')
