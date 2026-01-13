@@ -1,6 +1,8 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
+from .crop import Crop
+
 
 class Variety(models.Model):
     GROWTH_HABIT_CHOICES = [
@@ -9,7 +11,8 @@ class Variety(models.Model):
     ]
 
     name = models.CharField(max_length=50)
+    crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
     growth_habit = ArrayField(
-        models.CharField(max_length=13, choices=GROWTH_HABIT_CHOICES),
+        models.CharField(max_length=15, choices=GROWTH_HABIT_CHOICES),
         default=list,
     )
