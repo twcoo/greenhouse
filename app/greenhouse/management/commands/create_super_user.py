@@ -7,7 +7,7 @@ from loguru import logger
 class Command(BaseCommand):
     help = "Create a superuser if one does not exist"
 
-    def handle(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+    def handle(self, *args, **kwargs) -> None:
         User = get_user_model()
 
         email = config("APP_SUPERUSER_EMAIL")
