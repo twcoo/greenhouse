@@ -9,29 +9,82 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Variety',
+            name="Variety",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('growth_habit', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(choices=[('DETERMINATE', 'Determinate'), ('INDETERMINATE', 'Indeterminate')], max_length=13), default=list)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "growth_habit",
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.CharField(
+                            choices=[
+                                ("DETERMINATE", "Determinate"),
+                                ("INDETERMINATE", "Indeterminate"),
+                            ],
+                            max_length=13,
+                        ),
+                        default=list,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Crop',
+            name="Crop",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('scientific_name', models.CharField(max_length=100)),
-                ('category', models.CharField(choices=[('VEGETABLE', 'Vegetable'), ('FRUIT', 'Fruit')], default='VEGETABLE', max_length=9)),
-                ('sunlight_requirement', models.CharField(choices=[('FULL SUN', 'Full Sun'), ('PART SUN', 'Part Sun'), ('FULL SHADE', 'Full Shade')], max_length=10)),
-                ('min_days_to_harverst', models.IntegerField()),
-                ('max_days_to_harverst', models.IntegerField()),
-                ('variety', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='greenhouse.variety')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                ("scientific_name", models.CharField(max_length=100)),
+                (
+                    "category",
+                    models.CharField(
+                        choices=[
+                            ("VEGETABLE", "Vegetable"),
+                            ("FRUIT", "Fruit"),
+                        ],
+                        default="VEGETABLE",
+                        max_length=9,
+                    ),
+                ),
+                (
+                    "sunlight_requirement",
+                    models.CharField(
+                        choices=[
+                            ("FULL SUN", "Full Sun"),
+                            ("PART SUN", "Part Sun"),
+                            ("FULL SHADE", "Full Shade"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("min_days_to_harverst", models.IntegerField()),
+                ("max_days_to_harverst", models.IntegerField()),
+                (
+                    "variety",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="greenhouse.variety",
+                    ),
+                ),
             ],
         ),
     ]
