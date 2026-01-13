@@ -1,3 +1,7 @@
-from django.contrib import admin
+from django.contrib import admin as admin
 
-# Register your models here.
+from .models import Crop as Crop
+from .models import Variety as Variety
+
+admin.site.register(Crop)
+admin.site.register(Variety)
