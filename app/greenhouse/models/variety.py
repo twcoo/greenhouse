@@ -16,3 +16,5 @@ class Variety(models.Model):
         models.CharField(max_length=15, choices=GROWTH_HABIT_CHOICES),
         default=list,
     )
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)

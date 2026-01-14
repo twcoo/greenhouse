@@ -19,3 +19,5 @@ class Crop(models.Model):
     )
     min_days_to_harverst = models.IntegerField()
     max_days_to_harverst = models.IntegerField()
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
