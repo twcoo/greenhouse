@@ -5,7 +5,11 @@ from .planting_growth_stage import PlantingGrowthStage
 
 
 class PlantingDailyObservation(models.Model):
-    HEALTH_STATUS_CHOICES = [("GOOD", "Good"), ("FAIR", "Fair"), ("POOR", "Poor")]
+    HEALTH_STATUS_CHOICES = [
+        ("GOOD", "Good"),
+        ("FAIR", "Fair"),
+        ("POOR", "Poor"),
+    ]
     PEST_PRESSURE_CHOICES = [
         ("NONE", "None"),
         ("LOW", "Low"),
@@ -30,7 +34,7 @@ class PlantingDailyObservation(models.Model):
     temperature_c = models.DecimalField(
         max_digits=4, decimal_places=1, null=True, blank=True
     )
-    humidity_percent = models.Decimal(
+    humidity_percent = models.DecimalField(
         max_digits=5, decimal_places=2, null=True, blank=True
     )
     light_hours = models.DecimalField(
@@ -38,11 +42,15 @@ class PlantingDailyObservation(models.Model):
     )
 
     # Soil
-    soil_moisture_percent = models.Decimal(
+    soil_moisture_percent = models.DecimalField(
         max_digits=5, decimal_places=2, null=True, blank=True
     )
-    soil_ph = models.Decimal(max_digits=3, decimal_places=1, null=True, blank=True)
-    ec_ms_cm = models.Decimal(max_digits=4, decimal_places=2, null=True, blank=True)
+    soil_ph = models.DecimalField(
+        max_digits=3, decimal_places=1, null=True, blank=True
+    )
+    ec_ms_cm = models.DecimalField(
+        max_digits=4, decimal_places=2, null=True, blank=True
+    )
 
     # Health
     health_status = models.CharField(
