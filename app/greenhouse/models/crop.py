@@ -15,7 +15,7 @@ class Crop(models.Model):
         max_length=15, choices=CATEGORY_CHOICES, default="VEGETABLE"
     )
     sunlight_requirement = models.CharField(
-        max_length=15, choices=SUNLIGHT_REQUIREMENT_CHOICES
+        max_length=15, choices=SUNLIGHT_REQUIREMENT_CHOICES, default="FULL SUN"
     )
     min_days_to_harverst = models.IntegerField()
     max_days_to_harverst = models.IntegerField()
