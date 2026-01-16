@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "rest_framework",
     "greenhouse",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -109,6 +110,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Greenhouse",
+    "DESCRIPTION": "",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
