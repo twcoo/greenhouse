@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -8,6 +9,11 @@ class PlantingLocation(models.Model):
         ("GROUND", "Ground"),
     ]
 
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="planting_locations",
+    )
     name = models.CharField(max_length=50)
     location_type = models.CharField(
         max_length=20, choices=LOCATION_TYPE_CHOICES
