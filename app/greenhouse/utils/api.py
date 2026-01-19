@@ -12,8 +12,8 @@ class Status(Enum):
 
 # Format response data to JSend or at least something close to it
 # Reference: https://github.com/omniti-labs/jsend
-class CustomResponse(Response):  # type: ignore
-    def __init__(  # type: ignore
+class CustomResponse(Response):
+    def __init__(
         self,
         response_status: Optional[str] = "success",
         response_data: Optional[Mapping[str, Any]] = None,
