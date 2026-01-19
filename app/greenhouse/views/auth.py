@@ -6,7 +6,6 @@ from knox.views import LoginView as KnoxLoginView
 from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..serializers import RegisterSerializer
@@ -19,7 +18,72 @@ from ..utils.api import CustomOpenAPIResponseSchema, CustomResponse
     tags=["Authentication"],
     description="Allows new users to register by providing their details.",
     request=RegisterSerializer,
-    responses={200: OpenApiResponse(description="Success")},
+    responses={
+        201: OpenApiResponse(
+            description="Success",
+            response=CustomOpenAPIResponseSchema(
+                response_data_properties={
+                    "expiry": {
+                        "type": "string(datetime)",
+                        "description": "Token expiration timestamp in ISO 8601 UTC format. The token becomes invalid after this time.",
+                    },
+                    "token": {
+                        "type": "string",
+                        "description": "Authentication token used for API requests.",
+                    },
+                },
+                response_data_required_properties=["access_token"],
+            ).get_schema(),
+            examples=[
+                OpenApiExample(
+                    name="Successful registration",
+                    status_codes=["201"],
+                    response_only=True,
+                    value={
+                        "status": "success",
+                        "data": {
+                            "expiry": "2026-01-20T06:46:33.891979Z",
+                            "token": "a2f69c052c2b1a549dbdc458cbe34f5d0c9570919.......",
+                        },
+                        "message": None,
+                    },
+                ),
+            ],
+        ),
+        400: OpenApiResponse(
+            description="Bad Request",
+            response=CustomOpenAPIResponseSchema().get_schema(),
+            examples=[
+                OpenApiExample(
+                    name="Username is already registered",
+                    status_codes=["400"],
+                    response_only=True,
+                    value={
+                        "status": "error",
+                        "data": None,
+                        "message": {
+                            "username": [
+                                "A user with that username already exists."
+                            ]
+                        },
+                    },
+                ),
+                OpenApiExample(
+                    name="Username and password are required",
+                    status_codes=["400"],
+                    response_only=True,
+                    value={
+                        "status": "error",
+                        "data": None,
+                        "message": {
+                            "username": ["This field is required."],
+                            "password": ["This field is required."],
+                        },
+                    },
+                ),
+            ],
+        ),
+    },
 )
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -35,11 +99,7 @@ class RegisterView(APIView):
                 response_data={
                     "expiry": token_instance.expiry,
                     "token": token,
-                    "user": {
-                        "id": user.id,
-                        "username": user.username,
-                        "email": user.email,
-                    },
+                    "username": user.username,
                 },
                 status=status.HTTP_201_CREATED,
             )
