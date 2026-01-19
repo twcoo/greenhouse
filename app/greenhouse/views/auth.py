@@ -1,9 +1,13 @@
+from django.contrib.auth import login
+from knox.models import AuthToken
+from knox.views import LoginView as KnoxLoginView
 from rest_framework import status
-from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..serializers import LoginSerializer, RegisterSerializer
+from ..serializers import RegisterSerializer
 
 
 class RegisterView(APIView):
@@ -12,27 +16,44 @@ class RegisterView(APIView):
 
         if serializer.is_valid():
             user = serializer.save()
-            token, _ = Token.objects.get_or_create(user=user)
+            token_instance, token = AuthToken.objects.create(user)
 
             return Response(
-                {"username": user.username, "token": token.key},
+                {
+                    "expiry": token_instance.expiry,
+                    "token": token,
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                    },
+                },
                 status=status.HTTP_201_CREATED,
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginView(APIView):
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+class LoginView(KnoxLoginView):
+    permission_classes = [AllowAny]
 
-        if serializer.is_valid():
-            user = serializer.validated_data["user"]
-            token, _ = Token.objects.get_or_create(user=user)
+    def post(self, request, format=None):
+        serializer = AuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-            return Response(
-                {"username": user.username, "token": token.key},
-                status=status.HTTP_200_OK,
-            )
+        user = serializer.validated_data["user"]
+        login(request, user)
 
-        return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+        response = super().post(request, format=format)
+
+        response.data.update(
+            {
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                }
+            }
+        )
+
+        return response
