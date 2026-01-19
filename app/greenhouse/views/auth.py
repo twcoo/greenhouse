@@ -117,6 +117,59 @@ class RegisterView(APIView):
     tags=["Authentication"],
     description="Allows new users to login by providing their details.",
     request=AuthTokenSerializer,
+    responses={
+        200: OpenApiResponse(
+            description="Success",
+            response=CustomOpenAPIResponseSchema(
+                response_data_properties={
+                    "expiry": {
+                        "type": "string(datetime)",
+                        "description": "Token expiration timestamp in ISO 8601 UTC format. The token becomes invalid after this time.",
+                    },
+                    "token": {
+                        "type": "string",
+                        "description": "Authentication token used for API requests.",
+                    },
+                },
+                response_data_required_properties=["access_token"],
+            ).get_schema(),
+            examples=[
+                OpenApiExample(
+                    name="Successful registration",
+                    status_codes=["200"],
+                    response_only=True,
+                    value={
+                        "status": "success",
+                        "data": {
+                            "expiry": "2026-01-20T07:21:39.160819Z",
+                            "token": "2d54d895a9aaa0d4bd9d8052579e280e6e0da24f2.......",
+                        },
+                        "message": None,
+                    },
+                ),
+            ],
+        ),
+        401: OpenApiResponse(
+            description="Unauthorized",
+            response=CustomOpenAPIResponseSchema().get_schema(),
+            examples=[
+                OpenApiExample(
+                    name="Invalid provided credentials",
+                    status_codes=["401"],
+                    response_only=True,
+                    value={
+                        "status": "error",
+                        "data": None,
+                        "message": {
+                            "non_field_errors": [
+                                "Unable to log in with provided credentials."
+                            ]
+                        },
+                    },
+                ),
+            ],
+        ),
+    },
 )
 class LoginView(KnoxLoginView):
     permission_classes = [AllowAny]
@@ -135,16 +188,6 @@ class LoginView(KnoxLoginView):
         login(request, user)
 
         response = super().post(request, format=format)
-
-        response.data.update(
-            {
-                "user": {
-                    "id": user.id,
-                    "username": user.username,
-                    "email": user.email,
-                }
-            }
-        )
 
         return CustomResponse(
             response_data=response.data,
