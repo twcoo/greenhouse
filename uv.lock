@@ -106,6 +106,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-rest-knox"
+version = "5.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "djangorestframework" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ba/7e/6ef520fbfa0cb902fe32c6f921426b1dcfa50cb2471a0ddca31ba770fa72/django_rest_knox-5.0.2.tar.gz", hash = "sha256:f283622bcf5d28a6a0203845c065d06c7432efa54399ae32070c61ac03af2d6f", size = 16292 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/29/09468c086fd19f34b00a9698ee9cc1864dfae8c171be140657b965577472/django_rest_knox-5.0.2-py3-none-any.whl", hash = "sha256:694da5d0ad6eb3edbfd7cdc8d69c089fc074e6b0e548e00ff2750bf2fdfadb6f", size = 14960 },
+]
+
+[[package]]
 name = "djangorestframework"
 version = "3.16.1"
 source = { registry = "https://pypi.org/simple" }
@@ -142,6 +155,7 @@ dependencies = [
     { name = "dj-database-url" },
     { name = "django" },
     { name = "django-filter" },
+    { name = "django-rest-knox" },
     { name = "djangorestframework" },
     { name = "drf-spectacular" },
     { name = "loguru" },
@@ -164,6 +178,7 @@ requires-dist = [
     { name = "dj-database-url", specifier = ">=3.1.0" },
     { name = "django", specifier = ">=6.0.1" },
     { name = "django-filter", specifier = ">=25.2" },
+    { name = "django-rest-knox", specifier = ">=5.0.2" },
     { name = "djangorestframework", specifier = ">=3.16.1" },
     { name = "drf-spectacular", specifier = ">=0.29.0" },
     { name = "loguru", specifier = ">=0.7.3" },
