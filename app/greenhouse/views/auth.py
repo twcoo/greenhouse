@@ -3,6 +3,7 @@ from drf_spectacular.utils import (OpenApiExample, OpenApiResponse,
                                    extend_schema)
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
+from knox.views import LogoutView as KnoxLogoutView
 from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.permissions import AllowAny
@@ -191,5 +192,13 @@ class LoginView(KnoxLoginView):
 
         return CustomResponse(
             response_data=response.data,
+            status=status.HTTP_200_OK,
+        )
+
+
+class LogoutView(KnoxLogoutView):
+    def get_post_response(self, request):
+        return CustomResponse(
+            response_message="Logged out successfully.",
             status=status.HTTP_200_OK,
         )
