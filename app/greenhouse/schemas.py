@@ -26,7 +26,9 @@ class CustomOpenAPIResponseSchema:
         self.response_status_example = Status(response_status_example).value
         self.response_data_properties = response_data_properties
         self.response_message_example = response_message_example
-        self.response_data_required_properties = response_data_required_properties
+        self.response_data_required_properties = (
+            response_data_required_properties
+        )
 
     def get_schema(self) -> Mapping[str, Any]:
         """
