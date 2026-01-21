@@ -118,6 +118,9 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
     "EXCEPTION_HANDLER": "greenhouse.exceptions.custom_exception_handler",
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+    ],
 }
 
 SPECTACULAR_SETTINGS = {
