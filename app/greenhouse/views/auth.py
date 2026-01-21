@@ -6,6 +6,7 @@ from knox.views import LoginView as KnoxLoginView
 from knox.views import LogoutView as KnoxLogoutView
 from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.views import APIView
@@ -90,6 +91,7 @@ from ..utils.api import CustomAuthentication, CustomResponse
 )
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+    parser_classes = [JSONParser]
 
     def post(self, request: Request) -> CustomResponse:
         serializer = RegisterSerializer(data=request.data)
@@ -191,6 +193,7 @@ class RegisterView(APIView):
 )
 class LoginView(KnoxLoginView):
     permission_classes = [AllowAny]
+    parser_classes = [JSONParser]
 
     def post(self, request: Request, format: None = None) -> CustomResponse:
         serializer = AuthTokenSerializer(data=request.data)
@@ -255,6 +258,7 @@ class LoginView(KnoxLoginView):
 )
 class LogoutView(KnoxLogoutView):
     authentication_classes = [CustomAuthentication]
+    parser_classes = [JSONParser]
 
     def get_post_response(self, request: Request) -> CustomResponse:
         return CustomResponse(
