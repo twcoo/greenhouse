@@ -58,20 +58,6 @@ from ..utils.api import CustomAuthentication, CustomResponse
             response=CustomOpenAPIResponseSchema().get_schema(),
             examples=[
                 OpenApiExample(
-                    name="Username is already registered",
-                    status_codes=["400"],
-                    response_only=True,
-                    value={
-                        "status": "error",
-                        "data": None,
-                        "message": {
-                            "username": [
-                                "A user with that username already exists."
-                            ]
-                        },
-                    },
-                ),
-                OpenApiExample(
                     name="Username and password are required",
                     status_codes=["400"],
                     response_only=True,
@@ -82,6 +68,22 @@ from ..utils.api import CustomAuthentication, CustomResponse
                             "username": ["This field is required."],
                             "password": ["This field is required."],
                         },
+                    },
+                ),
+            ],
+        ),
+        409: OpenApiResponse(
+            description="Conflict",
+            response=CustomOpenAPIResponseSchema().get_schema(),
+            examples=[
+                OpenApiExample(
+                    name="Username is already registered",
+                    status_codes=["400"],
+                    response_only=True,
+                    value={
+                        "status": "error",
+                        "data": None,
+                        "message": "A user with that username already exists.",
                     },
                 ),
             ],
@@ -107,9 +109,19 @@ class RegisterView(APIView):
                 status=status.HTTP_201_CREATED,
             )
 
+        errors = serializer.errors
+
+        if "username" in errors:
+            if "already exists" in str(errors["username"][0]):
+                return CustomResponse(
+                    response_status="error",
+                    response_message="A user with that username already exists.",
+                    status=status.HTTP_409_CONFLICT,
+                )
+
         return CustomResponse(
             response_status="error",
-            response_message=serializer.errors,
+            response_message=errors,
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -216,8 +228,7 @@ class LoginView(KnoxLoginView):
 @extend_schema(
     operation_id="Logout",
     tags=["Authentication"],
-    description="Allows users to logout by providing their details.",
-    request=AuthTokenSerializer,
+    description="Allows users to logout by providing their token.",
     responses={
         200: OpenApiResponse(
             description="Success",
