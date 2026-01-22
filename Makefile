@@ -1,4 +1,4 @@
-.PHONY: dev
+.PHONY: lint-app dev test
 
 lint-app:
 	@uv run black --line-length 80 .
@@ -11,3 +11,7 @@ lint-app:
 	
 dev-app:
 	@docker compose up --build --force-recreate 
+
+test:
+	@uv run python app/manage.py test greenhouse
+
