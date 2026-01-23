@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from knox.models import AuthToken
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -28,7 +29,7 @@ class AuthRegisterTests(APITestCase):
         self.assertIn("token", response.data["data"])
         self.assertIn("expiry", response.data["data"])
         self.assertEqual("success", response.data["status"])
-        self.assertEqual(None, response.data["message"])
+        self.assertIsNone(response.data["message"])
 
     def test_existing_user_error(self):
         response = self.client.post(
@@ -46,7 +47,7 @@ class AuthRegisterTests(APITestCase):
             "A user with that username already exists.",
             response.data["message"],
         )
-        self.assertEqual(None, response.data["data"])
+        self.assertIsNone(response.data["data"])
 
     def test_required_fields_error(self):
         response = self.client.post(
@@ -67,7 +68,7 @@ class AuthRegisterTests(APITestCase):
             response.data["message"],
         )
         self.assertEqual("error", response.data["status"])
-        self.assertEqual(None, response.data["data"])
+        self.assertIsNone(response.data["data"])
 
 
 class AuthLoginTests(APITestCase):
@@ -90,7 +91,7 @@ class AuthLoginTests(APITestCase):
         self.assertIn("token", response.data["data"])
         self.assertIn("expiry", response.data["data"])
         self.assertEqual("success", response.data["status"])
-        self.assertEqual(None, response.data["message"])
+        self.assertIsNone(response.data["message"])
 
     def test_login_error(self):
         response = self.client.post(
@@ -100,7 +101,7 @@ class AuthLoginTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(None, response.data["data"])
+        self.assertIsNone(response.data["data"])
         self.assertEqual(
             "Unable to log in with provided credentials.",
             response.data["message"],
@@ -125,4 +126,65 @@ class AuthLoginTests(APITestCase):
             response.data["message"],
         )
         self.assertEqual("error", response.data["status"])
-        self.assertEqual(None, response.data["data"])
+        self.assertIsNone(response.data["data"])
+
+
+class AuthLogoutTests(APITestCase):
+    def setUp(self):
+        self.username = "ellieW"
+        self.password = "IAmAloneNow"
+
+        self.user = User.objects.create_user(
+            username=self.username,
+            password=self.password,
+        )
+
+        self.logout_url = reverse("logout")
+
+        self.token_instance, self.token = AuthToken.objects.create(self.user)
+
+    def authenticate(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token}")
+
+    def test_logout_success(self):
+        self.authenticate()
+
+        response = self.client.post(self.logout_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual("success", response.data["status"])
+        self.assertIsNone(response.data["data"])
+
+    def test_logout_without_token(self):
+        response = self.client.post(self.logout_url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual("error", response.data["status"])
+        self.assertIsNone(response.data["data"])
+        self.assertEqual(
+            "Authentication credentials were not provided.",
+            response.data["message"],
+        )
+
+    def test_logout_with_invalid_token(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token invalidtoken123")
+
+        response = self.client.post(self.logout_url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual("error", response.data["status"])
+        self.assertIsNone(response.data["data"])
+
+    def test_token_is_invalidated_after_logout(self):
+        self.authenticate()
+
+        self.client.post(self.logout_url)
+
+        response = self.client.post(self.logout_url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertIsNone(response.data["data"])
+        self.assertEqual(
+            "Unable to log in with provided credentials.",
+            response.data["message"],
+        )
