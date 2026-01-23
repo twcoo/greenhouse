@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.contrib.auth import login
 from drf_spectacular.utils import (OpenApiExample, OpenApiResponse,
                                    extend_schema)
@@ -204,24 +206,35 @@ class RegisterView(APIView):
 class LoginView(KnoxLoginView):
     permission_classes = [AllowAny]
 
-    def post(self, request: Request, format: None = None) -> CustomResponse:
+    def post(
+        self, request: Request, format: Optional[str] = None
+    ) -> CustomResponse:
         serializer = AuthTokenSerializer(data=request.data)
 
-        if not serializer.is_valid():
+        if serializer.is_valid():
+            user = serializer.validated_data["user"]
+            login(request, user)
+
+            response = super().post(request, format=format)
+
             return CustomResponse(
-                response_status="error",
-                response_message=serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST,
+                response_data=response.data,
+                status=status.HTTP_200_OK,
             )
 
-        user = serializer.validated_data["user"]
-        login(request, user)
+        non_field = serializer.errors.get("non_field_errors", [])
 
-        response = super().post(request, format=format)
+        if any(err.code == "authorization" for err in non_field):
+            return CustomResponse(
+                response_status="error",
+                response_message="Unable to log in with provided credentials.",
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         return CustomResponse(
-            response_data=response.data,
-            status=status.HTTP_200_OK,
+            response_status="error",
+            response_message=serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
 
