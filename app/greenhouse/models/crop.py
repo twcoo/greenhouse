@@ -9,15 +9,15 @@ class Crop(models.Model):
         ("FULL SHADE", "Full Shade"),
     ]
 
-    name = models.CharField(max_length=50)
-    scientific_name = models.CharField(max_length=100)
+    name = models.CharField(max_length=50, unique=True)
+    scientific_name = models.CharField(max_length=100, unique=True)
     category = models.CharField(
         max_length=15, choices=CATEGORY_CHOICES, default="VEGETABLE"
     )
     sunlight_requirement = models.CharField(
         max_length=15, choices=SUNLIGHT_REQUIREMENT_CHOICES, default="FULL SUN"
     )
-    min_days_to_harverst = models.IntegerField()
-    max_days_to_harverst = models.IntegerField()
-    created_at = models.DateTimeField(auto_now=True)
+    min_days_to_harvest = models.IntegerField()
+    max_days_to_harvest = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
