@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('greenhouse', '0008_remove_crop_max_days_to_harverst_and_more'),
+        ("greenhouse", "0008_remove_crop_max_days_to_harverst_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='crop',
-            name='name',
+            model_name="crop",
+            name="name",
             field=models.CharField(max_length=50, unique=True),
         ),
         migrations.AlterField(
-            model_name='crop',
-            name='scientific_name',
+            model_name="crop",
+            name="scientific_name",
             field=models.CharField(max_length=100, unique=True),
         ),
     ]

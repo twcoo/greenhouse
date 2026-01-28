@@ -6,26 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('greenhouse', '0007_alter_planting_user_alter_plantinglocation_user'),
+        ("greenhouse", "0007_alter_planting_user_alter_plantinglocation_user"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='crop',
-            name='max_days_to_harverst',
+            model_name="crop",
+            name="max_days_to_harverst",
         ),
         migrations.RemoveField(
-            model_name='crop',
-            name='min_days_to_harverst',
+            model_name="crop",
+            name="min_days_to_harverst",
         ),
         migrations.AddField(
-            model_name='crop',
-            name='max_days_to_harvest',
+            model_name="crop",
+            name="max_days_to_harvest",
             field=models.IntegerField(default=90),
         ),
         migrations.AddField(
-            model_name='crop',
-            name='min_days_to_harvest',
+            model_name="crop",
+            name="min_days_to_harvest",
             field=models.IntegerField(default=60),
         ),
     ]

@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('greenhouse', '0010_alter_crop_created_at'),
+        ("greenhouse", "0010_alter_crop_created_at"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='crop',
-            name='max_days_to_harvest',
+            model_name="crop",
+            name="max_days_to_harvest",
             field=models.IntegerField(),
         ),
         migrations.AlterField(
-            model_name='crop',
-            name='min_days_to_harvest',
+            model_name="crop",
+            name="min_days_to_harvest",
             field=models.IntegerField(),
         ),
     ]
