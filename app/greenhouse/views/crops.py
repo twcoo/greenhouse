@@ -38,13 +38,36 @@ from ..utils.api import CustomAuthentication, CustomResponse
                 response=CustomOpenAPIResponseSchema().get_schema(),
                 examples=[
                     OpenApiExample(
-                        name="Record already exist",
+                        name="Duplicate crop record",
+                        summary="Attempt to create a crop that already exists",
+                        description=(
+                            "This response is returned when a crop with the same `name` and "
+                            "`scientific_name` already exists in the database. "
+                            "The request is rejected to maintain uniqueness."
+                        ),
                         status_codes=["400"],
                         value={
                             "status": "error",
                             "data": None,
                             "message": {
                                 "non_field_errors": ["Record already exist."]
+                            },
+                        },
+                    ),
+                    OpenApiExample(
+                        name="Required field missing",
+                        summary="A required field is missing when creating a crop",
+                        description=(
+                            "This response is returned when one or more required fields are missing "
+                            "in the request payload."
+                        ),
+                        status_codes=["400"],
+                        value={
+                            "status": "error",
+                            "data": None,
+                            "message": {
+                                "name": ["This field is required."],
+                                "scientific_name": ["This field is required."],
                             },
                         },
                     ),
