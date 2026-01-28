@@ -185,6 +185,6 @@ class AuthLogoutTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIsNone(response.data["data"])
         self.assertEqual(
-            "Unable to log in with provided credentials.",
+            "Invalid token.",
             response.data["message"],
         )
