@@ -25,15 +25,6 @@ def custom_exception_handler(exc, context):
         )
 
     if isinstance(exc, ValidationError) and response is not None:
-        errors = exc.detail
-
-        if any("already exists." in str(msg) for msg in errors.values()):
-            return CustomResponse(
-                response_status="error",
-                status=status.HTTP_409_CONFLICT,
-                response_message=response.data,
-            )
-
         return CustomResponse(
             response_status="error",
             status=status.HTTP_400_BAD_REQUEST,
