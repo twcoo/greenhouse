@@ -20,7 +20,7 @@ def custom_exception_handler(exc, context):
     if isinstance(exc, AuthenticationFailed):
         return CustomResponse(
             response_status="error",
-            response_message="Unable to log in with provided credentials.",
+            response_message="Invalid token.",
             status=status.HTTP_401_UNAUTHORIZED,
         )
 
