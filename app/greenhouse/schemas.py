@@ -56,7 +56,11 @@ class CustomOpenAPIResponseSchema:
                     "required": self.response_data_required_properties,
                 },
                 "message": {
-                    "type": ["string", None, "object"],
+                    "type": [
+                        "string",
+                        "object",
+                        None,
+                    ],
                     "description": "Optional message or detail providing additional information about the response.",
                     "example": self.response_message_example,
                 },
