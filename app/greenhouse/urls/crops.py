@@ -1,10 +1,10 @@
 from django.urls import path
 
-from ..views import CropDetailAPIView
+from ..views import CropDetailAPIView, CropListApiView
 
 urlpatterns = [
     # List and create
-    path("", CropDetailAPIView.as_view(), name="crop-list-create"),
+    path("", CropListApiView.as_view(), name="crop-list-create"),
     # Get, partial update, full update, and delete
     path("<int:pk>", CropDetailAPIView.as_view(), name="crop-detail"),
 ]
