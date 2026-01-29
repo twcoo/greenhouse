@@ -1,6 +1,7 @@
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping, Optional, Type
 
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
+from rest_framework import serializers
 
 from .utils.api import Status
 
@@ -11,56 +12,87 @@ class CustomOpenAPIResponseSchema:
     def __init__(
         self,
         response_status_example: str = "success",
-        response_data_properties: Optional[Mapping[str, Any]] = None,
-        response_message_example: Optional[str] = None,
-        response_data_required_properties: Optional[list[str]] = None,
+        data_serializer: Optional[Type[serializers.Serializer]] = None,
+        response_message_example: Optional[Any] = None,
     ):
-        """
-        Initialize the CustomOpenAPIResponseSchema.
-
-        :param str response_status_example: Example value for the 'status' field.
-        :param Optional[Mapping[str, Any]] response_data_properties: Schema properties for the 'data' field.
-        :param Optional[str] response_message_example: Example value for the 'message' field.
-        :param Optional[list[str]] response_data_required_properties: List of required properties for the 'data' field.
-        """
         self.response_status_example = Status(response_status_example).value
-        self.response_data_properties = response_data_properties
+        self.data_serializer = data_serializer
         self.response_message_example = response_message_example
-        self.response_data_required_properties = (
-            response_data_required_properties
-        )
+
+    def _map_field(self, field: serializers.Field) -> dict[str, Any]:
+        schema: dict[str, Any] = {}
+
+        if isinstance(field, serializers.IntegerField):
+            schema["type"] = "integer"
+        elif isinstance(field, serializers.BooleanField):
+            schema["type"] = "boolean"
+        elif isinstance(field, serializers.FloatField):
+            schema["type"] = "number"
+        elif isinstance(field, serializers.ListField):
+            schema["type"] = "array"
+        elif isinstance(field, serializers.JSONField):
+            schema["type"] = ["object", "string", None]
+        else:
+            schema["type"] = "string"
+
+        if field.help_text:
+            schema["description"] = field.help_text
+
+        return schema
+
+    def _map_serializer_fields(
+        self, serializer: serializers.BaseSerializer
+    ) -> dict[str, Any]:
+        properties = {}
+        required = []
+
+        for field_name, field in serializer.fields.items():
+            properties[field_name] = self._map_field(field)
+
+            if getattr(field, "required", False):
+                required.append(field_name)
+
+        return {
+            "type": "object",
+            "properties": properties,
+            "required": required,
+        }
+
+    def _serializer_to_schema(self) -> Mapping[str, Any]:
+        if not self.data_serializer:
+            return {}
+
+        if isinstance(self.data_serializer, serializers.ListSerializer):
+            return {
+                "type": "array",
+                "items": self._map_serializer_fields(
+                    serializer=self.data_serializer.child
+                ),
+            }
+
+        return self._map_serializer_fields(serializer=self.data_serializer())
 
     def get_schema(self) -> Mapping[str, Any]:
-        """
-        Get the OpenAPI schema for the response.
+        data_schema = (
+            self._serializer_to_schema()
+            if self.data_serializer
+            else {"type": ["object", None]}
+        )
 
-        :return: A dictionary representing the schema.
-        :rtype: Mapping[str, Any]
-        """
         return {
             "type": "object",
             "properties": {
                 "status": {
                     "type": "string",
-                    "description": "The status of the API response, indicating success or failure.",
+                    "description": "The status of the API response.",
                     "example": self.response_status_example,
                 },
                 "data": {
-                    "type": ["object", None],
                     "description": "An object containing the data returned by the API.",
-                    **(
-                        {"properties": self.response_data_properties}
-                        if self.response_data_properties
-                        else {}
-                    ),
-                    "required": self.response_data_required_properties,
+                    **data_schema,
                 },
                 "message": {
-                    "type": [
-                        "string",
-                        "object",
-                        None,
-                    ],
+                    "type": ["string", "object", None],
                     "description": "Optional message or detail providing additional information about the response.",
                     "example": self.response_message_example,
                 },
