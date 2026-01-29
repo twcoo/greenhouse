@@ -9,8 +9,7 @@ from rest_framework.request import Request
 
 from ..models import Crop
 from ..schemas import CustomOpenAPIResponseSchema
-from ..serializers import (CropListResponseSerializer, CropResponseSerializer,
-                           CropSerializer)
+from ..serializers import CropSerializer
 from ..utils.api import CustomAuthentication, CustomResponse
 
 
@@ -18,28 +17,81 @@ from ..utils.api import CustomAuthentication, CustomResponse
     get=extend_schema(
         tags=["Crops"],
         summary="List crops",
-        description="Returns a list of crops.",
+        description=(
+            "Retrieve all crops in the system. "
+            "Each crop includes basic details such as `name` and `scientific_name`."
+        ),
         responses={
             200: OpenApiResponse(
-                response=CropListResponseSerializer, description="Success"
+                description="List of crops retrieved successfully.",
+                response=CustomOpenAPIResponseSchema(
+                    data_serializer=CropSerializer(many=True)
+                ).get_schema(),
+                examples=[
+                    OpenApiExample(
+                        name="Crop list",
+                        summary="List of all crops",
+                        value={
+                            "status": "success",
+                            "message": None,
+                            "data": [
+                                {
+                                    "id": 34,
+                                    "name": "Tomato",
+                                    "scientific_name": "Solanum lycopersicum",
+                                    "category": "VEGETABLE",
+                                    "sunlight_requirement": "FULL SUN",
+                                    "min_days_to_harvest": 60,
+                                    "max_days_to_harvest": 90,
+                                }
+                            ],
+                        },
+                    )
+                ],
             ),
         },
     ),
     post=extend_schema(
         tags=["Crops"],
         summary="Create crop",
-        description="Create a crop record.",
+        description=(
+            "Create a new crop record. "
+            "Duplicate `name` and `scientific_name` combinations are not allowed."
+        ),
         responses={
             201: OpenApiResponse(
-                response=CropResponseSerializer, description="Created"
+                description="Crop created successfully.",
+                response=CustomOpenAPIResponseSchema(
+                    data_serializer=CropSerializer
+                ).get_schema(),
+                examples=[
+                    OpenApiExample(
+                        name="Crop created example",
+                        summary="Successfully created crop",
+                        description="Example response returned after a crop is successfully created.",
+                        value={
+                            "status": "success",
+                            "message": None,
+                            "data": {
+                                "id": 34,
+                                "name": "Tomato",
+                                "scientific_name": "Solanum lycopersicum",
+                                "category": "VEGETABLE",
+                                "sunlight_requirement": "FULL SUN",
+                                "min_days_to_harvest": 60,
+                                "max_days_to_harvest": 90,
+                            },
+                        },
+                    )
+                ],
             ),
             400: OpenApiResponse(
-                description="Bad Request",
+                description="The request is invalid due to validation errors.",
                 response=CustomOpenAPIResponseSchema().get_schema(),
                 examples=[
                     OpenApiExample(
                         name="Duplicate crop record",
-                        summary="Attempt to create a crop that already exists",
+                        summary="Crop already exists",
                         description=(
                             "This response is returned when a crop with the same `name` and "
                             "`scientific_name` already exists in the database. "
@@ -56,7 +108,7 @@ from ..utils.api import CustomAuthentication, CustomResponse
                     ),
                     OpenApiExample(
                         name="Required field missing",
-                        summary="A required field is missing when creating a crop",
+                        summary="Missing required fields",
                         description=(
                             "This response is returned when one or more required fields are missing "
                             "in the request payload."
