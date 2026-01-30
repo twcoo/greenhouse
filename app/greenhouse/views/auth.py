@@ -26,19 +26,7 @@ from ..utils.api import CustomAuthentication, CustomResponse
     responses={
         201: OpenApiResponse(
             description="Success",
-            response=CustomOpenAPIResponseSchema(
-                response_data_properties={
-                    "expiry": {
-                        "type": "string(datetime)",
-                        "description": "Token expiration timestamp in ISO 8601 UTC format. The token becomes invalid after this time.",
-                    },
-                    "token": {
-                        "type": "string",
-                        "description": "Authentication token used for API requests.",
-                    },
-                },
-                response_data_required_properties=["expiry", "token"],
-            ).get_schema(),
+            response=CustomOpenAPIResponseSchema().get_schema(),
             examples=[
                 OpenApiExample(
                     name="Successful registration",
@@ -137,19 +125,7 @@ class RegisterView(APIView):
     responses={
         200: OpenApiResponse(
             description="Success",
-            response=CustomOpenAPIResponseSchema(
-                response_data_properties={
-                    "expiry": {
-                        "type": "string(datetime)",
-                        "description": "Token expiration timestamp in ISO 8601 UTC format. The token becomes invalid after this time.",
-                    },
-                    "token": {
-                        "type": "string",
-                        "description": "Authentication token used for API requests.",
-                    },
-                },
-                response_data_required_properties=["expiry", "token"],
-            ).get_schema(),
+            response=CustomOpenAPIResponseSchema().get_schema(),
             examples=[
                 OpenApiExample(
                     name="Successful login",
