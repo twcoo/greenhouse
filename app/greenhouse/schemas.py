@@ -112,3 +112,10 @@ class MyAuthenticationScheme(OpenApiAuthenticationExtension):
             "name": "Authorization",
             "description": "Token authentication. Format: `Token <token>`",
         }
+
+
+RESOURCE_NOT_FOUND_RESPONSE: dict[str, Optional[str]] = {
+    "status": "error",
+    "message": "Resource not found.",
+    "data": None,
+}
