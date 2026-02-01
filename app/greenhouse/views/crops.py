@@ -1,7 +1,9 @@
 from typing import Any
 
-from drf_spectacular.utils import (OpenApiExample, OpenApiResponse,
-                                   extend_schema, extend_schema_view)
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (OpenApiExample, OpenApiParameter,
+                                   OpenApiResponse, extend_schema,
+                                   extend_schema_view)
 from rest_framework import mixins, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -17,10 +19,7 @@ from ..utils.api import CustomAuthentication, CustomResponse
     get=extend_schema(
         tags=["Crops"],
         summary="List crops",
-        description=(
-            "Retrieve all crops in the system. "
-            "Each crop includes basic details such as `name` and `scientific_name`."
-        ),
+        description="Retrieve all crop records.",
         responses={
             200: OpenApiResponse(
                 description="List of crops retrieved successfully.",
@@ -54,10 +53,7 @@ from ..utils.api import CustomAuthentication, CustomResponse
     post=extend_schema(
         tags=["Crops"],
         summary="Create crop",
-        description=(
-            "Create a new crop record. "
-            "Duplicate `name` and `scientific_name` combinations are not allowed."
-        ),
+        description="Create a new crop record.",
         responses={
             201: OpenApiResponse(
                 description="Crop created successfully.",
@@ -92,17 +88,15 @@ from ..utils.api import CustomAuthentication, CustomResponse
                     OpenApiExample(
                         name="Duplicate crop record",
                         summary="Crop already exists",
-                        description=(
-                            "This response is returned when a crop with the same `name` and "
-                            "`scientific_name` already exists in the database. "
-                            "The request is rejected to maintain uniqueness."
-                        ),
+                        description="This response is returned when a duplicate record already exists.",
                         status_codes=["400"],
                         value={
                             "status": "error",
                             "data": None,
                             "message": {
-                                "non_field_errors": ["Record already exist."]
+                                "non_field_errors": [
+                                    "A crop with the same name and scientific name already exists."
+                                ]
                             },
                         },
                     ),
@@ -158,6 +152,66 @@ class CropListApiView(
         )
 
 
+@extend_schema_view(
+    get=extend_schema(
+        tags=["Crops"],
+        summary="Retrieve a crop",
+        description="Retrieve a single crop record by it's ID.",
+        parameters=[
+            OpenApiParameter(
+                name="id",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.PATH,
+                description="Unique identifier of the crop.",
+                required=True,
+            )
+        ],
+        responses={
+            200: OpenApiResponse(
+                description="Crop retrieved successfully.",
+                response=CustomOpenAPIResponseSchema(
+                    data_serializer=CropSerializer
+                ).get_schema(),
+                examples=[
+                    OpenApiExample(
+                        name="Crop detail",
+                        summary="Retrieve a crop by ID",
+                        description="Returns the details of a crop identified by the provided ID.",
+                        value={
+                            "status": "success",
+                            "message": None,
+                            "data": {
+                                "id": 34,
+                                "name": "Tomato",
+                                "scientific_name": "Solanum lycopersicum",
+                                "category": "VEGETABLE",
+                                "sunlight_requirement": "FULL SUN",
+                                "min_days_to_harvest": 60,
+                                "max_days_to_harvest": 90,
+                            },
+                        },
+                    )
+                ],
+            ),
+            404: OpenApiResponse(
+                description="The requested crop does not exist.",
+                response=CustomOpenAPIResponseSchema().get_schema(),
+                examples=[
+                    OpenApiExample(
+                        name="CropNotFound",
+                        summary="No crop found for the provided ID",
+                        description="Returned when a crop with the specified ID does not exist.",
+                        value={
+                            "status": "error",
+                            "message": "Resource not found.",
+                            "data": None,
+                        },
+                    )
+                ],
+            ),
+        },
+    ),
+)
 class CropDetailAPIView(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
