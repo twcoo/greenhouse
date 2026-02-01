@@ -47,6 +47,6 @@ class CropSerializer(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=Crop.objects.all(),
                 fields=["name", "scientific_name"],
-                message="Record already exist.",
+                message="A crop with the same name and scientific name already exists.",
             )
         ]
