@@ -2,30 +2,17 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from .commons.mixins import RequiredAuthTestsMixin
 
-class CropListApiViewTests(APITestCase):
+
+class CropListApiViewTests(RequiredAuthTestsMixin, APITestCase):
     def setUp(self):
+        super().setUp()
         self.url = reverse("crop-list-create")
 
-    def test_required_auth_header(self):
-        response = self.client.get(
-            self.url,
-        )
+    def test_get_crops(self):
+        self.authenticate()
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIsNone(response.data["data"])
-        self.assertEqual(
-            response.data["message"],
-            "Authentication credentials were not provided.",
-        )
+        response = self.client.get(self.url)
 
-    def test_required_valid_token(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Token Invalid Token")
-
-        response = self.client.get(
-            self.url,
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIsNone(response.data["data"])
-        self.assertEqual(response.data["message"], "Invalid token.")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
