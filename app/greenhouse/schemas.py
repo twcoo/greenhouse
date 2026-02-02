@@ -14,10 +14,12 @@ class CustomOpenAPIResponseSchema:
         response_status_example: str = "success",
         data_serializer: Optional[Type[serializers.Serializer]] = None,
         response_message_example: Optional[Any] = None,
+        additional_required_data_fields: Optional[list[str]] = [],
     ):
         self.response_status_example = Status(response_status_example).value
         self.data_serializer = data_serializer
         self.response_message_example = response_message_example
+        self.additional_required_data_fields = additional_required_data_fields
 
     def _map_field(self, field: serializers.Field) -> dict[str, Any]:
         schema: dict[str, Any] = {}
@@ -49,7 +51,10 @@ class CustomOpenAPIResponseSchema:
         for field_name, field in serializer.fields.items():
             properties[field_name] = self._map_field(field)
 
-            if getattr(field, "required", False):
+            if getattr(field, "required", False) or (
+                self.additional_required_data_fields
+                and field_name in self.additional_required_data_fields
+            ):
                 required.append(field_name)
 
         return {
