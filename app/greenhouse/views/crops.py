@@ -45,6 +45,12 @@ OPEN_API_REQUIRED_FIELDS_EXAMPLE = OpenApiExample(
     },
 )
 
+
+RESPONSE_DATA_SCHEMA = CustomOpenAPIResponseSchema(
+    data_serializer=CropSerializer,
+    additional_required_data_fields=["id", "category", "sunlight_requirement"],
+).get_schema()
+
 OPEN_API_PARAMETERS = [
     OpenApiParameter(
         name="id",
@@ -57,9 +63,7 @@ OPEN_API_PARAMETERS = [
 
 OPEN_API_UPDATE_RESPONSE = OpenApiResponse(
     description="Crop updated successfully.",
-    response=CustomOpenAPIResponseSchema(
-        data_serializer=CropSerializer
-    ).get_schema(),
+    response=RESPONSE_DATA_SCHEMA,
     examples=[
         OpenApiExample(
             name="Crop Updated",
@@ -92,7 +96,12 @@ OPEN_API_UPDATE_RESPONSE = OpenApiResponse(
             200: OpenApiResponse(
                 description="List of crops retrieved successfully.",
                 response=CustomOpenAPIResponseSchema(
-                    data_serializer=CropSerializer(many=True)
+                    data_serializer=CropSerializer(many=True),
+                    additional_required_data_fields=[
+                        "id",
+                        "category",
+                        "sunlight_requirement",
+                    ],
                 ).get_schema(),
                 examples=[
                     OpenApiExample(
@@ -125,9 +134,7 @@ OPEN_API_UPDATE_RESPONSE = OpenApiResponse(
         responses={
             201: OpenApiResponse(
                 description="Crop created successfully.",
-                response=CustomOpenAPIResponseSchema(
-                    data_serializer=CropSerializer
-                ).get_schema(),
+                response=RESPONSE_DATA_SCHEMA,
                 examples=[
                     OpenApiExample(
                         name="Crop created example",
@@ -213,9 +220,7 @@ class CropListApiView(
         responses={
             200: OpenApiResponse(
                 description="Crop retrieved successfully.",
-                response=CustomOpenAPIResponseSchema(
-                    data_serializer=CropSerializer
-                ).get_schema(),
+                response=RESPONSE_DATA_SCHEMA,
                 examples=[
                     OpenApiExample(
                         name="Crop detail",
