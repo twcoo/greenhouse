@@ -17,7 +17,7 @@ class CropListApiViewTests(RequiredAuthTestsMixin, APITestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["data"], [])
+        self.assertEqual(response.data["data"]["results"], [])
         self.assertEqual(response.data["message"], None)
 
     def test_list_populated_crops(self):
@@ -28,4 +28,15 @@ class CropListApiViewTests(RequiredAuthTestsMixin, APITestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["data"]), 3)
+        self.assertEqual(len(response.data["data"]["results"]), 3)
+        self.assertEqual(response.data["message"], None)
+
+    def test_list_pagination(self):
+        self.authenticate()
+        CropFactory.create_batch(15)
+
+        response = self.client.get(self.url, {"page_size": 10})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["data"]["results"]), 10)
+        self.assertEqual(response.data["message"], None)
