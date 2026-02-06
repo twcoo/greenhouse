@@ -3,6 +3,11 @@ from typing import Optional
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
 from ..schemas import CustomOpenAPIResponseSchema
+from ..serializers import CropSerializer
+from .examples import (CREATE_CROP_RESPONSE_EXAMPLE,
+                       CROP_REQUIRED_FIELDS_EXAMPLE,
+                       DUPLICATE_CROP_RESPONSE_EXAMPLE,
+                       RETRIEVE_CROP_RESPONSE_EXAMPLE)
 from .schemas import CROP_RESPONSE_DATA_SCHEMA
 
 RESOURCE_NOT_FOUND_RESPONSE: dict[str, Optional[str]] = {
@@ -23,6 +28,33 @@ CROP_NOT_FOUND_RESPONSE = OpenApiResponse(
         )
     ],
 )
+
+CROP_LIST_RESPONSE = OpenApiResponse(
+    description="List of crops retrieved successfully.",
+    response=CropSerializer,
+)
+
+CROP_CREATED_RESPONSE = OpenApiResponse(
+    description="Crop created successfully.",
+    response=CROP_RESPONSE_DATA_SCHEMA,
+    examples=[CREATE_CROP_RESPONSE_EXAMPLE],
+)
+
+CROP_CREATE_VALIDATION_RESPONSE = OpenApiResponse(
+    description="Invalid request due to validation errors.",
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[
+        DUPLICATE_CROP_RESPONSE_EXAMPLE,
+        CROP_REQUIRED_FIELDS_EXAMPLE,
+    ],
+)
+
+CROP_RETRIEVE_RESPONSE = OpenApiResponse(
+    description="Crop retrieved successfully.",
+    response=CROP_RESPONSE_DATA_SCHEMA,
+    examples=[RETRIEVE_CROP_RESPONSE_EXAMPLE],
+)
+
 
 CROP_UPDATE_RESPONSE = OpenApiResponse(
     description="Crop updated successfully.",
@@ -47,4 +79,14 @@ CROP_UPDATE_RESPONSE = OpenApiResponse(
             },
         )
     ],
+)
+
+CROP_UPDATE_VALIDATION_RESPONSE = OpenApiResponse(
+    description="Invalid request due to validation errors.",
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[CROP_REQUIRED_FIELDS_EXAMPLE],
+)
+
+CROP_DELETE_RESPONSE = OpenApiResponse(
+    description="Crop deleted successfully. No content is returned.",
 )

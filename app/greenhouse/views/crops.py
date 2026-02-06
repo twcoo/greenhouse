@@ -1,19 +1,19 @@
 from typing import Any
 
-from drf_spectacular.utils import (OpenApiExample, OpenApiResponse,
-                                   extend_schema, extend_schema_view)
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
 from ..models import Crop
-from ..openapi.examples import (CREATE_CROP_REQUEST_EXAMPLE,
-                                CROP_REQUIRED_FIELDS_EXAMPLE)
+from ..openapi.examples import CREATE_CROP_REQUEST_EXAMPLE
 from ..openapi.parameters import CROP_ID_PARAM
-from ..openapi.responses import CROP_NOT_FOUND_RESPONSE, CROP_UPDATE_RESPONSE
-from ..openapi.schemas import CROP_RESPONSE_DATA_SCHEMA
-from ..schemas import CustomOpenAPIResponseSchema
+from ..openapi.responses import (CROP_CREATE_VALIDATION_RESPONSE,
+                                 CROP_CREATED_RESPONSE, CROP_DELETE_RESPONSE,
+                                 CROP_LIST_RESPONSE, CROP_NOT_FOUND_RESPONSE,
+                                 CROP_RETRIEVE_RESPONSE, CROP_UPDATE_RESPONSE,
+                                 CROP_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import CropSerializer
 from ..utils.api import CustomAuthentication, CustomResponse
 
@@ -24,10 +24,7 @@ from ..utils.api import CustomAuthentication, CustomResponse
         summary="List crops",
         description="Retrieve all crop records.",
         responses={
-            200: OpenApiResponse(
-                description="List of crops retrieved successfully.",
-                response=CropSerializer,
-            ),
+            200: CROP_LIST_RESPONSE,
         },
     ),
     post=extend_schema(
@@ -38,52 +35,8 @@ from ..utils.api import CustomAuthentication, CustomResponse
             CREATE_CROP_REQUEST_EXAMPLE,
         ],
         responses={
-            201: OpenApiResponse(
-                description="Crop created successfully.",
-                response=CROP_RESPONSE_DATA_SCHEMA,
-                examples=[
-                    OpenApiExample(
-                        name="Crop created example",
-                        summary="Successfully created crop",
-                        description="Example response returned after a crop is successfully created.",
-                        value={
-                            "status": "success",
-                            "message": None,
-                            "data": {
-                                "id": 34,
-                                "name": "Tomato",
-                                "scientific_name": "Solanum lycopersicum",
-                                "category": "VEGETABLE",
-                                "sunlight_requirement": "FULL SUN",
-                                "min_days_to_harvest": 60,
-                                "max_days_to_harvest": 90,
-                            },
-                        },
-                    )
-                ],
-            ),
-            400: OpenApiResponse(
-                description="Invalid request due to validation errors.",
-                response=CustomOpenAPIResponseSchema().get_schema(),
-                examples=[
-                    OpenApiExample(
-                        name="Duplicate crop record",
-                        summary="Crop already exists",
-                        description="This response is returned when a duplicate record already exists.",
-                        status_codes=["400"],
-                        value={
-                            "status": "error",
-                            "data": None,
-                            "message": {
-                                "non_field_errors": [
-                                    "A crop with the same name and scientific name already exists."
-                                ]
-                            },
-                        },
-                    ),
-                    CROP_REQUIRED_FIELDS_EXAMPLE,
-                ],
-            ),
+            201: CROP_CREATED_RESPONSE,
+            400: CROP_CREATE_VALIDATION_RESPONSE,
         },
     ),
 )
@@ -124,30 +77,7 @@ class CropListApiView(
         description="Retrieve a single crop record by it's ID.",
         parameters=CROP_ID_PARAM,
         responses={
-            200: OpenApiResponse(
-                description="Crop retrieved successfully.",
-                response=CROP_RESPONSE_DATA_SCHEMA,
-                examples=[
-                    OpenApiExample(
-                        name="Crop detail",
-                        summary="Retrieve a crop by ID",
-                        description="Returns the details of a crop identified by the provided ID.",
-                        value={
-                            "status": "success",
-                            "message": None,
-                            "data": {
-                                "id": 34,
-                                "name": "Tomato",
-                                "scientific_name": "Solanum lycopersicum",
-                                "category": "VEGETABLE",
-                                "sunlight_requirement": "FULL SUN",
-                                "min_days_to_harvest": 60,
-                                "max_days_to_harvest": 90,
-                            },
-                        },
-                    )
-                ],
-            ),
+            200: CROP_RETRIEVE_RESPONSE,
             404: CROP_NOT_FOUND_RESPONSE,
         },
     ),
@@ -158,11 +88,7 @@ class CropListApiView(
         parameters=CROP_ID_PARAM,
         responses={
             200: CROP_UPDATE_RESPONSE,
-            400: OpenApiResponse(
-                description="Invalid request due to validation errors.",
-                response=CustomOpenAPIResponseSchema().get_schema(),
-                examples=[CROP_REQUIRED_FIELDS_EXAMPLE],
-            ),
+            400: CROP_UPDATE_VALIDATION_RESPONSE,
             404: CROP_NOT_FOUND_RESPONSE,
         },
     ),
@@ -182,9 +108,7 @@ class CropListApiView(
         description="Deletes an existing crop record identified by its ID.",
         parameters=CROP_ID_PARAM,
         responses={
-            204: OpenApiResponse(
-                description="Crop deleted successfully. No content is returned.",
-            ),
+            204: CROP_DELETE_RESPONSE,
             404: CROP_NOT_FOUND_RESPONSE,
         },
     ),

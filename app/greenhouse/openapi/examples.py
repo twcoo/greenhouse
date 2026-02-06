@@ -32,3 +32,58 @@ CROP_REQUIRED_FIELDS_EXAMPLE = OpenApiExample(
         },
     },
 )
+
+
+CREATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Crop created example",
+    summary="Successfully created crop",
+    description="Example response returned after a crop is successfully created.",
+    value={
+        "status": "success",
+        "message": None,
+        "data": {
+            "id": 34,
+            "name": "Tomato",
+            "scientific_name": "Solanum lycopersicum",
+            "category": "VEGETABLE",
+            "sunlight_requirement": "FULL SUN",
+            "min_days_to_harvest": 60,
+            "max_days_to_harvest": 90,
+        },
+    },
+)
+
+DUPLICATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Duplicate crop record",
+    summary="Crop already exists",
+    description="This response is returned when a duplicate record already exists.",
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "non_field_errors": [
+                "A crop with the same name and scientific name already exists."
+            ]
+        },
+    },
+)
+
+RETRIEVE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Crop detail",
+    summary="Retrieve a crop by ID",
+    description="Returns the details of a crop identified by the provided ID.",
+    value={
+        "status": "success",
+        "message": None,
+        "data": {
+            "id": 34,
+            "name": "Tomato",
+            "scientific_name": "Solanum lycopersicum",
+            "category": "VEGETABLE",
+            "sunlight_requirement": "FULL SUN",
+            "min_days_to_harvest": 60,
+            "max_days_to_harvest": 90,
+        },
+    },
+)

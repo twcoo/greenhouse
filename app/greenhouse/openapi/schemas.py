@@ -5,5 +5,3 @@ CROP_RESPONSE_DATA_SCHEMA = CustomOpenAPIResponseSchema(
     data_serializer=CropSerializer,
     additional_required_data_fields=["id", "category", "sunlight_requirement"],
 ).get_schema()
-
-OPEN_API_RESPONSE_DATA_SCHEMA = ""
