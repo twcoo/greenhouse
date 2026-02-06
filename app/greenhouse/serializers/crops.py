@@ -15,13 +15,10 @@ class CropSerializer(serializers.ModelSerializer):
         max_length=100, help_text="Scientific (Latin) name of the crop"
     )
     category = serializers.ChoiceField(
-        choices=Crop.CATEGORY_CHOICES,
-        default="VEGETABLE",
-        help_text="Category of the crop",
+        choices=Crop.CATEGORY_CHOICES, help_text="Category of the crop"
     )
     sunlight_requirement = serializers.ChoiceField(
         choices=Crop.SUNLIGHT_REQUIREMENT_CHOICES,
-        default="FULL SUN",
         help_text="Sunlight requirement of the crop",
     )
     min_days_to_harvest = serializers.IntegerField(

@@ -12,10 +12,12 @@ class Crop(models.Model):
     name = models.CharField(max_length=50, unique=True)
     scientific_name = models.CharField(max_length=100, unique=True)
     category = models.CharField(
-        max_length=15, choices=CATEGORY_CHOICES, default="VEGETABLE"
+        max_length=15,
+        choices=CATEGORY_CHOICES,
     )
     sunlight_requirement = models.CharField(
-        max_length=15, choices=SUNLIGHT_REQUIREMENT_CHOICES, default="FULL SUN"
+        max_length=15,
+        choices=SUNLIGHT_REQUIREMENT_CHOICES,
     )
     min_days_to_harvest = models.IntegerField()
     max_days_to_harvest = models.IntegerField()
