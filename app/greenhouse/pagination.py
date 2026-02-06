@@ -26,7 +26,7 @@ class StandardResultSetPagination(PageNumberPagination):
                     "properties": {
                         "count": {
                             "type": "integer",
-                            "example": 100,
+                            "example": 1,
                             "description": "The total number of items available across all pages.",
                         },
                         "next": {
