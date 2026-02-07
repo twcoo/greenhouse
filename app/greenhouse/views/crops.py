@@ -7,7 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
 from ..models import Crop
-from ..openapi.examples import CREATE_CROP_REQUEST_EXAMPLE
+from ..openapi.examples import (CREATE_CROP_REQUEST_EXAMPLE,
+                                UPDATE_CROP_REQUEST_EXAMPLE)
 from ..openapi.parameters import CROP_ID_PARAM
 from ..openapi.responses import (CROP_CREATE_VALIDATION_RESPONSE,
                                  CROP_CREATED_RESPONSE, CROP_DELETE_RESPONSE,
@@ -86,6 +87,7 @@ class CropListApiView(
         summary="Update a crop",
         description="Updates an existing crop record by it's ID.",
         parameters=CROP_ID_PARAM,
+        examples=[UPDATE_CROP_REQUEST_EXAMPLE],
         responses={
             200: CROP_UPDATE_RESPONSE,
             400: CROP_UPDATE_VALIDATION_RESPONSE,
