@@ -1,9 +1,12 @@
+from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from ..models import Crop
+from ..openapi.examples import CROP_SERIALIZER_EXAMPLE
 
 
+@extend_schema_serializer(examples=[CROP_SERIALIZER_EXAMPLE])
 class CropSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(
         read_only=True, help_text="Unique identifier of the crop"
