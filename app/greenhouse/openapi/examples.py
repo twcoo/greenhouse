@@ -81,6 +81,16 @@ UPDATE_CROP_REQUEST_EXAMPLE = OpenApiExample(
     request_only=True,
 )
 
+PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE = OpenApiExample(
+    name="Partially update crop payload",
+    summary="Partially update a crop",
+    description="Example request payload for partially updating a crop.",
+    value={
+        "min_days_to_harvest": 70,
+    },
+    request_only=True,
+)
+
 CROP_REQUIRED_FIELDS_EXAMPLE = OpenApiExample(
     name="Required field missing",
     summary="Missing required fields",

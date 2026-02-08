@@ -8,6 +8,7 @@ from rest_framework.request import Request
 
 from ..models import Crop
 from ..openapi.examples import (CREATE_CROP_REQUEST_EXAMPLE,
+                                PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE,
                                 UPDATE_CROP_REQUEST_EXAMPLE)
 from ..openapi.parameters import CROP_ID_PARAM
 from ..openapi.responses import (CROP_CREATE_VALIDATION_RESPONSE,
@@ -99,7 +100,7 @@ class CropListApiView(
         summary="Partially update a crop",
         description="Partially updates an existing crop record identified by its ID.",
         parameters=CROP_ID_PARAM,
-        examples=[UPDATE_CROP_REQUEST_EXAMPLE],
+        examples=[PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE],
         responses={
             200: CROP_UPDATE_RESPONSE,
             404: CROP_NOT_FOUND_RESPONSE,
