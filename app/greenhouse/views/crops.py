@@ -99,6 +99,7 @@ class CropListApiView(
         summary="Partially update a crop",
         description="Partially updates an existing crop record identified by its ID.",
         parameters=CROP_ID_PARAM,
+        examples=[UPDATE_CROP_REQUEST_EXAMPLE],
         responses={
             200: CROP_UPDATE_RESPONSE,
             404: CROP_NOT_FOUND_RESPONSE,
