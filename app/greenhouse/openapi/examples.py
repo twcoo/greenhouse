@@ -12,7 +12,7 @@ RESOURCE_NOT_FOUND_RESPONSE: dict[str, Optional[str]] = {
 CROP_SERIALIZER_EXAMPLE = OpenApiExample(
     name="Crop",
     summary="Crop serializer example",
-    description="Represents a crop object returned by the API.",
+    description="Example paginated response containing a list of crops.",
     value={
         "id": 1,
         "name": "Tomato",
@@ -28,7 +28,7 @@ CROP_SERIALIZER_EXAMPLE = OpenApiExample(
 RETRIEVE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
     name="Crop detail",
     summary="Retrieve a crop by ID",
-    description="Returns the details of a crop identified by the provided ID.",
+    description="Example response returning crop details for the specified ID.",
     value={
         "status": "success",
         "message": None,
@@ -44,10 +44,17 @@ RETRIEVE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
     },
 )
 
+CROP_NOT_FOUND_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Crop not found",
+    summary="No crop exists with the provided ID.",
+    description="Example response returned when no crop exists for the specified ID.",
+    value=RESOURCE_NOT_FOUND_RESPONSE,
+)
+
 CREATE_CROP_REQUEST_EXAMPLE = OpenApiExample(
-    name="Create tomato crop payload",
-    summary="Create a tomato crop",
-    description="Example request payload for creating a tomato crop.",
+    name="Create crop payload",
+    summary="Create a crop",
+    description="Example request payload for creating a crop.",
     value={
         "name": "Tomato",
         "scientific_name": "Solanum lycopersicum",
@@ -60,9 +67,9 @@ CREATE_CROP_REQUEST_EXAMPLE = OpenApiExample(
 )
 
 UPDATE_CROP_REQUEST_EXAMPLE = OpenApiExample(
-    name="Update tomato crop payload",
-    summary="Update a tomato crop",
-    description="Example request payload for update a tomato crop.",
+    name="Update crop payload",
+    summary="Update a crop",
+    description="Example request payload for updating a crop.",
     value={
         "name": "Tomato",
         "scientific_name": "Solanum lycopersicum",
@@ -77,10 +84,7 @@ UPDATE_CROP_REQUEST_EXAMPLE = OpenApiExample(
 CROP_REQUIRED_FIELDS_EXAMPLE = OpenApiExample(
     name="Required field missing",
     summary="Missing required fields",
-    description=(
-        "This response is returned when one or more required fields are missing "
-        "in the request payload."
-    ),
+    description="Example response returned when required fields are missing in the request payload.",
     status_codes=["400"],
     value={
         "status": "error",
@@ -115,7 +119,7 @@ CREATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
 DUPLICATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
     name="Duplicate crop record",
     summary="Crop already exists",
-    description="This response is returned when a duplicate record already exists.",
+    description="Example response returned when a duplicate record already exists.",
     status_codes=["400"],
     value={
         "status": "error",
@@ -132,7 +136,7 @@ DUPLICATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
 UPDATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
     name="Crop Updated",
     summary="Crop updated successfully",
-    description="Returned after the crop has been successfully updated.",
+    description="Example response indicating the crop was successfully updated.",
     value={
         "status": "success",
         "message": None,
@@ -146,11 +150,4 @@ UPDATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
             "max_days_to_harvest": 90,
         },
     },
-)
-
-CROP_NOT_FOUND_RESPONSE_EXAMPLE = OpenApiExample(
-    name="Crop not found",
-    summary="No crop exists with the provided ID.",
-    description="Returned when a crop with the specified ID does not exist.",
-    value=RESOURCE_NOT_FOUND_RESPONSE,
 )
