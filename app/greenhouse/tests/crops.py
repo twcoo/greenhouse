@@ -18,7 +18,10 @@ class CropListApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["data"]["results"], [])
-        self.assertEqual(response.data["message"], None)
+        self.assertEqual(response.data["data"]["count"], 0)
+        self.assertIsNone(response.data["data"]["next"])
+        self.assertIsNone(response.data["data"]["previous"])
+        self.assertIsNone(response.data["message"])
 
     def test_list_populated_crops(self):
         self.authenticate()
@@ -29,7 +32,7 @@ class CropListApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["data"]["results"]), 3)
-        self.assertEqual(response.data["message"], None)
+        self.assertIsNone(response.data["message"])
 
     def test_list_pagination(self):
         self.authenticate()
@@ -39,4 +42,7 @@ class CropListApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["data"]["results"]), 10)
-        self.assertEqual(response.data["message"], None)
+        self.assertEqual(response.data["data"]["count"], 15)
+        self.assertIsNotNone(response.data["data"]["next"])
+        self.assertIsNone(response.data["data"]["previous"])
+        self.assertIsNone(response.data["message"])
