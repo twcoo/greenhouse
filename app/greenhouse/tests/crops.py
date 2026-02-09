@@ -68,3 +68,9 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
         response = self.client.post(self.url, payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["status"], "success")
+        self.assertEqual(
+            response.data["data"],
+            {"id": 1, **payload},
+        )
+        self.assertIsNone(response.data["message"])
