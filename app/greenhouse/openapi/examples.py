@@ -4,8 +4,8 @@ from drf_spectacular.utils import OpenApiExample
 
 RESOURCE_NOT_FOUND_RESPONSE: dict[str, Optional[str]] = {
     "status": "error",
-    "message": "Resource not found.",
     "data": None,
+    "message": "Resource not found.",
 }
 
 
@@ -31,7 +31,6 @@ RETRIEVE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
     description="Example response returning crop details for the specified ID.",
     value={
         "status": "success",
-        "message": None,
         "data": {
             "id": 1,
             "name": "Tomato",
@@ -41,6 +40,7 @@ RETRIEVE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
             "min_days_to_harvest": 60,
             "max_days_to_harvest": 90,
         },
+        "message": None,
     },
 )
 
@@ -113,7 +113,6 @@ CREATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
     description="Example response returned after a crop is successfully created.",
     value={
         "status": "success",
-        "message": None,
         "data": {
             "id": 1,
             "name": "Tomato",
@@ -123,6 +122,7 @@ CREATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
             "min_days_to_harvest": 60,
             "max_days_to_harvest": 90,
         },
+        "message": None,
     },
 )
 
@@ -149,7 +149,6 @@ UPDATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
     description="Example response indicating the crop was successfully updated.",
     value={
         "status": "success",
-        "message": None,
         "data": {
             "id": 1,
             "name": "Tomato",
@@ -159,5 +158,6 @@ UPDATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
             "min_days_to_harvest": 70,
             "max_days_to_harvest": 90,
         },
+        "message": None,
     },
 )
