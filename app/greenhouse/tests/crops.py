@@ -46,3 +46,25 @@ class CropListApiViewTests(RequiredAuthTestsMixin, APITestCase):
         self.assertIsNotNone(response.data["data"]["next"])
         self.assertIsNone(response.data["data"]["previous"])
         self.assertIsNone(response.data["message"])
+
+
+class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = reverse("crop-list-create")
+
+    def test_create_crop_success(self):
+        self.authenticate()
+
+        payload = {
+            "name": "Tomato",
+            "scientific_name": "Solanum lycopersicum",
+            "category": "VEGETABLE",
+            "sunlight_requirement": "FULL SUN",
+            "min_days_to_harvest": 60,
+            "max_days_to_harvest": 90,
+        }
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
