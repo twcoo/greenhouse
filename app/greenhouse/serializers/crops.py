@@ -11,9 +11,7 @@ class CropSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(
         read_only=True, help_text="Unique identifier of the crop"
     )
-    name = serializers.CharField(
-        max_length=50, help_text="Common name of the crop"
-    )
+    name = serializers.CharField(max_length=50, help_text="Common name of the crop")
     scientific_name = serializers.CharField(
         max_length=100, help_text="Scientific (Latin) name of the crop"
     )
@@ -30,6 +28,14 @@ class CropSerializer(serializers.ModelSerializer):
     max_days_to_harvest = serializers.IntegerField(
         min_value=1, help_text="Estimated maximum number of days until harvest"
     )
+
+    def validate_name(self, value):
+        if value.isdigit():
+            raise serializers.ValidationError("Name must be a valid string.")
+
+    def validate_scientific_name(self, value):
+        if value.isdigit():
+            raise serializers.ValidationError("Scientific name must be a valid string.")
 
     class Meta:
         model = Crop
