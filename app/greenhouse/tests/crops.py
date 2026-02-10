@@ -186,3 +186,31 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
                 ],
             },
         )
+
+    def test_validation_error_when_min_days_to_harvest_exceeds_max(self):
+        self.authenticate()
+        payload = {
+            "name": "Lettuce",
+            "scientific_name": "Lactuca sativa",
+            "category": "VEGETABLE",
+            "sunlight_requirement": "PART SUN",
+            "min_days_to_harvest": 20,
+            "max_days_to_harvest": 10,
+        }
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["status"], "error")
+        self.assertIsNone(response.data["data"])
+        self.assertEqual(
+            response.data["message"],
+            {
+                "min_days_to_harvest": [
+                    "Cannot be greater than max_days_to_harvest."
+                ],
+                "max_days_to_harvest": [
+                    "max_days_to_harvest cannot be less than min_days_to_harvest."
+                ],
+            },
+        )
