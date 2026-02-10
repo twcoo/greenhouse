@@ -16,4 +16,6 @@ class CropFactory(DjangoModelFactory):
         [choice[0] for choice in Crop.SUNLIGHT_REQUIREMENT_CHOICES]
     )
     min_days_to_harvest = Faker("random_int", min=20, max=60)
-    max_days_to_harvest = Faker("random_int", min=20, max=60)
+    max_days_to_harvest = factory.LazyAttribute(
+        lambda obj: obj.min_days_to_harvest + 40
+    )
