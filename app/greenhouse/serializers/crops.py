@@ -60,8 +60,14 @@ class CropSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
-        min_days_to_harvest = attrs.get("min_days_to_harvest")
-        max_days_to_harvest = attrs.get("max_days_to_harvest")
+        min_days_to_harvest = attrs.get(
+            "min_days_to_harvest",
+            getattr(self.instance, "min_days_to_harvest", None),
+        )
+        max_days_to_harvest = attrs.get(
+            "max_days_to_harvest",
+            getattr(self.instance, "max_days_to_harvest", None),
+        )
 
         if min_days_to_harvest > max_days_to_harvest:
             raise serializers.ValidationError(
