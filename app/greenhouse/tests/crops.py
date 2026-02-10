@@ -239,3 +239,111 @@ class CropGetApiViewTests(RequiredAuthTestsMixin, APITestCase):
             response.data["data"],
         )
         self.assertEqual(response.data["message"], "Resource not found.")
+
+
+class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.crop = CropFactory()
+        self.url = reverse("crop-detail", args=[self.crop.id])  # type: ignore[attr-defined]
+        self.url_not_found = reverse("crop-detail", args=[2])
+        self.payload = {
+            "name": "Cucumber",
+            "scientific_name": "Cucumis sativus",
+            "category": "VEGETABLE",
+            "sunlight_requirement": "FULL SUN",
+            "min_days_to_harvest": 50,
+            "max_days_to_harvest": 70,
+        }
+
+    def test_update_crop(self):
+        self.authenticate()
+
+        response = self.client.put(self.url, self.payload)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["data"],
+            {
+                "id": self.crop.id,  # type: ignore[attr-defined]
+                **self.payload,
+            },
+        )
+        self.assertIsNone(response.data["message"])
+
+    def test_update_crop_not_found(self):
+        self.authenticate()
+
+        response = self.client.put(self.url_not_found, self.payload)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertIsNone(
+            response.data["data"],
+        )
+        self.assertEqual(response.data["message"], "Resource not found.")
+
+    def test_update_crop_invalid_field_values(self):
+        self.authenticate()
+
+        payload = {
+            "name": 1,
+            "scientific_name": 1,
+            "category": "INVALID_VALUE",
+            "sunlight_requirement": "INVALID_VALUE",
+            "min_days_to_harvest": 60,
+            "max_days_to_harvest": 90,
+        }
+
+        response = self.client.put(self.url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["status"], "error")
+        self.assertIsNone(response.data["data"])
+        self.assertEqual(
+            response.data["message"],
+            {
+                "name": [
+                    ErrorDetail(string="Name must be a valid string.", code="invalid")
+                ],
+                "scientific_name": [
+                    ErrorDetail(
+                        string="Scientific name must be a valid string.",
+                        code="invalid",
+                    )
+                ],
+                "category": [
+                    ErrorDetail(
+                        string='"INVALID_VALUE" is not a valid choice.',
+                        code="invalid_choice",
+                    )
+                ],
+                "sunlight_requirement": [
+                    ErrorDetail(
+                        string='"INVALID_VALUE" is not a valid choice.',
+                        code="invalid_choice",
+                    )
+                ],
+            },
+        )
+
+    def test_validation_error_when_min_days_to_harvest_exceeds_max(self):
+        self.authenticate()
+
+        payload = self.payload
+
+        payload["min_days_to_harvest"] = 1000
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["status"], "error")
+        self.assertIsNone(response.data["data"])
+        self.assertEqual(
+            response.data["message"],
+            {
+                "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
+                "max_days_to_harvest": [
+                    "max_days_to_harvest cannot be less than min_days_to_harvest."
+                ],
+            },
+        )
