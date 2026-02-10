@@ -66,9 +66,7 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
     def test_create_crop_success(self):
         self.authenticate()
 
-        response = self.client.post(
-            self.url, self.tomato_payload, format="json"
-        )
+        response = self.client.post(self.url, self.tomato_payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["status"], "success")
@@ -108,9 +106,7 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         CropFactory(name="Tomato")
 
-        response = self.client.post(
-            self.url, self.tomato_payload, format="json"
-        )
+        response = self.client.post(self.url, self.tomato_payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["status"], "error")
@@ -125,20 +121,14 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         CropFactory(scientific_name="Solanum lycopersicum")
 
-        response = self.client.post(
-            self.url, self.tomato_payload, format="json"
-        )
+        response = self.client.post(self.url, self.tomato_payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["status"], "error")
         self.assertIsNone(response.data["data"])
         self.assertEqual(
             response.data["message"],
-            {
-                "scientific_name": [
-                    "A crop with this scientific name already exists."
-                ]
-            },
+            {"scientific_name": ["A crop with this scientific name already exists."]},
         )
 
     def test_create_crop_invalid_field_values(self):
@@ -162,9 +152,7 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
             response.data["message"],
             {
                 "name": [
-                    ErrorDetail(
-                        string="Name must be a valid string.", code="invalid"
-                    )
+                    ErrorDetail(string="Name must be a valid string.", code="invalid")
                 ],
                 "scientific_name": [
                     ErrorDetail(
@@ -206,9 +194,7 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
         self.assertEqual(
             response.data["message"],
             {
-                "min_days_to_harvest": [
-                    "Cannot be greater than max_days_to_harvest."
-                ],
+                "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
                 "max_days_to_harvest": [
                     "max_days_to_harvest cannot be less than min_days_to_harvest."
                 ],
@@ -317,9 +303,7 @@ class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
             response.data["message"],
             {
                 "name": [
-                    ErrorDetail(
-                        string="Name must be a valid string.", code="invalid"
-                    )
+                    ErrorDetail(string="Name must be a valid string.", code="invalid")
                 ],
                 "scientific_name": [
                     ErrorDetail(
@@ -357,9 +341,7 @@ class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
         self.assertEqual(
             response.data["message"],
             {
-                "min_days_to_harvest": [
-                    "Cannot be greater than max_days_to_harvest."
-                ],
+                "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
                 "max_days_to_harvest": [
                     "max_days_to_harvest cannot be less than min_days_to_harvest."
                 ],
@@ -429,9 +411,7 @@ class CropPartialUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
             response.data["message"],
             {
                 "name": [
-                    ErrorDetail(
-                        string="Name must be a valid string.", code="invalid"
-                    )
+                    ErrorDetail(string="Name must be a valid string.", code="invalid")
                 ],
                 "scientific_name": [
                     ErrorDetail(
@@ -454,24 +434,24 @@ class CropPartialUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
             },
         )
 
-    # def test_validation_error_when_min_days_to_harvest_exceeds_max(self):
-    #     self.authenticate()
-    #
-    #     payload = self.payload
-    #
-    #     payload = {"min_days_to_harvest": 1000}
-    #
-    #     response = self.client.patch(self.url, payload, format="json")
-    #
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    #     self.assertEqual(response.data["status"], "error")
-    #     self.assertIsNone(response.data["data"])
-    #     self.assertEqual(
-    #         response.data["message"],
-    #         {
-    #             "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
-    #             "max_days_to_harvest": [
-    #                 "max_days_to_harvest cannot be less than min_days_to_harvest."
-    #             ],
-    #         },
-    #     )
+    def test_validation_error_when_min_days_to_harvest_exceeds_max(self):
+        self.authenticate()
+
+        payload = self.payload
+
+        payload = {"min_days_to_harvest": 1000}
+
+        response = self.client.patch(self.url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["status"], "error")
+        self.assertIsNone(response.data["data"])
+        self.assertEqual(
+            response.data["message"],
+            {
+                "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
+                "max_days_to_harvest": [
+                    "max_days_to_harvest cannot be less than min_days_to_harvest."
+                ],
+            },
+        )
