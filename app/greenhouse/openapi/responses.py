@@ -7,6 +7,7 @@ from .examples import (CREATE_CROP_RESPONSE_EXAMPLE,
                        CROP_REQUIRED_FIELDS_EXAMPLE,
                        DUPLICATE_CROP_RESPONSE_EXAMPLE,
                        MIN_AND_MAX_DAYS_HARVEST_VALIDATION_RESPONSE_EXAMPLE,
+                       NO_DATA_RESPONSE_EXAMPLE,
                        RETRIEVE_CROP_RESPONSE_EXAMPLE,
                        UPDATE_CROP_RESPONSE_EXAMPLE)
 from .schemas import CROP_RESPONSE_DATA_SCHEMA
@@ -44,7 +45,6 @@ CROP_RETRIEVE_RESPONSE = OpenApiResponse(
     examples=[RETRIEVE_CROP_RESPONSE_EXAMPLE],
 )
 
-
 CROP_UPDATE_RESPONSE = OpenApiResponse(
     description="Crop updated successfully.",
     response=CROP_RESPONSE_DATA_SCHEMA,
@@ -71,5 +71,7 @@ CROP_PARTIAL_UPDATE_VALIDATION_RESPONSE = OpenApiResponse(
 )
 
 CROP_DELETE_RESPONSE = OpenApiResponse(
-    description="Crop deleted successfully. No content is returned.",
+    description="Crop deleted successfully.",
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[NO_DATA_RESPONSE_EXAMPLE],
 )

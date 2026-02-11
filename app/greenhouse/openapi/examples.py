@@ -8,6 +8,19 @@ RESOURCE_NOT_FOUND_RESPONSE: dict[str, Optional[str]] = {
     "message": "Resource not found.",
 }
 
+NO_DATA_RESPONSE_EXAMPLE = OpenApiExample(
+    name="No data response",
+    summary="Successful response with no data",
+    description=(
+        "Example response returned when a request completes successfully "
+        "but does not include any data in the response body."
+    ),
+    value={
+        "status": "success",
+        "data": None,
+        "message": None,
+    },
+)
 
 CROP_SERIALIZER_EXAMPLE = OpenApiExample(
     name="Crop",
