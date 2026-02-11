@@ -14,6 +14,7 @@ from ..openapi.parameters import CROP_ID_PARAM
 from ..openapi.responses import (CROP_CREATE_VALIDATION_RESPONSE,
                                  CROP_CREATED_RESPONSE, CROP_DELETE_RESPONSE,
                                  CROP_LIST_RESPONSE, CROP_NOT_FOUND_RESPONSE,
+                                 CROP_PARTIAL_UPDATE_VALIDATION_RESPONSE,
                                  CROP_RETRIEVE_RESPONSE, CROP_UPDATE_RESPONSE,
                                  CROP_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import CropSerializer
@@ -103,6 +104,7 @@ class CropListApiView(
         examples=[PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE],
         responses={
             200: CROP_UPDATE_RESPONSE,
+            400: CROP_PARTIAL_UPDATE_VALIDATION_RESPONSE,
             404: CROP_NOT_FOUND_RESPONSE,
         },
     ),

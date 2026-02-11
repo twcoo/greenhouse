@@ -6,6 +6,7 @@ from .examples import (CREATE_CROP_RESPONSE_EXAMPLE,
                        CROP_NOT_FOUND_RESPONSE_EXAMPLE,
                        CROP_REQUIRED_FIELDS_EXAMPLE,
                        DUPLICATE_CROP_RESPONSE_EXAMPLE,
+                       MIN_AND_MAX_DAYS_HARVEST_VALIDATION_RESPONSE_EXAMPLE,
                        RETRIEVE_CROP_RESPONSE_EXAMPLE,
                        UPDATE_CROP_RESPONSE_EXAMPLE)
 from .schemas import CROP_RESPONSE_DATA_SCHEMA
@@ -33,6 +34,7 @@ CROP_CREATE_VALIDATION_RESPONSE = OpenApiResponse(
     examples=[
         DUPLICATE_CROP_RESPONSE_EXAMPLE,
         CROP_REQUIRED_FIELDS_EXAMPLE,
+        MIN_AND_MAX_DAYS_HARVEST_VALIDATION_RESPONSE_EXAMPLE,
     ],
 )
 
@@ -46,13 +48,26 @@ CROP_RETRIEVE_RESPONSE = OpenApiResponse(
 CROP_UPDATE_RESPONSE = OpenApiResponse(
     description="Crop updated successfully.",
     response=CROP_RESPONSE_DATA_SCHEMA,
-    examples=[UPDATE_CROP_RESPONSE_EXAMPLE],
+    examples=[
+        UPDATE_CROP_RESPONSE_EXAMPLE,
+    ],
 )
 
 CROP_UPDATE_VALIDATION_RESPONSE = OpenApiResponse(
     description="Invalid request due to validation errors.",
     response=CustomOpenAPIResponseSchema().get_schema(),
-    examples=[CROP_REQUIRED_FIELDS_EXAMPLE],
+    examples=[
+        CROP_REQUIRED_FIELDS_EXAMPLE,
+        MIN_AND_MAX_DAYS_HARVEST_VALIDATION_RESPONSE_EXAMPLE,
+    ],
+)
+
+CROP_PARTIAL_UPDATE_VALIDATION_RESPONSE = OpenApiResponse(
+    description="Invalid request due to validation errors.",
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[
+        MIN_AND_MAX_DAYS_HARVEST_VALIDATION_RESPONSE_EXAMPLE,
+    ],
 )
 
 CROP_DELETE_RESPONSE = OpenApiResponse(

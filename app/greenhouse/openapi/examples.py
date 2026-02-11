@@ -107,6 +107,27 @@ CROP_REQUIRED_FIELDS_EXAMPLE = OpenApiExample(
 )
 
 
+MIN_AND_MAX_DAYS_HARVEST_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Invalid harvest days range",
+    summary="Invalid min/max days to harvest",
+    description=(
+        "Example response returned when the minimum days to harvest "
+        "is greater than the maximum days to harvest."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "min_days_to_harvest": [
+                "Cannot be greater than max_days_to_harvest."
+            ],
+            "max_days_to_harvest": ["Cannot be less than min_days_to_harvest."],
+        },
+    },
+)
+
+
 CREATE_CROP_RESPONSE_EXAMPLE = OpenApiExample(
     name="Crop created example",
     summary="Successfully created crop",
