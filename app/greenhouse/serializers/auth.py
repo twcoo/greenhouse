@@ -17,3 +17,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
         return user
+
+
+class KnoxLoginResponseSerializer(serializers.Serializer):
+    token = serializers.CharField(
+        help_text="Authentication token issued upon successful login or registration. "
+    )
+    expiry = serializers.DateTimeField(
+        help_text="ISO 8601 timestamp indicating when the authentication token will expire."
+    )

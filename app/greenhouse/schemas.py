@@ -34,6 +34,9 @@ class CustomOpenAPIResponseSchema:
             schema["type"] = "array"
         elif isinstance(field, serializers.JSONField):
             schema["type"] = ["object", "string", None]
+        elif isinstance(field, serializers.DateTimeField):
+            schema["type"] = "string"
+            schema["format"] = "date-time"
         else:
             schema["type"] = "string"
 
