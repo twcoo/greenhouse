@@ -116,6 +116,7 @@ AUTH_LOGIN_UNAUTHORIZED_RESPONSE_EXAMPLE = OpenApiExample(
 
 AUTH_LOGOUT_RESPONSE_EXAMPLE = OpenApiExample(
     name="Successful logout",
+    description="Example response returned after successful logout.",
     status_codes=["200"],
     response_only=True,
     value={
