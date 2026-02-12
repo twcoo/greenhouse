@@ -3,9 +3,11 @@ from drf_spectacular.utils import OpenApiResponse
 from ..schemas import CustomOpenAPIResponseSchema
 from ..serializers import CropSerializer
 from .examples import (AUTH_LOGIN_RESPONSE_EXAMPLE,
+                       AUTH_LOGIN_UNAUTHORIZED_RESPONSE_EXAMPLE,
+                       AUTH_LOGOUT_RESPONSE_EXAMPLE,
+                       AUTH_LOGOUT_UNAUTHORIZED_RESPONSE_EXAMPLE,
                        AUTH_REGISTER_CONFLICT_RESPONSE_EXAMPLE,
                        AUTH_REGISTERED_RESPONSE_EXAMPLE,
-                       AUTH_UNAUTHORIZED_RESPONSE_EXAMPLE,
                        AUTH_VALIDATION_RESPONSE_EXAMPLE,
                        CREATE_CROP_RESPONSE_EXAMPLE,
                        CROP_NOT_FOUND_RESPONSE_EXAMPLE,
@@ -56,8 +58,22 @@ AUTH_LOGIN_UNAUTHORIZED_RESPONSE = OpenApiResponse(
     description="Unauthorized access.",
     response=CustomOpenAPIResponseSchema().get_schema(),
     examples=[
-        AUTH_UNAUTHORIZED_RESPONSE_EXAMPLE,
+        AUTH_LOGIN_UNAUTHORIZED_RESPONSE_EXAMPLE,
     ],
+)
+
+AUTH_LOGOUT_RESPONSE = OpenApiResponse(
+    description="Logout completed successfully.",
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[
+        AUTH_LOGOUT_RESPONSE_EXAMPLE,
+    ],
+)
+
+AUTH_LOGOUT_UNAUTHORIZED_RESPONSE = OpenApiResponse(
+    description="Unauthorized access.",
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[AUTH_LOGOUT_UNAUTHORIZED_RESPONSE_EXAMPLE],
 )
 
 # Crop

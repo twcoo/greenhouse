@@ -1,8 +1,7 @@
 from typing import Optional
 
 from django.contrib.auth import login
-from drf_spectacular.utils import (OpenApiExample, OpenApiResponse,
-                                   extend_schema)
+from drf_spectacular.utils import extend_schema
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
 from knox.views import LogoutView as KnoxLogoutView
@@ -17,10 +16,11 @@ from ..openapi.examples import (AUTH_LOGIN_REQUEST_EXAMPLE,
 from ..openapi.responses import (AUTH_LOGIN_RESPONSE,
                                  AUTH_LOGIN_UNAUTHORIZED_RESPONSE,
                                  AUTH_LOGIN_VALIDATION_RESPONSE,
+                                 AUTH_LOGOUT_RESPONSE,
+                                 AUTH_LOGOUT_UNAUTHORIZED_RESPONSE,
                                  AUTH_REGISTER_CONFLICT_RESPONSE,
                                  AUTH_REGISTER_VALIDATION_RESPONSE,
                                  AUTH_REGISTERED_RESPONSE)
-from ..schemas import CustomOpenAPIResponseSchema
 from ..serializers import KnoxLoginRequestSerializer, RegisterSerializer
 from ..utils.api import CustomAuthentication, CustomResponse
 
@@ -127,38 +127,8 @@ class LoginView(KnoxLoginView):
     tags=["Authentication"],
     description="Allows users to logout by providing their token.",
     responses={
-        200: OpenApiResponse(
-            description="Success",
-            response=CustomOpenAPIResponseSchema().get_schema(),
-            examples=[
-                OpenApiExample(
-                    name="Successful logout",
-                    status_codes=["200"],
-                    response_only=True,
-                    value={
-                        "status": "success",
-                        "data": None,
-                        "message": "Logged out successfully.",
-                    },
-                ),
-            ],
-        ),
-        401: OpenApiResponse(
-            description="Unauthorized",
-            response=CustomOpenAPIResponseSchema().get_schema(),
-            examples=[
-                OpenApiExample(
-                    name="Invalid provided credentials",
-                    status_codes=["401"],
-                    response_only=True,
-                    value={
-                        "status": "error",
-                        "data": None,
-                        "message": "Unable to log in with provided credentials.",
-                    },
-                ),
-            ],
-        ),
+        200: AUTH_LOGOUT_RESPONSE,
+        401: AUTH_LOGOUT_UNAUTHORIZED_RESPONSE,
     },
 )
 class LogoutView(KnoxLogoutView):

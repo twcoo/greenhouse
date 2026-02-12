@@ -102,7 +102,7 @@ AUTH_LOGIN_RESPONSE_EXAMPLE = OpenApiExample(
     },
 )
 
-AUTH_UNAUTHORIZED_RESPONSE_EXAMPLE = OpenApiExample(
+AUTH_LOGIN_UNAUTHORIZED_RESPONSE_EXAMPLE = OpenApiExample(
     name="Invalid provided credentials",
     description="Example response returned when logging in with invalid credentials.",
     status_codes=["401"],
@@ -111,6 +111,29 @@ AUTH_UNAUTHORIZED_RESPONSE_EXAMPLE = OpenApiExample(
         "status": "error",
         "data": None,
         "message": "Unable to log in with provided credentials.",
+    },
+)
+
+AUTH_LOGOUT_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Successful logout",
+    status_codes=["200"],
+    response_only=True,
+    value={
+        "status": "success",
+        "data": None,
+        "message": "Logged out successfully.",
+    },
+)
+
+AUTH_LOGOUT_UNAUTHORIZED_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Invalid provided token",
+    description="Example response returned when attempting to log out with an invalid or expired authentication token.",
+    status_codes=["401"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": "Invalid token.",
     },
 )
 
