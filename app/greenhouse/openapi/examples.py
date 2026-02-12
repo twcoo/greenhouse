@@ -2,6 +2,7 @@ from typing import Optional
 
 from drf_spectacular.utils import OpenApiExample
 
+# Constants
 RESOURCE_NOT_FOUND_RESPONSE: dict[str, Optional[str]] = {
     "status": "error",
     "data": None,
@@ -22,6 +23,62 @@ NO_DATA_RESPONSE_EXAMPLE = OpenApiExample(
     },
 )
 
+# Auth
+AUTH_REGISTRATION_REQUEST_EXAMPLE = OpenApiExample(
+    name="User registration request",
+    summary="User registration",
+    description="Example request payload for registering a new user account.",
+    value={
+        "username": "mhillcrest",
+        "email": "mhillcrest@example.com",
+        "password": "strongPassword$1",
+    },
+    request_only=True,
+)
+
+AUTH_REGISTERED_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Successful registration",
+    description="Example response returned after successful registration.",
+    status_codes=["201"],
+    response_only=True,
+    value={
+        "status": "success",
+        "data": {
+            "expiry": "2026-01-20T06:46:33.891979Z",
+            "token": "ca57a6fb43553fdbe63488748004731714173689eb7.....",
+        },
+        "message": None,
+    },
+)
+
+AUTH_REGISTER_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Auth missing required fields",
+    description="Example response returned when required fields are missing in the request payload.",
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "username": ["This field is required."],
+            "password": ["This field is required."],
+        },
+    },
+)
+
+AUTH_REGISTER_CONFLICT_RESPONSE_EXAMPLE = OpenApiExample(
+    name="User is already registered.",
+    description="Example response returned when a user attempts to register with a username that already exists.",
+    status_codes=["409"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": "A user with that username already exists.",
+    },
+)
+
+# Crop
 CROP_SERIALIZER_EXAMPLE = OpenApiExample(
     name="Crop",
     summary="Crop serializer example",

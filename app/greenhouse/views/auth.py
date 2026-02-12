@@ -12,6 +12,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
+from ..openapi.examples import AUTH_REGISTRATION_REQUEST_EXAMPLE
+from ..openapi.responses import (AUTH_REGISTER_CONFLICT_RESPONSE,
+                                 AUTH_REGISTER_VALIDATION_RESPONSE,
+                                 AUTH_REGISTERED_RESPONSE)
 from ..schemas import CustomOpenAPIResponseSchema
 from ..serializers import RegisterSerializer
 from ..utils.api import CustomAuthentication, CustomResponse
@@ -23,61 +27,11 @@ from ..utils.api import CustomAuthentication, CustomResponse
     tags=["Authentication"],
     description="Allows new users to register by providing their details.",
     request=RegisterSerializer,
+    examples=[AUTH_REGISTRATION_REQUEST_EXAMPLE],
     responses={
-        201: OpenApiResponse(
-            description="Success",
-            response=CustomOpenAPIResponseSchema().get_schema(),
-            examples=[
-                OpenApiExample(
-                    name="Successful registration",
-                    status_codes=["201"],
-                    response_only=True,
-                    value={
-                        "status": "success",
-                        "data": {
-                            "expiry": "2026-01-20T06:46:33.891979Z",
-                            "token": "a2f69c052c2b1a549dbdc458cbe34f5d0c9570919.......",
-                        },
-                        "message": None,
-                    },
-                ),
-            ],
-        ),
-        400: OpenApiResponse(
-            description="Bad Request",
-            response=CustomOpenAPIResponseSchema().get_schema(),
-            examples=[
-                OpenApiExample(
-                    name="Username and password are required",
-                    status_codes=["400"],
-                    response_only=True,
-                    value={
-                        "status": "error",
-                        "data": None,
-                        "message": {
-                            "username": ["This field is required."],
-                            "password": ["This field is required."],
-                        },
-                    },
-                ),
-            ],
-        ),
-        409: OpenApiResponse(
-            description="Conflict",
-            response=CustomOpenAPIResponseSchema().get_schema(),
-            examples=[
-                OpenApiExample(
-                    name="Username is already registered",
-                    status_codes=["400"],
-                    response_only=True,
-                    value={
-                        "status": "error",
-                        "data": None,
-                        "message": "A user with that username already exists.",
-                    },
-                ),
-            ],
-        ),
+        201: AUTH_REGISTERED_RESPONSE,
+        400: AUTH_REGISTER_VALIDATION_RESPONSE,
+        409: AUTH_REGISTER_CONFLICT_RESPONSE,
     },
 )
 class RegisterView(APIView):
