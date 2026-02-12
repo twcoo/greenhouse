@@ -12,12 +12,16 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from ..openapi.examples import AUTH_REGISTRATION_REQUEST_EXAMPLE
-from ..openapi.responses import (AUTH_REGISTER_CONFLICT_RESPONSE,
+from ..openapi.examples import (AUTH_LOGIN_REQUEST_EXAMPLE,
+                                AUTH_REGISTRATION_REQUEST_EXAMPLE)
+from ..openapi.responses import (AUTH_LOGIN_RESPONSE,
+                                 AUTH_LOGIN_UNAUTHORIZED_RESPONSE,
+                                 AUTH_LOGIN_VALIDATION_RESPONSE,
+                                 AUTH_REGISTER_CONFLICT_RESPONSE,
                                  AUTH_REGISTER_VALIDATION_RESPONSE,
                                  AUTH_REGISTERED_RESPONSE)
 from ..schemas import CustomOpenAPIResponseSchema
-from ..serializers import RegisterSerializer
+from ..serializers import KnoxLoginRequestSerializer, RegisterSerializer
 from ..utils.api import CustomAuthentication, CustomResponse
 
 
@@ -75,62 +79,12 @@ class RegisterView(APIView):
     operation_id="Login",
     tags=["Authentication"],
     description="Allows users to login by providing their details.",
-    request=AuthTokenSerializer,
+    request=KnoxLoginRequestSerializer,
+    examples=[AUTH_LOGIN_REQUEST_EXAMPLE],
     responses={
-        200: OpenApiResponse(
-            description="Success",
-            response=CustomOpenAPIResponseSchema().get_schema(),
-            examples=[
-                OpenApiExample(
-                    name="Successful login",
-                    status_codes=["200"],
-                    response_only=True,
-                    value={
-                        "status": "success",
-                        "data": {
-                            "expiry": "2026-01-20T07:21:39.160819Z",
-                            "token": "2d54d895a9aaa0d4bd9d8052579e280e6e0da24f2.......",
-                        },
-                        "message": None,
-                    },
-                ),
-            ],
-        ),
-        400: OpenApiResponse(
-            description="Bad Request",
-            response=CustomOpenAPIResponseSchema().get_schema(),
-            examples=[
-                OpenApiExample(
-                    name="Username and password fields are required",
-                    status_codes=["400"],
-                    response_only=True,
-                    value={
-                        "status": "error",
-                        "data": None,
-                        "message": {
-                            "username": ["This field is required."],
-                            "password": ["This field is required."],
-                        },
-                    },
-                ),
-            ],
-        ),
-        401: OpenApiResponse(
-            description="Unauthorized",
-            response=CustomOpenAPIResponseSchema().get_schema(),
-            examples=[
-                OpenApiExample(
-                    name="Invalid provided credentials",
-                    status_codes=["401"],
-                    response_only=True,
-                    value={
-                        "status": "error",
-                        "data": None,
-                        "message": "Unable to log in with provided credentials.",
-                    },
-                ),
-            ],
-        ),
+        200: AUTH_LOGIN_RESPONSE,
+        400: AUTH_LOGIN_VALIDATION_RESPONSE,
+        401: AUTH_LOGIN_UNAUTHORIZED_RESPONSE,
     },
 )
 class LoginView(KnoxLoginView):

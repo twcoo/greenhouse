@@ -26,7 +26,6 @@ NO_DATA_RESPONSE_EXAMPLE = OpenApiExample(
 # Auth
 AUTH_REGISTRATION_REQUEST_EXAMPLE = OpenApiExample(
     name="User registration request",
-    summary="User registration",
     description="Example request payload for registering a new user account.",
     value={
         "username": "mhillcrest",
@@ -51,7 +50,7 @@ AUTH_REGISTERED_RESPONSE_EXAMPLE = OpenApiExample(
     },
 )
 
-AUTH_REGISTER_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
+AUTH_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
     name="Auth missing required fields",
     description="Example response returned when required fields are missing in the request payload.",
     status_codes=["400"],
@@ -67,7 +66,7 @@ AUTH_REGISTER_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
 )
 
 AUTH_REGISTER_CONFLICT_RESPONSE_EXAMPLE = OpenApiExample(
-    name="User is already registered.",
+    name="User is already registered",
     description="Example response returned when a user attempts to register with a username that already exists.",
     status_codes=["409"],
     response_only=True,
@@ -75,6 +74,43 @@ AUTH_REGISTER_CONFLICT_RESPONSE_EXAMPLE = OpenApiExample(
         "status": "error",
         "data": None,
         "message": "A user with that username already exists.",
+    },
+)
+
+AUTH_LOGIN_REQUEST_EXAMPLE = OpenApiExample(
+    name="User login request",
+    description="Example request payload for user login.",
+    value={
+        "username": "mhillcrest",
+        "password": "strongPassword$1",
+    },
+    request_only=True,
+)
+
+AUTH_LOGIN_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Successful login",
+    description="Example response returned after successful login.",
+    status_codes=["200"],
+    response_only=True,
+    value={
+        "status": "success",
+        "data": {
+            "expiry": "2026-01-20T07:21:39.160819Z",
+            "token": "ab57a6fb43553fdbe63488748004731714173689eb7.....",
+        },
+        "message": None,
+    },
+)
+
+AUTH_UNAUTHORIZED_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Invalid provided credentials",
+    description="Example response returned when logging in with invalid credentials.",
+    status_codes=["401"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": "Unable to log in with provided credentials.",
     },
 )
 

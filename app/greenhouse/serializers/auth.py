@@ -26,3 +26,12 @@ class KnoxLoginResponseSerializer(serializers.Serializer):
     expiry = serializers.DateTimeField(
         help_text="ISO 8601 timestamp indicating when the authentication token will expire."
     )
+
+
+class KnoxLoginRequestSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        max_length=150, help_text="The username of the user trying to log in."
+    )
+    password = serializers.CharField(
+        write_only=True, help_text="The password of the user."
+    )
