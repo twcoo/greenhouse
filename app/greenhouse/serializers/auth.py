@@ -33,5 +33,5 @@ class KnoxLoginRequestSerializer(serializers.Serializer):
         max_length=150, help_text="The username of the user trying to log in."
     )
     password = serializers.CharField(
-        write_only=True, help_text="The password of the user."
+        write_only=True, min_length=8, help_text="The password of the user."
     )
