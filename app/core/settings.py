@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import sys
 from pathlib import Path
 
 import dj_database_url
@@ -81,17 +82,24 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+TEST_DB_HOST = config("APP_TEST_DB_HOST", cast=str)
+DB_HOST = config("APP_DB_HOST", cast=str)
 DB_USER = config("APP_DB_USER", cast=str)
 DB_PASSWORD = config("APP_DB_PASSWORD", cast=str)
-DB_HOST = config("APP_DB_HOST", cast=str)
 DB_NAME = config("APP_DB_NAME", cast=str)
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=f"postgres://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
-    )
-}
-
+if "test" in sys.argv:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=f"postgres://{DB_USER}:{DB_PASSWORD}@{TEST_DB_HOST}:5432/{DB_NAME}"
+        )
+    }
+else:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=f"postgres://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:5432/{DB_NAME}"
+        )
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
