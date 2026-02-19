@@ -1,4 +1,12 @@
-from .auth import KnoxLoginRequestSerializer as KnoxLoginRequestSerializer
-from .auth import KnoxLoginResponseSerializer as KnoxLoginResponseSerializer
-from .auth import RegisterSerializer as RegisterSerializer
-from .crops import CropSerializer as CropSerializer
+from .auth import (KnoxLoginRequestSerializer, KnoxLoginResponseSerializer,
+                   RegisterSerializer)
+from .crops import CropSerializer
+from .planting_location import PlantingLocationSerializer
+
+__all__ = [
+    "KnoxLoginRequestSerializer",
+    "KnoxLoginResponseSerializer",
+    "RegisterSerializer",
+    "CropSerializer",
+    "PlantingLocationSerializer",
+]
