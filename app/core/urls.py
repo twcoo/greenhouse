@@ -19,4 +19,8 @@ urlpatterns = [
     path(
         f"api/{settings.API_VERSION}/crops/", include("greenhouse.urls.crops")
     ),
+    path(
+        f"api/{settings.API_VERSION}/planting-locations/",
+        include("greenhouse.urls.planting_location"),
+    ),
 ]
