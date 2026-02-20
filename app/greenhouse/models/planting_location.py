@@ -18,7 +18,15 @@ class PlantingLocation(models.Model):
     location_type = models.CharField(
         max_length=20, choices=LOCATION_TYPE_CHOICES
     )
-    height = models.DecimalField(max_digits=6, decimal_places=2)
+    height = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True
+    )
     width = models.DecimalField(max_digits=6, decimal_places=2)
-    created_at = models.DateTimeField(auto_now=True)
+    length = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        null=True,
+        blank=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
