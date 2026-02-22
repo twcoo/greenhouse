@@ -1,6 +1,6 @@
 from django.urls import path
 
-from ..views import PlantingLocationListApiView
+from ..views import PlantingLocationDetailAPIView, PlantingLocationListApiView
 
 urlpatterns = [
     # List and create
@@ -10,5 +10,9 @@ urlpatterns = [
         name="planting-location-list-create",
     ),
     # Get, partial update, full update, and delete
-    # path("<int:pk>", CropDetailAPIView.as_view(), name="crop-detail"),
+    path(
+        "<int:pk>",
+        PlantingLocationDetailAPIView.as_view(),
+        name="planting-location-detail",
+    ),
 ]

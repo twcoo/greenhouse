@@ -10,3 +10,13 @@ CROP_ID_PARAM = [
         required=True,
     )
 ]
+
+PLANTING_LOCATION_ID_PARAM = [
+    OpenApiParameter(
+        name="id",
+        type=OpenApiTypes.INT,
+        location=OpenApiParameter.PATH,
+        description="Unique identifier of the planting location.",
+        required=True,
+    )
+]

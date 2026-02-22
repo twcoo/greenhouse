@@ -1,6 +1,7 @@
 from .auth import LoginView, LogoutView, RegisterView
 from .crops import CropDetailAPIView, CropListApiView
-from .planting_location import PlantingLocationListApiView
+from .planting_location import (PlantingLocationDetailAPIView,
+                                PlantingLocationListApiView)
 
 __all__ = [
     "LoginView",
@@ -9,4 +10,5 @@ __all__ = [
     "CropDetailAPIView",
     "CropListApiView",
     "PlantingLocationListApiView",
+    "PlantingLocationDetailAPIView",
 ]

@@ -10,6 +10,7 @@ from ..models import PlantingLocation
 from ..openapi.examples import (
     CREATE_PLANTING_LOCATION_REQUEST_GROUND_EXAMPLE,
     CREATE_PLANTING_LOCATION_REQUEST_POT_EXAMPLE)
+from ..openapi.parameters import PLANTING_LOCATION_ID_PARAM
 from ..openapi.responses import (PLANTING_LOCATION_CREATE_VALIDATION_RESPONSE,
                                  PLANTING_LOCATION_CREATED_RESPONSE,
                                  PLANTING_LOCATION_LIST_RESPONSE)
@@ -78,4 +79,101 @@ class PlantingLocationListApiView(
 
         return CustomResponse(
             response_data=response.data, status=status.HTTP_201_CREATED
+        )
+
+
+@extend_schema_view(
+    get=extend_schema(
+        tags=["Planting Location"],
+        summary="Retrieve a planting location",
+        description="Retrieve a single planting location record by it's ID.",
+        parameters=PLANTING_LOCATION_ID_PARAM,
+        responses={
+            # 200: CROP_RETRIEVE_RESPONSE,
+            # 404: CROP_NOT_FOUND_RESPONSE,
+        },
+    ),
+    put=extend_schema(
+        tags=["Planting Location"],
+        summary="Update a planting location",
+        description="Updates an existing planting location record by it's ID.",
+        parameters=PLANTING_LOCATION_ID_PARAM,
+        # examples=[UPDATE_CROP_REQUEST_EXAMPLE],
+        responses={
+            # 200: CROP_UPDATE_RESPONSE,
+            # 400: CROP_UPDATE_VALIDATION_RESPONSE,
+            # 404: CROP_NOT_FOUND_RESPONSE,
+        },
+    ),
+    patch=extend_schema(
+        tags=["Planting Location"],
+        summary="Partially update a planting location",
+        description="Partially updates an existing planting location record identified by its ID.",
+        parameters=PLANTING_LOCATION_ID_PARAM,
+        # examples=[PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE],
+        responses={
+            # 200: CROP_UPDATE_RESPONSE,
+            # 400: CROP_PARTIAL_UPDATE_VALIDATION_RESPONSE,
+            # 404: CROP_NOT_FOUND_RESPONSE,
+        },
+    ),
+    delete=extend_schema(
+        tags=["Planting Location"],
+        summary="Delete a crop",
+        description="Deletes an existing planting location record identified by its ID.",
+        parameters=PLANTING_LOCATION_ID_PARAM,
+        responses={
+            # 204: CROP_DELETE_RESPONSE,
+            # 404: CROP_NOT_FOUND_RESPONSE,
+        },
+    ),
+)
+class PlantingLocationDetailAPIView(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    GenericAPIView,
+):
+    authentication_classes = [CustomAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = PlantingLocationSerializer
+
+    def get_queryset(self):
+        return PlantingLocation.objects.filter(user=self.request.user)
+
+    def get(
+        self, request: Request, *args: Any, **kwargs: Any
+    ) -> CustomResponse:
+        response = self.retrieve(request, *args, **kwargs)
+
+        return CustomResponse(
+            response_data=response.data, status=status.HTTP_200_OK
+        )
+
+    def put(
+        self, request: Request, *args: Any, **kwargs: Any
+    ) -> CustomResponse:
+        response = self.update(request, *args, **kwargs)
+
+        return CustomResponse(
+            response_data=response.data, status=status.HTTP_200_OK
+        )
+
+    def patch(
+        self, request: Request, *args: Any, **kwargs: Any
+    ) -> CustomResponse:
+        response = self.partial_update(request, *args, **kwargs)
+
+        return CustomResponse(
+            response_data=response.data, status=status.HTTP_200_OK
+        )
+
+    def delete(
+        self, request: Request, *args: Any, **kwargs: Any
+    ) -> CustomResponse:
+        response = self.destroy(request, *args, **kwargs)
+
+        return CustomResponse(
+            response_data=response.data, status=status.HTTP_204_NO_CONTENT
         )
