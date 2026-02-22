@@ -445,3 +445,29 @@ PLANTING_LOCATION_REQUIRED_FIELDS_EXAMPLE = OpenApiExample(
         },
     },
 )
+
+
+RETRIEVE_PLANTING_LOCATION_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Planting location detail",
+    summary="Retrieve a planting location by ID",
+    description="Example response returning planting location details for the specified ID.",
+    value={
+        "status": "success",
+        "data": {
+            "id": 1,
+            "name": "Backyard Garden Bed",
+            "location_type": "GROUND",
+            "height": None,
+            "width": "120.00",
+            "length": "5.00",
+        },
+        "message": None,
+    },
+)
+
+PLANTING_LOCATION_NOT_FOUND_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Planting location not found",
+    summary="No planting location exists with the provided ID.",
+    description="Example response returned when no planting location exists for the specified ID.",
+    value=RESOURCE_NOT_FOUND_RESPONSE,
+)

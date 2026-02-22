@@ -13,7 +13,9 @@ from ..openapi.examples import (
 from ..openapi.parameters import PLANTING_LOCATION_ID_PARAM
 from ..openapi.responses import (PLANTING_LOCATION_CREATE_VALIDATION_RESPONSE,
                                  PLANTING_LOCATION_CREATED_RESPONSE,
-                                 PLANTING_LOCATION_LIST_RESPONSE)
+                                 PLANTING_LOCATION_LIST_RESPONSE,
+                                 PLANTING_LOCATION_NOT_FOUND_RESPONSE,
+                                 PLANTING_LOCATION_RETRIEVE_RESPONSE)
 from ..serializers import PlantingLocationSerializer
 from ..utils.api import CustomAuthentication, CustomResponse
 
@@ -89,8 +91,8 @@ class PlantingLocationListApiView(
         description="Retrieve a single planting location record by it's ID.",
         parameters=PLANTING_LOCATION_ID_PARAM,
         responses={
-            # 200: CROP_RETRIEVE_RESPONSE,
-            # 404: CROP_NOT_FOUND_RESPONSE,
+            200: PLANTING_LOCATION_RETRIEVE_RESPONSE,
+            404: PLANTING_LOCATION_NOT_FOUND_RESPONSE,
         },
     ),
     put=extend_schema(
