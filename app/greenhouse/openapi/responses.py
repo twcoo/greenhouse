@@ -1,6 +1,5 @@
 from drf_spectacular.utils import OpenApiResponse
 
-from ..schemas import CustomOpenAPIResponseSchema
 from ..serializers import CropSerializer, PlantingLocationSerializer
 from .examples import (
     AUTH_LOGIN_RESPONSE_EXAMPLE, AUTH_LOGIN_UNAUTHORIZED_RESPONSE_EXAMPLE,
@@ -18,7 +17,8 @@ from .examples import (
     PLANTING_LOCATION_REQUIRED_FIELDS_EXAMPLE, RETRIEVE_CROP_RESPONSE_EXAMPLE,
     UPDATE_CROP_RESPONSE_EXAMPLE)
 from .schemas import (AUTH_RESPONSE_DATA_SCHEMA, CROP_RESPONSE_DATA_SCHEMA,
-                      PLANTING_LOCATION_RESPONSE_DATA_SCHEMA)
+                      PLANTING_LOCATION_RESPONSE_DATA_SCHEMA,
+                      CustomOpenAPIResponseSchema)
 
 # Auth
 AUTH_REGISTERED_RESPONSE = OpenApiResponse(
