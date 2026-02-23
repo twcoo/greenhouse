@@ -503,3 +503,41 @@ UPDATE_PLANTING_LOCATION_RESPONSE_EXAMPLE = OpenApiExample(
         "message": None,
     },
 )
+
+PARTIAL_UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE = OpenApiExample(
+    name="Partially update planting location payload",
+    summary="Partially update a planting location",
+    description="Example request payload for partially updating a planting location.",
+    value={
+        "length": "10.00",
+    },
+    request_only=True,
+)
+
+GROUND_LOCATION_HEIGHT_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
+    name="Invalid height for ground location",
+    summary="Height provided for ground location",
+    description="Example response returned when a height is provided for a planting location with a type of 'GROUND'.",
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "height": ["Height must not be provided for ground locations."]
+        },
+    },
+)
+
+POT_LOCATION_LENGTH_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
+    name="Invalid length for pot location",
+    summary="Length provided for pot location",
+    description="Example response returned when a height is provided for a planting location with a type of 'POT'.",
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "length": ["Length must not be provided for ground locations."]
+        },
+    },
+)
