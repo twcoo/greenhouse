@@ -55,10 +55,18 @@ class PlantingLocationSerializer(serializers.ModelSerializer):
                     }
                 )
 
-        if location_type in ["NURSERYPOT", "POT"] and not height:
-            raise serializers.ValidationError(
-                {"height": "Height is required for pot locations."}
-            )
+        if location_type in ["NURSERYPOT", "POT"]:
+            if not height:
+                raise serializers.ValidationError(
+                    {"height": "Height is required for pot locations."}
+                )
+
+            if length:
+                raise serializers.ValidationError(
+                    {
+                        "length": "Length must not be provided for ground locations."
+                    }
+                )
 
         return attrs
 
