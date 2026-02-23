@@ -210,3 +210,9 @@ PLANTING_LOCATION_PARTIAL_UPDATE_VALIDATION_RESPONSE = OpenApiResponse(
         POT_LOCATION_LENGTH_VALIDATION_ERROR_EXAMPLE,
     ],
 )
+
+PLANTING_LOCATION_DELETE_RESPONSE = OpenApiResponse(
+    description="Planting location deleted successfully.",
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[NO_DATA_RESPONSE_EXAMPLE],
+)
