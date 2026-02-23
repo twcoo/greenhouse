@@ -91,7 +91,7 @@ class PlantingLocationListApiView(
     get=extend_schema(
         tags=["Planting Location"],
         summary="Retrieve a planting location",
-        description="Retrieve a single planting location record by it's ID.",
+        description="Retrieve a single planting location record by ID.",
         parameters=PLANTING_LOCATION_ID_PARAM,
         responses={
             200: PLANTING_LOCATION_RETRIEVE_RESPONSE,
@@ -101,7 +101,7 @@ class PlantingLocationListApiView(
     put=extend_schema(
         tags=["Planting Location"],
         summary="Update a planting location",
-        description="Updates an existing planting location record by it's ID.",
+        description="Updates an existing planting location record by ID.",
         parameters=PLANTING_LOCATION_ID_PARAM,
         examples=[UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE],
         responses={
@@ -113,7 +113,7 @@ class PlantingLocationListApiView(
     patch=extend_schema(
         tags=["Planting Location"],
         summary="Partially update a planting location",
-        description="Partially updates an existing planting location record identified by its ID.",
+        description="Partially updates an existing planting location record by ID.",
         parameters=PLANTING_LOCATION_ID_PARAM,
         examples=[UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE],
         responses={
@@ -125,7 +125,7 @@ class PlantingLocationListApiView(
     delete=extend_schema(
         tags=["Planting Location"],
         summary="Delete a crop",
-        description="Deletes an existing planting location record identified by its ID.",
+        description="Deletes an existing planting location record by ID.",
         parameters=PLANTING_LOCATION_ID_PARAM,
         responses={
             # 204: CROP_DELETE_RESPONSE,

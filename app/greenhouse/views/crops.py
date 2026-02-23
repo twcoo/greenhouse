@@ -77,7 +77,7 @@ class CropListApiView(
     get=extend_schema(
         tags=["Crops"],
         summary="Retrieve a crop",
-        description="Retrieve a single crop record by it's ID.",
+        description="Retrieve a single crop record by ID.",
         parameters=CROP_ID_PARAM,
         responses={
             200: CROP_RETRIEVE_RESPONSE,
@@ -87,7 +87,7 @@ class CropListApiView(
     put=extend_schema(
         tags=["Crops"],
         summary="Update a crop",
-        description="Updates an existing crop record by it's ID.",
+        description="Updates an existing crop record by ID.",
         parameters=CROP_ID_PARAM,
         examples=[UPDATE_CROP_REQUEST_EXAMPLE],
         responses={
@@ -99,7 +99,7 @@ class CropListApiView(
     patch=extend_schema(
         tags=["Crops"],
         summary="Partially update a crop",
-        description="Partially updates an existing crop record identified by its ID.",
+        description="Partially updates an existing crop record by ID.",
         parameters=CROP_ID_PARAM,
         examples=[PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE],
         responses={
@@ -111,7 +111,7 @@ class CropListApiView(
     delete=extend_schema(
         tags=["Crops"],
         summary="Delete a crop",
-        description="Deletes an existing crop record identified by its ID.",
+        description="Deletes an existing crop record by ID.",
         parameters=CROP_ID_PARAM,
         responses={
             204: CROP_DELETE_RESPONSE,
