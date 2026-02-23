@@ -9,13 +9,16 @@ from rest_framework.request import Request
 from ..models import PlantingLocation
 from ..openapi.examples import (
     CREATE_PLANTING_LOCATION_REQUEST_GROUND_EXAMPLE,
-    CREATE_PLANTING_LOCATION_REQUEST_POT_EXAMPLE)
+    CREATE_PLANTING_LOCATION_REQUEST_POT_EXAMPLE,
+    UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE)
 from ..openapi.parameters import PLANTING_LOCATION_ID_PARAM
 from ..openapi.responses import (PLANTING_LOCATION_CREATE_VALIDATION_RESPONSE,
                                  PLANTING_LOCATION_CREATED_RESPONSE,
                                  PLANTING_LOCATION_LIST_RESPONSE,
                                  PLANTING_LOCATION_NOT_FOUND_RESPONSE,
-                                 PLANTING_LOCATION_RETRIEVE_RESPONSE)
+                                 PLANTING_LOCATION_RETRIEVE_RESPONSE,
+                                 PLANTING_LOCATION_UPDATE_RESPONSE,
+                                 PLANTING_LOCATION_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import PlantingLocationSerializer
 from ..utils.api import CustomAuthentication, CustomResponse
 
@@ -100,11 +103,11 @@ class PlantingLocationListApiView(
         summary="Update a planting location",
         description="Updates an existing planting location record by it's ID.",
         parameters=PLANTING_LOCATION_ID_PARAM,
-        # examples=[UPDATE_CROP_REQUEST_EXAMPLE],
+        examples=[UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE],
         responses={
-            # 200: CROP_UPDATE_RESPONSE,
-            # 400: CROP_UPDATE_VALIDATION_RESPONSE,
-            # 404: CROP_NOT_FOUND_RESPONSE,
+            200: PLANTING_LOCATION_UPDATE_RESPONSE,
+            400: PLANTING_LOCATION_UPDATE_VALIDATION_RESPONSE,
+            404: PLANTING_LOCATION_NOT_FOUND_RESPONSE,
         },
     ),
     patch=extend_schema(
@@ -112,7 +115,7 @@ class PlantingLocationListApiView(
         summary="Partially update a planting location",
         description="Partially updates an existing planting location record identified by its ID.",
         parameters=PLANTING_LOCATION_ID_PARAM,
-        # examples=[PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE],
+        examples=[UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE],
         responses={
             # 200: CROP_UPDATE_RESPONSE,
             # 400: CROP_PARTIAL_UPDATE_VALIDATION_RESPONSE,

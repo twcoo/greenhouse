@@ -400,7 +400,7 @@ PLANTING_LOCATION_POT_HEIGHT_REQUIRED_VALIDATION_RESPONSE_EXAMPLE = OpenApiExamp
     summary="Height required for pot or nursery pot",
     description=(
         "Example response returned when a pot or nursery pot planting location "
-        "is created without providing the required height field."
+        "is created or updated without providing the required height field."
     ),
     status_codes=["400"],
     value={
@@ -416,7 +416,7 @@ PLANTING_LOCATION_GROUND_LENGTH_REQUIRED_VALIDATION_RESPONSE_EXAMPLE = OpenApiEx
     name="Missing length for ground location",
     summary="Length required for ground location",
     description=(
-        "Example response returned when a ground planting location is created "
+        "Example response returned when a ground planting location is created  or updated "
         "without providing the required length field."
     ),
     status_codes=["400"],
@@ -470,4 +470,36 @@ PLANTING_LOCATION_NOT_FOUND_RESPONSE_EXAMPLE = OpenApiExample(
     summary="No planting location exists with the provided ID.",
     description="Example response returned when no planting location exists for the specified ID.",
     value=RESOURCE_NOT_FOUND_RESPONSE,
+)
+
+UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE = OpenApiExample(
+    name="Update planting location payload",
+    summary="Update a planting location",
+    description="Example request payload for updating planting location dimensions and type.",
+    value={
+        "name": "Backyard Garden Bed",
+        "location_type": "GROUND",
+        "height": None,
+        "width": "120.00",
+        "length": "10.00",
+    },
+    request_only=True,
+)
+
+UPDATE_PLANTING_LOCATION_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Planting location updated",
+    summary="Planting location updated successfully",
+    description="Example response indicating the planting location details were successfully updated.",
+    value={
+        "status": "success",
+        "data": {
+            "id": 1,
+            "name": "Backyard Garden Bed",
+            "location_type": "GROUND",
+            "height": None,
+            "width": "120.00",
+            "length": "10.00",
+        },
+        "message": None,
+    },
 )
