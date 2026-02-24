@@ -4,38 +4,26 @@ from rest_framework.exceptions import (AuthenticationFailed, NotAuthenticated,
                                        ValidationError)
 from rest_framework.views import exception_handler
 
-from .utils.api import CustomResponse
-
 
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
     if isinstance(exc, NotAuthenticated):
-        return CustomResponse(
-            response_status="error",
-            response_message="Authentication credentials were not provided.",
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
+        response.data = {
+            "message": "Authentication credentials were not provided."
+        }
+        response.status_code = status.HTTP_401_UNAUTHORIZED
 
     if isinstance(exc, AuthenticationFailed):
-        return CustomResponse(
-            response_status="error",
-            response_message="Invalid token.",
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
+        response.data = {"message": "Invalid token."}
+        response.status_code = status.HTTP_401_UNAUTHORIZED
 
     if isinstance(exc, ValidationError) and response is not None:
-        return CustomResponse(
-            response_status="error",
-            status=status.HTTP_400_BAD_REQUEST,
-            response_message=response.data,
-        )
+        response.data = {"message": response.data}
+        response.status_code = status.HTTP_400_BAD_REQUEST
 
     if isinstance(exc, Http404):
-        return CustomResponse(
-            response_status="error",
-            status=status.HTTP_404_NOT_FOUND,
-            response_message="Resource not found.",
-        )
+        response.data = {"message": "Resource not found."}
+        response.status_code = status.HTTP_404_NOT_FOUND
 
     return response
