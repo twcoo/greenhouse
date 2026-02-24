@@ -8,7 +8,6 @@ from rest_framework.response import Response
 class Status(Enum):
     ERROR = "error"
     SUCCESS = "success"
-    FAIL = "fail"
 
 
 # Format response data to JSend or at least something close to it
