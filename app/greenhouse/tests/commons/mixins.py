@@ -26,10 +26,12 @@ class RequiredAuthTestsMixin:
     def test_required_auth_header(self):
         response = self._request()
 
+        response_json = response.json()
+
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIsNone(response.data["data"])
+        self.assertIsNone(response_json["data"])
         self.assertEqual(
-            response.data["message"],
+            response_json["message"],
             "Authentication credentials were not provided.",
         )
 
@@ -38,6 +40,8 @@ class RequiredAuthTestsMixin:
 
         response = self._request()
 
+        response_json = response.json()
+
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIsNone(response.data["data"])
-        self.assertEqual(response.data["message"], "Invalid token.")
+        self.assertIsNone(response_json["data"])
+        self.assertEqual(response_json["message"], "Invalid token.")

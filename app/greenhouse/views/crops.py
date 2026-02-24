@@ -18,7 +18,7 @@ from ..openapi.responses import (CROP_CREATE_VALIDATION_RESPONSE,
                                  CROP_RETRIEVE_RESPONSE, CROP_UPDATE_RESPONSE,
                                  CROP_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import CropSerializer
-from ..utils.api import CustomAuthentication, CustomResponse
+from ..utils.api import CustomAuthentication
 
 
 @extend_schema_view(
@@ -54,23 +54,11 @@ class CropListApiView(
     serializer_class = CropSerializer
     queryset = Crop.objects.all()
 
-    def get(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.list(request, *args, **kwargs)
+    def get(self, request: Request, *args: Any, **kwargs: Any):
+        return self.list(request, *args, **kwargs)
 
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_200_OK
-        )
-
-    def post(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.create(request, *args, **kwargs)
-
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_201_CREATED
-        )
+    def post(self, request: Request, *args: Any, **kwargs: Any):
+        return self.create(request, *args, **kwargs)
 
 
 @extend_schema_view(
@@ -131,38 +119,14 @@ class CropDetailAPIView(
     serializer_class = CropSerializer
     queryset = Crop.objects.all()
 
-    def get(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.retrieve(request, *args, **kwargs)
+    def get(self, request: Request, *args: Any, **kwargs: Any):
+        return self.retrieve(request, *args, **kwargs)
 
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_200_OK
-        )
+    def put(self, request: Request, *args: Any, **kwargs: Any):
+        return self.update(request, *args, **kwargs)
 
-    def put(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.update(request, *args, **kwargs)
+    def patch(self, request: Request, *args: Any, **kwargs: Any):
+        return self.partial_update(request, *args, **kwargs)
 
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_200_OK
-        )
-
-    def patch(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.partial_update(request, *args, **kwargs)
-
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_200_OK
-        )
-
-    def delete(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.destroy(request, *args, **kwargs)
-
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_204_NO_CONTENT
-        )
+    def delete(self, request: Request, *args: Any, **kwargs: Any):
+        return self.destroy(request, *args, **kwargs)
