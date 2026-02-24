@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..openapi.examples import (AUTH_LOGIN_REQUEST_EXAMPLE,
@@ -22,7 +23,8 @@ from ..openapi.responses import (AUTH_LOGIN_RESPONSE,
                                  AUTH_REGISTER_VALIDATION_RESPONSE,
                                  AUTH_REGISTERED_RESPONSE)
 from ..serializers import KnoxLoginRequestSerializer, RegisterSerializer
-from ..utils.api import CustomAuthentication, CustomResponse
+from ..utils.api import CustomAuthentication
+from ..utils.renderers import JSendRenderer
 
 
 @extend_schema(
@@ -40,16 +42,17 @@ from ..utils.api import CustomAuthentication, CustomResponse
 )
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+    renderer_classes = [JSendRenderer]
 
-    def post(self, request: Request) -> CustomResponse:
+    def post(self, request: Request) -> Response:
         serializer = RegisterSerializer(data=request.data)
 
         if serializer.is_valid():
             user = serializer.save()
             token_instance, token = AuthToken.objects.create(user)
 
-            return CustomResponse(
-                response_data={
+            return Response(
+                {
                     "expiry": token_instance.expiry,
                     "token": token,
                     "username": user.username,
@@ -61,17 +64,12 @@ class RegisterView(APIView):
 
         if "username" in errors:
             if "already exists" in str(errors["username"][0]):
-                return CustomResponse(
-                    response_status="error",
-                    response_message="A user with that username already exists.",
+                return Response(
+                    {"message": "A user with that username already exists."},
                     status=status.HTTP_409_CONFLICT,
                 )
 
-        return CustomResponse(
-            response_status="error",
-            response_message=errors,
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        return Response({"message": errors}, status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema(
@@ -89,10 +87,9 @@ class RegisterView(APIView):
 )
 class LoginView(KnoxLoginView):
     permission_classes = [AllowAny]
+    renderer_classes = [JSendRenderer]
 
-    def post(
-        self, request: Request, format: Optional[str] = None
-    ) -> CustomResponse:
+    def post(self, request: Request, format: Optional[str] = None) -> Response:
         serializer = AuthTokenSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -101,23 +98,18 @@ class LoginView(KnoxLoginView):
 
             response = super().post(request, format=format)
 
-            return CustomResponse(
-                response_data=response.data,
-                status=status.HTTP_200_OK,
-            )
+            return Response(response.data, status=status.HTTP_200_OK)
 
         non_field = serializer.errors.get("non_field_errors", [])
 
         if any(err.code == "authorization" for err in non_field):
-            return CustomResponse(
-                response_status="error",
-                response_message="Unable to log in with provided credentials.",
+            return Response(
+                {"message": "Unable to log in with provided credentials."},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        return CustomResponse(
-            response_status="error",
-            response_message=serializer.errors,
+        return Response(
+            {"message": serializer.errors},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -133,9 +125,10 @@ class LoginView(KnoxLoginView):
 )
 class LogoutView(KnoxLogoutView):
     authentication_classes = [CustomAuthentication]
+    renderer_classes = [JSendRenderer]
 
-    def get_post_response(self, request: Request) -> CustomResponse:
-        return CustomResponse(
-            response_message="Logged out successfully.",
+    def get_post_response(self, request: Request) -> Response:
+        return Response(
+            {"message": "Logged out successfully."},
             status=status.HTTP_200_OK,
         )
