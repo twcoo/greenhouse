@@ -5,6 +5,8 @@ from rest_framework.renderers import JSONRenderer
 from .api import Status
 
 
+# Format response data to JSend or at least something close to it
+# Reference: https://github.com/omniti-labs/jsend
 class JSendRenderer(JSONRenderer):
     def render(
         self,
