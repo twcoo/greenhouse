@@ -1,7 +1,7 @@
 from typing import Any
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import mixins, status
+from rest_framework import mixins
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -21,7 +21,7 @@ from ..openapi.responses import (
     PLANTING_LOCATION_RETRIEVE_RESPONSE, PLANTING_LOCATION_UPDATE_RESPONSE,
     PLANTING_LOCATION_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import PlantingLocationSerializer
-from ..utils.api import CustomAuthentication, CustomResponse
+from ..utils.api import CustomAuthentication
 
 
 @extend_schema_view(
@@ -69,23 +69,11 @@ class PlantingLocationListApiView(
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    def get(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.list(request, *args, **kwargs)
+    def get(self, request: Request, *args: Any, **kwargs: Any):
+        return self.list(request, *args, **kwargs)
 
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_200_OK
-        )
-
-    def post(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.create(request, *args, **kwargs)
-
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_201_CREATED
-        )
+    def post(self, request: Request, *args: Any, **kwargs: Any):
+        return self.create(request, *args, **kwargs)
 
 
 @extend_schema_view(
@@ -148,38 +136,14 @@ class PlantingLocationDetailAPIView(
     def get_queryset(self):
         return PlantingLocation.objects.filter(user=self.request.user)
 
-    def get(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.retrieve(request, *args, **kwargs)
+    def get(self, request: Request, *args: Any, **kwargs: Any):
+        return self.retrieve(request, *args, **kwargs)
 
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_200_OK
-        )
+    def put(self, request: Request, *args: Any, **kwargs: Any):
+        return self.update(request, *args, **kwargs)
 
-    def put(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.update(request, *args, **kwargs)
+    def patch(self, request: Request, *args: Any, **kwargs: Any):
+        return self.partial_update(request, *args, **kwargs)
 
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_200_OK
-        )
-
-    def patch(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.partial_update(request, *args, **kwargs)
-
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_200_OK
-        )
-
-    def delete(
-        self, request: Request, *args: Any, **kwargs: Any
-    ) -> CustomResponse:
-        response = self.destroy(request, *args, **kwargs)
-
-        return CustomResponse(
-            response_data=response.data, status=status.HTTP_204_NO_CONTENT
-        )
+    def delete(self, request: Request, *args: Any, **kwargs: Any):
+        return self.destroy(request, *args, **kwargs)
