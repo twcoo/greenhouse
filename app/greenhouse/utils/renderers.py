@@ -23,7 +23,7 @@ class JSendRenderer(JSONRenderer):
 
         message = None
         if isinstance(data, dict):
-            message = data.pop("message", None)
+            message = data.pop("message", data.pop("detail", None))
 
             # If the response data is empty or contains a 'data' key with a None value,
             # ensure we normalize it to None.
@@ -36,6 +36,4 @@ class JSendRenderer(JSONRenderer):
             "message": message,
         }
 
-        return super().render(
-            formatted_data, accepted_media_type, renderer_context
-        )
+        return super().render(formatted_data, accepted_media_type, renderer_context)
