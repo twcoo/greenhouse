@@ -15,12 +15,8 @@ class PlantingLocation(models.Model):
         related_name="planting_locations",
     )
     name = models.CharField(max_length=50)
-    location_type = models.CharField(
-        max_length=20, choices=LOCATION_TYPE_CHOICES
-    )
-    height = models.DecimalField(
-        max_digits=6, decimal_places=2, null=True, blank=True
-    )
+    location_type = models.CharField(max_length=20, choices=LOCATION_TYPE_CHOICES)
+    height = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     width = models.DecimalField(max_digits=6, decimal_places=2)
     length = models.DecimalField(
         max_digits=6,
@@ -28,5 +24,6 @@ class PlantingLocation(models.Model):
         null=True,
         blank=True,
     )
+    image = models.ImageField(upload_to="planting_locations/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
