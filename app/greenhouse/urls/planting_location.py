@@ -1,6 +1,8 @@
 from django.urls import path
 
-from ..views import PlantingLocationDetailAPIView, PlantingLocationListApiView
+from ..views import (PlantingLocationDetailAPIView,
+                     PlantingLocationListApiView,
+                     PlantingLocationUploadImageView)
 
 urlpatterns = [
     # List and create
@@ -14,5 +16,11 @@ urlpatterns = [
         "<int:pk>",
         PlantingLocationDetailAPIView.as_view(),
         name="planting-location-detail",
+    ),
+    # Upload image
+    path(
+        "<int:pk>/image/",
+        PlantingLocationUploadImageView.as_view(),
+        name="planting-location-image-upload",
     ),
 ]

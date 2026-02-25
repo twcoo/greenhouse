@@ -80,3 +80,9 @@ class PlantingLocationSerializer(serializers.ModelSerializer):
             "width",
             "length",
         )
+
+
+class PlantingLocationImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlantingLocation
+        fields = ["image"]

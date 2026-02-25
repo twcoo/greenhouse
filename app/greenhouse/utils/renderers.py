@@ -36,4 +36,6 @@ class JSendRenderer(JSONRenderer):
             "message": message,
         }
 
-        return super().render(formatted_data, accepted_media_type, renderer_context)
+        return super().render(
+            formatted_data, accepted_media_type, renderer_context
+        )

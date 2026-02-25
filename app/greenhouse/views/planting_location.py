@@ -3,6 +3,7 @@ from typing import Any
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
 from rest_framework.generics import GenericAPIView
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
@@ -20,7 +21,8 @@ from ..openapi.responses import (
     PLANTING_LOCATION_PARTIAL_UPDATE_VALIDATION_RESPONSE,
     PLANTING_LOCATION_RETRIEVE_RESPONSE, PLANTING_LOCATION_UPDATE_RESPONSE,
     PLANTING_LOCATION_UPDATE_VALIDATION_RESPONSE)
-from ..serializers import PlantingLocationSerializer
+from ..serializers import (PlantingLocationImageSerializer,
+                           PlantingLocationSerializer)
 from ..utils.api import CustomAuthentication
 
 
@@ -147,3 +149,30 @@ class PlantingLocationDetailAPIView(
 
     def delete(self, request: Request, *args: Any, **kwargs: Any):
         return self.destroy(request, *args, **kwargs)
+
+
+@extend_schema_view(
+    put=extend_schema(
+        tags=["Planting Location"],
+        summary="Upload planting location image",
+        description="Upload planting location image by ID.",
+        # parameters=PLANTING_LOCATION_ID_PARAM,
+        # responses={
+        #     200: PLANTING_LOCATION_RETRIEVE_RESPONSE,
+        #     404: PLANTING_LOCATION_NOT_FOUND_RESPONSE,
+        # },
+    ),
+)
+class PlantingLocationUploadImageView(mixins.UpdateModelMixin, GenericAPIView):
+    authentication_classes = [CustomAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = PlantingLocationImageSerializer
+
+    parser_classes = [MultiPartParser]
+
+    def get_queryset(self):
+        return PlantingLocation.objects.filter(user=self.request.user)
+
+    def put(self, request: Request, *args: Any, **kwargs: Any):
+        return self.update(request, *args, **kwargs)

@@ -39,6 +39,9 @@ class CustomOpenAPIResponseSchema:
         elif isinstance(field, serializers.DateTimeField):
             schema["type"] = "string"
             schema["format"] = "date-time"
+        elif isinstance(field, serializers.DateTimeField):
+            schema["type"] = "string"
+            schema["format"] = "binary"
         else:
             schema["type"] = "string"
 

@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('greenhouse', '0014_plantinglocation_length_and_more'),
+        ("greenhouse", "0014_plantinglocation_length_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='plantinglocation',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to='planting_locations/'),
+            model_name="plantinglocation",
+            name="image",
+            field=models.ImageField(
+                blank=True, null=True, upload_to="planting_locations/"
+            ),
         ),
     ]
