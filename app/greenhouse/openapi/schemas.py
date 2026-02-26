@@ -4,6 +4,7 @@ from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from rest_framework import serializers
 
 from ..serializers import (CropSerializer, KnoxLoginResponseSerializer,
+                           PlantingLocationImageSerializer,
                            PlantingLocationSerializer)
 from ..utils.api import Status
 
@@ -39,6 +40,9 @@ class CustomOpenAPIResponseSchema:
         elif isinstance(field, serializers.DateTimeField):
             schema["type"] = "string"
             schema["format"] = "date-time"
+        elif isinstance(field, serializers.ImageField):
+            schema["type"] = "string"
+            schema["format"] = "uri"
         else:
             schema["type"] = "string"
 
@@ -136,3 +140,9 @@ AUTH_RESPONSE_DATA_SCHEMA = CustomOpenAPIResponseSchema(
 PLANTING_LOCATION_RESPONSE_DATA_SCHEMA = CustomOpenAPIResponseSchema(
     data_serializer=PlantingLocationSerializer,
 ).get_schema()
+
+PLANTING_LOCATION_UPLOADED_IMAGE_RESPONSE_DATA_SCHEMA = (
+    CustomOpenAPIResponseSchema(
+        data_serializer=PlantingLocationImageSerializer,
+    ).get_schema()
+)

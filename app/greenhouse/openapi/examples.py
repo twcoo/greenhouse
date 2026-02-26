@@ -541,3 +541,79 @@ POT_LOCATION_LENGTH_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
         },
     },
 )
+
+PLANTING_LOCATION_UPLOAD_IMAGE_REQUEST_EXAMPLE = OpenApiExample(
+    name="Image Upload",
+    summary="Upload or update the site photo",
+    media_type="multipart/form-data",
+    description=(
+        "Example request payload for updating the planting location image. "
+        "This request requires **multipart/form-data** encoding. "
+        "Supported formats: **JPG, PNG**. Maximum file size: **2MB**."
+    ),
+    value={
+        "image": "planting_location.png",
+    },
+    request_only=True,
+)
+
+PLANTING_LOCATION_UPLOAD_IMAGE_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Planting location image uploaded",
+    summary="Planting location image uploaded successfully",
+    description="Example response returned when the planting location image is successfully uploaded and updated.",
+    value={
+        "status": "success",
+        "data": {
+            "image": "http://api.example.com/media/planting_locations/planting_location.png"
+        },
+        "message": None,
+    },
+)
+
+
+PLANTING_LOCATION_UPLOAD_INVALID_IMAGE_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
+    name="Invalid image upload",
+    summary="Invalid or corrupted image file",
+    description="Example response returned when the uploaded file is not a valid image.",
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "image": [
+                "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
+            ]
+        },
+    },
+)
+
+PLANTING_LOCATION_UPLOAD_IMAGE_TOO_LARGE_ERROR_EXAMPLE = OpenApiExample(
+    name="Image file too large",
+    summary="Uploaded image exceeds maximum file size",
+    description="Example response returned when the uploaded image exceeds the maximum allowed file size of 2MB during planting location image upload.",
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": {"image": ["File too large. Size should not exceed 2.0MB."]},
+    },
+)
+
+PLANTING_LOCATION_UPLOAD_IMAGE_UNSUPPORTED_EXTENSION_ERROR_EXAMPLE = OpenApiExample(
+    name="Unsupported image file extension",
+    summary="Invalid image file type",
+    description="Example response returned when the uploaded planting location image has an unsupported file extension. Only .jpg and .png files are allowed.",
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "image": [
+                "Unsupported file extension. Please upload a .jpg or .png image."
+            ]
+        },
+    },
+)
