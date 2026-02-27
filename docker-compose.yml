@@ -1,7 +1,7 @@
 services:
   app-db:
     image: "postgres:alpine"
-    container_name: platypus-db
+    container_name: greenhouse-db
     environment:
       - POSTGRES_USER=${APP_DB_USER}
       - POSTGRES_PASSWORD=${APP_DB_PASSWORD}
