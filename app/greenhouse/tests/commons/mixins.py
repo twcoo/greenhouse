@@ -1,9 +1,8 @@
-from django.contrib.auth import get_user_model
 from knox.models import AuthToken
 from rest_framework import status
 from rest_framework.test import APIClient
 
-User = get_user_model()
+from .factories import UserFactory
 
 
 class RequiredAuthTestsMixin:
@@ -12,9 +11,7 @@ class RequiredAuthTestsMixin:
 
     def setUp(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(
-            username="shimmer", password="ShimmerDontJump!"
-        )
+        self.user = UserFactory()
         self.token_instance, self.token = AuthToken.objects.create(self.user)
 
     def _request(self):

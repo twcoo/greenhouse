@@ -1,8 +1,19 @@
 import factory
+from django.contrib.auth import get_user_model
 from factory import Faker
 from factory.django import DjangoModelFactory
 
 from ...models import Crop
+
+User = get_user_model()
+
+
+class UserFactory(DjangoModelFactory):
+    class Meta:
+        model = User
+
+    username = "shimmer"
+    password = "ShimmerDontJump!"
 
 
 class CropFactory(DjangoModelFactory):

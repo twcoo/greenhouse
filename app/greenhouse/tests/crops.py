@@ -54,7 +54,7 @@ class CropListApiViewTests(RequiredAuthTestsMixin, APITestCase):
     def test_list_populated_crops(self):
         self.authenticate()
 
-        CropFactory.create_batch(3)
+        CropFactory.create_batch(3, user=self.user)
 
         response = self.client.get(self.url)
 
@@ -66,7 +66,7 @@ class CropListApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
     def test_list_pagination(self):
         self.authenticate()
-        CropFactory.create_batch(15)
+        CropFactory.create_batch(15, user=self.user)
 
         response = self.client.get(self.url, {"page_size": 10})
 
@@ -140,7 +140,7 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
     def test_create_crop_duplicate_name(self):
         self.authenticate()
 
-        CropFactory(name="Tomato")
+        CropFactory(name="Tomato", user=self.user)
 
         response = self.client.post(
             self.url, self.tomato_payload, format="json"
@@ -159,7 +159,7 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
     def test_create_crop_duplicate_scientific_name(self):
         self.authenticate()
 
-        CropFactory(scientific_name="Solanum lycopersicum")
+        CropFactory(scientific_name="Solanum lycopersicum", user=self.user)
 
         response = self.client.post(
             self.url, self.tomato_payload, format="json"
@@ -234,7 +234,7 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, APITestCase):
 class CropGetApiViewTests(RequiredAuthTestsMixin, APITestCase):
     def setUp(self):
         super().setUp()
-        self.crop = CropFactory()
+        self.crop = CropFactory(user=self.user)
         self.url = reverse("crop-detail", args=[self.crop.id])  # type: ignore[attr-defined]
         self.url_not_found = reverse("crop-detail", args=[2])
 
@@ -277,7 +277,7 @@ class CropGetApiViewTests(RequiredAuthTestsMixin, APITestCase):
 class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
     def setUp(self):
         super().setUp()
-        self.crop = CropFactory()
+        self.crop = CropFactory(user=self.user)
         self.url = reverse("crop-detail", args=[self.crop.id])  # type: ignore[attr-defined]
         self.url_not_found = reverse("crop-detail", args=[2])
         self.payload = {
@@ -370,7 +370,7 @@ class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
 class CropPartialUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
     def setUp(self):
         super().setUp()
-        self.crop = CropFactory(min_days_to_harvest=20)
+        self.crop = CropFactory(min_days_to_harvest=20, user=self.user)
         self.url = reverse("crop-detail", args=[self.crop.id])  # type: ignore[attr-defined]
         self.url_not_found = reverse("crop-detail", args=[2])
         self.payload = {
@@ -463,7 +463,7 @@ class CropPartialUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
 class CropDeleteApiViewTests(RequiredAuthTestsMixin, APITestCase):
     def setUp(self):
         super().setUp()
-        self.crop = CropFactory()
+        self.crop = CropFactory(user=self.user)
         self.url = reverse("crop-detail", args=[self.crop.id])  # type: ignore[attr-defined]
         self.url_not_found = reverse("crop-detail", args=[2])
 
