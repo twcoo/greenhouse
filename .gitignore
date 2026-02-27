@@ -11,3 +11,4 @@ wheels/
 .env
 app/db.sqlite3
 app/media/planting_locations
+app/media/crops
