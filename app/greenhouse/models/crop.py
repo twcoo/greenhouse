@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -8,7 +9,11 @@ class Crop(models.Model):
         ("PART SUN", "Part Sun"),
         ("FULL SHADE", "Full Shade"),
     ]
-
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="crops",
+    )
     name = models.CharField(max_length=50, unique=True)
     scientific_name = models.CharField(max_length=100, unique=True)
     category = models.CharField(
@@ -21,6 +26,7 @@ class Crop(models.Model):
     )
     min_days_to_harvest = models.IntegerField()
     max_days_to_harvest = models.IntegerField()
+    image = models.ImageField(upload_to="crops/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

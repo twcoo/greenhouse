@@ -56,7 +56,12 @@ class CropListApiView(
     permission_classes = [IsAuthenticated]
 
     serializer_class = CropSerializer
-    queryset = Crop.objects.all()
+
+    def get_queryset(self):
+        return Crop.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.list(request, *args, **kwargs)
@@ -121,7 +126,9 @@ class CropDetailAPIView(
     permission_classes = [IsAuthenticated]
 
     serializer_class = CropSerializer
-    queryset = Crop.objects.all()
+
+    def get_queryset(self):
+        return Crop.objects.filter(user=self.request.user)
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.retrieve(request, *args, **kwargs)
@@ -158,7 +165,8 @@ class CropUploadImageView(mixins.UpdateModelMixin, GenericAPIView):
 
     parser_classes = [MultiPartParser, FormParser]
 
-    queryset = Crop.objects.all()
+    def get_queryset(self):
+        return Crop.objects.filter(user=self.request.user)
 
     def put(self, request: Request, *args: Any, **kwargs: Any):
         return self.update(request, *args, **kwargs)
