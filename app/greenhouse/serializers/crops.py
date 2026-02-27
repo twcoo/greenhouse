@@ -4,6 +4,7 @@ from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from ..models import Crop
 from ..openapi.examples import CROP_SERIALIZER_EXAMPLE
+from .utils import UploadImageSerializer
 
 
 @extend_schema_serializer(examples=[CROP_SERIALIZER_EXAMPLE])
@@ -102,3 +103,9 @@ class CropSerializer(serializers.ModelSerializer):
                 message="A crop with the same name and scientific name already exists.",
             )
         ]
+
+
+class CropImageSerializer(UploadImageSerializer):
+    class Meta:
+        model = Crop
+        fields = ["image"]

@@ -3,27 +3,31 @@ from typing import Any
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
 from rest_framework.generics import GenericAPIView
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
 from ..models import Crop
 from ..openapi.examples import (CREATE_CROP_REQUEST_EXAMPLE,
+                                CROP_UPLOAD_IMAGE_REQUEST_EXAMPLE,
                                 PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE,
                                 UPDATE_CROP_REQUEST_EXAMPLE)
 from ..openapi.parameters import CROP_ID_PARAM
 from ..openapi.responses import (CROP_CREATE_VALIDATION_RESPONSE,
                                  CROP_CREATED_RESPONSE, CROP_DELETE_RESPONSE,
+                                 CROP_IMAGE_UPLOAD_VALIDATION_RESPONSE,
+                                 CROP_IMAGE_UPLOADED_RESPONSE,
                                  CROP_LIST_RESPONSE, CROP_NOT_FOUND_RESPONSE,
                                  CROP_PARTIAL_UPDATE_VALIDATION_RESPONSE,
                                  CROP_RETRIEVE_RESPONSE, CROP_UPDATE_RESPONSE,
                                  CROP_UPDATE_VALIDATION_RESPONSE)
-from ..serializers import CropSerializer
+from ..serializers import CropImageSerializer, CropSerializer
 from ..utils.api import CustomAuthentication
 
 
 @extend_schema_view(
     get=extend_schema(
-        tags=["Crops"],
+        tags=["Crop"],
         summary="List crops",
         description="Retrieve all crop records.",
         responses={
@@ -31,7 +35,7 @@ from ..utils.api import CustomAuthentication
         },
     ),
     post=extend_schema(
-        tags=["Crops"],
+        tags=["Crop"],
         summary="Create crop",
         description="Create a new crop record.",
         examples=[
@@ -63,7 +67,7 @@ class CropListApiView(
 
 @extend_schema_view(
     get=extend_schema(
-        tags=["Crops"],
+        tags=["Crop"],
         summary="Retrieve a crop",
         description="Retrieve a single crop record by ID.",
         parameters=CROP_ID_PARAM,
@@ -73,7 +77,7 @@ class CropListApiView(
         },
     ),
     put=extend_schema(
-        tags=["Crops"],
+        tags=["Crop"],
         summary="Update a crop",
         description="Updates an existing crop record by ID.",
         parameters=CROP_ID_PARAM,
@@ -85,7 +89,7 @@ class CropListApiView(
         },
     ),
     patch=extend_schema(
-        tags=["Crops"],
+        tags=["Crop"],
         summary="Partially update a crop",
         description="Partially updates an existing crop record by ID.",
         parameters=CROP_ID_PARAM,
@@ -97,7 +101,7 @@ class CropListApiView(
         },
     ),
     delete=extend_schema(
-        tags=["Crops"],
+        tags=["Crop"],
         summary="Delete a crop",
         description="Deletes an existing crop record by ID.",
         parameters=CROP_ID_PARAM,
@@ -130,3 +134,31 @@ class CropDetailAPIView(
 
     def delete(self, request: Request, *args: Any, **kwargs: Any):
         return self.destroy(request, *args, **kwargs)
+
+
+@extend_schema_view(
+    put=extend_schema(
+        tags=["Crop"],
+        summary="Upload crop image",
+        description="Upload crop image by ID.",
+        parameters=CROP_ID_PARAM,
+        examples=[CROP_UPLOAD_IMAGE_REQUEST_EXAMPLE],
+        responses={
+            200: CROP_IMAGE_UPLOADED_RESPONSE,
+            400: CROP_IMAGE_UPLOAD_VALIDATION_RESPONSE,
+            404: CROP_NOT_FOUND_RESPONSE,
+        },
+    ),
+)
+class CropUploadImageView(mixins.UpdateModelMixin, GenericAPIView):
+    authentication_classes = [CustomAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = CropImageSerializer
+
+    parser_classes = [MultiPartParser, FormParser]
+
+    queryset = Crop.objects.all()
+
+    def put(self, request: Request, *args: Any, **kwargs: Any):
+        return self.update(request, *args, **kwargs)
