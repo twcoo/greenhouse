@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 
 from ..models import Crop
 from .commons.factories import CropFactory, UserFactory
-from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixins
+from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixin
 
 INVALID_FIELD_TYPE_MESSAGE = {
     "name": [ErrorDetail(string="Name must be a valid string.", code="invalid")],
@@ -30,7 +30,7 @@ INVALID_FIELD_TYPE_MESSAGE = {
 }
 
 
-class CropListApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixins, APITestCase):
+class CropListApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase):
     def setUp(self):
         super().setUp()
         self.url = reverse("crop-list-create")
@@ -95,7 +95,7 @@ class CropListApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixins, APITestC
         )
 
 
-class CropCreateApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixins, APITestCase):
+class CropCreateApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase):
     def setUp(self):
         super().setUp()
         self.url = reverse("crop-list-create")
@@ -232,7 +232,7 @@ class CropCreateApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixins, APITes
         )
 
 
-class CropGetApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixins, APITestCase):
+class CropGetApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase):
     def setUp(self):
         super().setUp()
         self.crop = CropFactory(user=self.user)
@@ -277,7 +277,7 @@ class CropGetApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixins, APITestCa
         self.assertEqual(message, "Resource not found.")
 
 
-class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
+class CropUpdateApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase):
     def setUp(self):
         super().setUp()
         self.crop = CropFactory(user=self.user)
@@ -297,30 +297,32 @@ class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         response = self.client.put(self.url, self.payload, format="json")
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_status, "success")
         self.assertEqual(
-            response_json["data"],
+            data,
             {
                 "id": self.crop.id,
                 **self.payload,
             },
         )
-        self.assertIsNone(response_json["message"])
+        self.assertIsNone(message)
 
     def test_update_crop_not_found(self):
         self.authenticate()
 
         response = self.client.put(self.url_not_found, self.payload)
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response_status, "error")
         self.assertIsNone(
-            response_json["data"],
+            data,
         )
-        self.assertEqual(response_json["message"], "Resource not found.")
+        self.assertEqual(message, "Resource not found.")
 
     def test_update_crop_invalid_field_values(self):
         self.authenticate()
@@ -336,12 +338,12 @@ class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         response = self.client.put(self.url, payload, format="json")
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response_json["status"], "error")
-        self.assertIsNone(response_json["data"])
-        self.assertEqual(response_json["message"], INVALID_FIELD_TYPE_MESSAGE)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertEqual(message, INVALID_FIELD_TYPE_MESSAGE)
 
     def test_validation_error_when_min_days_to_harvest_exceeds_max(self):
         self.authenticate()
@@ -352,13 +354,13 @@ class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         response = self.client.put(self.url, payload, format="json")
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response_json["status"], "error")
-        self.assertIsNone(response_json["data"])
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
         self.assertEqual(
-            response_json["message"],
+            message,
             {
                 "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
                 "max_days_to_harvest": [

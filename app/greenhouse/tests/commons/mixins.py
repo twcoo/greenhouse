@@ -44,7 +44,7 @@ class RequiredAuthTestsMixin(APITestCase):
         self.assertEqual(response_json["message"], "Invalid token.")
 
 
-class ResponseUtilsMixins(APITestCase):
+class ResponseUtilsMixin(APITestCase):
     def validate_no_cross_user_data_leakage(self, user_data, another_user_data):
         returned_ids = {row["id"] for row in user_data}
         another_user_ids = {row.id for row in another_user_data}
