@@ -8,9 +8,7 @@ from .commons.factories import CropFactory, UserFactory
 from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixins
 
 INVALID_FIELD_TYPE_MESSAGE = {
-    "name": [
-        ErrorDetail(string="Name must be a valid string.", code="invalid")
-    ],
+    "name": [ErrorDetail(string="Name must be a valid string.", code="invalid")],
     "scientific_name": [
         ErrorDetail(
             string="Scientific name must be a valid string.",
@@ -32,25 +30,19 @@ INVALID_FIELD_TYPE_MESSAGE = {
 }
 
 
-class CropListApiViewTests(
-    RequiredAuthTestsMixin, ResponseUtilsMixins, APITestCase
-):
+class CropListApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixins, APITestCase):
     def setUp(self):
         super().setUp()
         self.url = reverse("crop-list-create")
         self.another_user = UserFactory(username="shimmer2")
-        self.another_user_crops = CropFactory.create_batch(
-            12, user=self.another_user
-        )
+        self.another_user_crops = CropFactory.create_batch(12, user=self.another_user)
 
     def test_list_empty_crops(self):
         self.authenticate()
 
         response = self.client.get(self.url)
 
-        response_status, data, crops, message = self.get_response_data_many(
-            response
-        )
+        response_status, data, crops, message = self.get_response_data_many(response)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_status, "success")
@@ -70,9 +62,7 @@ class CropListApiViewTests(
 
         response = self.client.get(self.url)
 
-        response_status, data, crops, message = self.get_response_data_many(
-            response
-        )
+        response_status, data, crops, message = self.get_response_data_many(response)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_status, "success")
@@ -91,9 +81,7 @@ class CropListApiViewTests(
 
         response = self.client.get(self.url, {"page_size": 10})
 
-        response_status, data, crops, message = self.get_response_data_many(
-            response
-        )
+        response_status, data, crops, message = self.get_response_data_many(response)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_status, "success")
@@ -107,9 +95,7 @@ class CropListApiViewTests(
         )
 
 
-class CropCreateApiViewTests(
-    RequiredAuthTestsMixin, ResponseUtilsMixins, APITestCase
-):
+class CropCreateApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixins, APITestCase):
     def setUp(self):
         super().setUp()
         self.url = reverse("crop-list-create")
@@ -125,9 +111,7 @@ class CropCreateApiViewTests(
     def test_create_crop_success(self):
         self.authenticate()
 
-        response = self.client.post(
-            self.url, self.tomato_payload, format="json"
-        )
+        response = self.client.post(self.url, self.tomato_payload, format="json")
 
         response_status, data, message = self.get_response_data(response)
 
@@ -136,9 +120,7 @@ class CropCreateApiViewTests(
         self.assertIsNotNone(data["id"])
         del data["id"]
         self.assertEqual(data, self.tomato_payload)
-        self.assertTrue(
-            Crop.objects.filter(name=self.tomato_payload["name"]).exists()
-        )
+        self.assertTrue(Crop.objects.filter(name=self.tomato_payload["name"]).exists())
         crop = Crop.objects.get(name=self.tomato_payload["name"])
         self.assertEqual(crop.user_id, self.user.id)
         self.assertIsNone(message)
@@ -171,9 +153,7 @@ class CropCreateApiViewTests(
 
         CropFactory(name="Tomato", user=self.user)
 
-        response = self.client.post(
-            self.url, self.tomato_payload, format="json"
-        )
+        response = self.client.post(self.url, self.tomato_payload, format="json")
 
         response_status, data, message = self.get_response_data(response)
 
@@ -190,9 +170,7 @@ class CropCreateApiViewTests(
 
         CropFactory(scientific_name="Solanum lycopersicum", user=self.user)
 
-        response = self.client.post(
-            self.url, self.tomato_payload, format="json"
-        )
+        response = self.client.post(self.url, self.tomato_payload, format="json")
 
         response_status, data, message = self.get_response_data(response)
 
@@ -201,11 +179,7 @@ class CropCreateApiViewTests(
         self.assertIsNone(data)
         self.assertEqual(
             message,
-            {
-                "scientific_name": [
-                    "A crop with this scientific name already exists."
-                ]
-            },
+            {"scientific_name": ["A crop with this scientific name already exists."]},
         )
 
     def test_create_crop_invalid_field_values(self):
@@ -250,9 +224,7 @@ class CropCreateApiViewTests(
         self.assertEqual(
             message,
             {
-                "min_days_to_harvest": [
-                    "Cannot be greater than max_days_to_harvest."
-                ],
+                "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
                 "max_days_to_harvest": [
                     "max_days_to_harvest cannot be less than min_days_to_harvest."
                 ],
@@ -260,7 +232,7 @@ class CropCreateApiViewTests(
         )
 
 
-class CropGetApiViewTests(RequiredAuthTestsMixin, APITestCase):
+class CropGetApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixins, APITestCase):
     def setUp(self):
         super().setUp()
         self.crop = CropFactory(user=self.user)
@@ -272,11 +244,12 @@ class CropGetApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         response = self.client.get(self.url)
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_status, "success")
         self.assertEqual(
-            response_json["data"],
+            data,
             {
                 "id": self.crop.id,
                 "name": self.crop.name,
@@ -287,20 +260,21 @@ class CropGetApiViewTests(RequiredAuthTestsMixin, APITestCase):
                 "max_days_to_harvest": self.crop.max_days_to_harvest,
             },
         )
-        self.assertIsNone(response_json["message"])
+        self.assertIsNone(message)
 
     def test_get_crop_not_found(self):
         self.authenticate()
 
         response = self.client.get(self.url_not_found)
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response_status, "error")
         self.assertIsNone(
-            response_json["data"],
+            data,
         )
-        self.assertEqual(response_json["message"], "Resource not found.")
+        self.assertEqual(message, "Resource not found.")
 
 
 class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
@@ -386,9 +360,7 @@ class CropUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
         self.assertEqual(
             response_json["message"],
             {
-                "min_days_to_harvest": [
-                    "Cannot be greater than max_days_to_harvest."
-                ],
+                "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
                 "max_days_to_harvest": [
                     "max_days_to_harvest cannot be less than min_days_to_harvest."
                 ],
@@ -479,9 +451,7 @@ class CropPartialUpdateApiViewTests(RequiredAuthTestsMixin, APITestCase):
         self.assertEqual(
             response_json["message"],
             {
-                "min_days_to_harvest": [
-                    "Cannot be greater than max_days_to_harvest."
-                ],
+                "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
                 "max_days_to_harvest": [
                     "max_days_to_harvest cannot be less than min_days_to_harvest."
                 ],
