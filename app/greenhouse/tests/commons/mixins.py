@@ -1,11 +1,11 @@
 from knox.models import AuthToken
 from rest_framework import status
-from rest_framework.test import APIClient, APITestCase
+from rest_framework.test import APIClient
 
 from .factories import UserFactory
 
 
-class RequiredAuthTestsMixin(APITestCase):
+class RequiredAuthTestsMixin:
     url: str
     http_method: str = "GET"
 
@@ -44,7 +44,7 @@ class RequiredAuthTestsMixin(APITestCase):
         self.assertEqual(response_json["message"], "Invalid token.")
 
 
-class ResponseUtilsMixin(APITestCase):
+class ResponseUtilsMixin:
     def validate_no_cross_user_data_leakage(self, user_data, another_user_data):
         returned_ids = {row["id"] for row in user_data}
         another_user_ids = {row.id for row in another_user_data}
