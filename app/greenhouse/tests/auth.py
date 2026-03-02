@@ -4,10 +4,12 @@ from knox.models import AuthToken
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from .commons.mixins import ResponseUtilsMixin
+
 User = get_user_model()
 
 
-class AuthRegisterTests(APITestCase):
+class AuthRegisterTests(ResponseUtilsMixin, APITestCase):
     def setUp(self):
         self.existing_username = "tommyM"
         self.existing_username_password = "DearMaria12"
@@ -25,13 +27,13 @@ class AuthRegisterTests(APITestCase):
             format="json",
         )
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn("token", response_json["data"])
-        self.assertIn("expiry", response_json["data"])
-        self.assertEqual("success", response_json["status"])
-        self.assertIsNone(response_json["message"])
+        self.assertEqual(response_status, "success")
+        self.assertIn("token", data)
+        self.assertIn("expiry", data)
+        self.assertIsNone(message)
 
     def test_existing_user_error(self):
         response = self.client.post(
@@ -43,15 +45,18 @@ class AuthRegisterTests(APITestCase):
             format="json",
         )
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
-        self.assertEqual("error", response_json["status"])
+        self.assertEqual(
+            response_status,
+            "error",
+        )
+        self.assertIsNone(data)
         self.assertEqual(
             "A user with that username already exists.",
-            response_json["message"],
+            message,
         )
-        self.assertIsNone(response_json["data"])
 
     def test_required_fields_error(self):
         response = self.client.post(
@@ -63,21 +68,24 @@ class AuthRegisterTests(APITestCase):
             format="json",
         )
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response_status,
+            "error",
+        )
+        self.assertIsNone(data)
         self.assertEqual(
             {
                 "username": ["This field is required."],
                 "password": ["This field is required."],
             },
-            response_json["message"],
+            message,
         )
-        self.assertEqual("error", response_json["status"])
-        self.assertIsNone(response_json["data"])
 
 
-class AuthLoginTests(APITestCase):
+class AuthLoginTests(ResponseUtilsMixin, APITestCase):
     def setUp(self):
         self.username = "jesse"
         self.password = "IAmAlive12"
@@ -93,13 +101,13 @@ class AuthLoginTests(APITestCase):
             format="json",
         )
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("token", response_json["data"])
-        self.assertIn("expiry", response_json["data"])
-        self.assertEqual("success", response_json["status"])
-        self.assertIsNone(response_json["message"])
+        self.assertEqual(response_status, "success")
+        self.assertIn("token", data)
+        self.assertIn("expiry", data)
+        self.assertIsNone(message)
 
     def test_login_error(self):
         response = self.client.post(
@@ -108,13 +116,14 @@ class AuthLoginTests(APITestCase):
             format="json",
         )
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIsNone(response_json["data"])
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
         self.assertEqual(
             "Unable to log in with provided credentials.",
-            response_json["message"],
+            message,
         )
 
     def test_required_fields_error(self):
@@ -127,21 +136,21 @@ class AuthLoginTests(APITestCase):
             format="json",
         )
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
         self.assertEqual(
             {
                 "username": ["This field is required."],
                 "password": ["This field is required."],
             },
-            response_json["message"],
+            message,
         )
-        self.assertEqual("error", response_json["status"])
-        self.assertIsNone(response_json["data"])
 
 
-class AuthLogoutTests(APITestCase):
+class AuthLogoutTests(ResponseUtilsMixin, APITestCase):
     def setUp(self):
         self.username = "ellieW"
         self.password = "IAmAloneNow"
@@ -163,23 +172,24 @@ class AuthLogoutTests(APITestCase):
 
         response = self.client.post(self.logout_url)
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual("success", response_json["status"])
-        self.assertIsNone(response_json["data"])
+        self.assertEqual("success", response_status)
+        self.assertIsNone(data)
+        self.assertEqual("Logged out successfully.", message)
 
     def test_logout_without_token(self):
         response = self.client.post(self.logout_url)
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual("error", response_json["status"])
-        self.assertIsNone(response_json["data"])
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
         self.assertEqual(
             "Authentication credentials were not provided.",
-            response_json["message"],
+            message,
         )
 
     def test_logout_with_invalid_token(self):
@@ -187,11 +197,12 @@ class AuthLogoutTests(APITestCase):
 
         response = self.client.post(self.logout_url)
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual("error", response_json["status"])
-        self.assertIsNone(response_json["data"])
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertEqual("Invalid token.", message)
 
     def test_token_is_invalidated_after_logout(self):
         self.authenticate()
@@ -200,11 +211,9 @@ class AuthLogoutTests(APITestCase):
 
         response = self.client.post(self.logout_url)
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIsNone(response_json["data"])
-        self.assertEqual(
-            "Invalid token.",
-            response_json["message"],
-        )
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertEqual("Invalid token.", message)
