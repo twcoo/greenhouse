@@ -501,7 +501,9 @@ class CropPartialUpdateApiViewTests(
         )
 
 
-class CropDeleteApiViewTests(RequiredAuthTestsMixin, APITestCase):
+class CropDeleteApiViewTests(
+    RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase
+):
     def setUp(self):
         super().setUp()
         self.crop = CropFactory(user=self.user)
@@ -521,10 +523,11 @@ class CropDeleteApiViewTests(RequiredAuthTestsMixin, APITestCase):
 
         response = self.client.delete(self.url_not_found)
 
-        response_json = response.json()
+        response_status, data, message = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response_status, "error")
         self.assertIsNone(
-            response_json["data"],
+            data,
         )
-        self.assertEqual(response_json["message"], "Resource not found.")
+        self.assertEqual(message, "Resource not found.")
