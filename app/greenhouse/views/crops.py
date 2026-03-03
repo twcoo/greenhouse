@@ -47,7 +47,7 @@ from ..utils.api import CustomAuthentication
         },
     ),
 )
-class CropListApiView(
+class CropListAPIView(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     GenericAPIView,
@@ -157,7 +157,7 @@ class CropDetailAPIView(
         },
     ),
 )
-class CropUploadImageApiView(mixins.UpdateModelMixin, GenericAPIView):
+class CropUploadImageAPIView(mixins.UpdateModelMixin, GenericAPIView):
     authentication_classes = [CustomAuthentication]
     permission_classes = [IsAuthenticated]
 
