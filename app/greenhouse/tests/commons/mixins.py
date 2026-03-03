@@ -1,4 +1,8 @@
+import io
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from knox.models import AuthToken
+from PIL import Image
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -68,3 +72,73 @@ class ResponseUtilsMixin:
             response_json["data"],
             response_json["message"],
         )
+
+
+class ImageUploadTestMixin:
+    def setUp(self):
+        super().setUp()
+
+        if not self.upload_to:
+            raise ValueError("upload_to must be defined.")
+
+    def create_test_image(
+        self,
+        name: str = "test",
+        extension: str = "png",
+        width: int = 800,
+        height: int = 600,
+        target_mb: float = 2,
+    ) -> SimpleUploadedFile:
+        ext = extension.lower().replace("jpg", "jpeg")
+        filename = f"{name}.{extension}"
+
+        img_byte_arr = io.BytesIO()
+        img = Image.new("RGB", (width, height), color="blue")
+
+        img.save(img_byte_arr, format=ext.upper())
+
+        target_bytes = int(target_mb * 1024 * 1024)
+        current_size = img_byte_arr.tell()
+
+        if current_size < target_bytes:
+            img_byte_arr.write(b"\x00" * (target_bytes - current_size))
+
+        img_byte_arr.seek(0)
+
+        return SimpleUploadedFile(
+            name=filename,
+            content=img_byte_arr.read(),
+            content_type=f"image/{ext}",
+        )
+
+    def upload_image(
+        self, image_filename="test", image_extension="png", image_size=2
+    ):
+        image = self.create_test_image(
+            name=image_filename, extension=image_extension, target_mb=image_size
+        )
+
+        data = {"image": image}
+
+        response = self.client.put(self.url, data, format="multipart")
+
+        response_status, data, message = self.get_response_data(response)
+
+        image = data["image"]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_status, "success")
+        self.assertIsNotNone(image)
+        self.assertEqual(
+            f"http://testserver/media/{self.upload_to}/{image_filename}.{image_extension}",
+            image,
+        )
+        self.assertIsNone(message)
+
+    def test_upload_png_image_success(self):
+        self.authenticate()
+        self.upload_image(image_filename="crop_png")
+
+    def test_upload_jpg_image_success(self):
+        self.authenticate()
+        self.upload_image(image_filename="crop_jpg", image_extension="jpg")
