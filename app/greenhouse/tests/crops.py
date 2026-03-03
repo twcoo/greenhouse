@@ -1,3 +1,6 @@
+import tempfile
+
+from django.test import override_settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.exceptions import ErrorDetail
@@ -6,6 +9,7 @@ from rest_framework.test import APITestCase
 from ..models import Crop
 from .commons.factories import CropFactory, UserFactory
 from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixin
+from .commons.utils import ImageUploadAPITestCase
 
 INVALID_FIELD_TYPE_MESSAGE = {
     "name": [
@@ -531,3 +535,15 @@ class CropDeleteApiViewTests(
             data,
         )
         self.assertEqual(message, "Resource not found.")
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class CropImageUploadApiViewTests(
+    RequiredAuthTestsMixin, ResponseUtilsMixin, ImageUploadAPITestCase
+):
+    def setUp(self):
+        super().setUp()
+        self.crop = CropFactory(user=self.user)
+        self.url = reverse("crop-image-upload", args=[self.crop.id])
+        self.upload_to = "crops"
+        self.url_not_found = reverse("crop-detail", args=[2])

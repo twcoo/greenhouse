@@ -1,7 +1,8 @@
 from .auth import AuthLoginTests, AuthLogoutTests, AuthRegisterTests
 from .crops import (CropCreateApiViewTests, CropDeleteApiViewTests,
-                    CropGetApiViewTests, CropListApiViewTests,
-                    CropPartialUpdateApiViewTests, CropUpdateApiViewTests)
+                    CropGetApiViewTests, CropImageUploadApiViewTests,
+                    CropListApiViewTests, CropPartialUpdateApiViewTests,
+                    CropUpdateApiViewTests)
 
 __all__ = [
     "AuthLoginTests",
@@ -13,4 +14,5 @@ __all__ = [
     "CropListApiViewTests",
     "CropPartialUpdateApiViewTests",
     "CropUpdateApiViewTests",
+    "CropImageUploadApiViewTests",
 ]
