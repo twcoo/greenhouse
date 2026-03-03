@@ -157,7 +157,7 @@ class CropDetailAPIView(
         },
     ),
 )
-class CropUploadImageView(mixins.UpdateModelMixin, GenericAPIView):
+class CropUploadImageApiView(mixins.UpdateModelMixin, GenericAPIView):
     authentication_classes = [CustomAuthentication]
     permission_classes = [IsAuthenticated]
 
