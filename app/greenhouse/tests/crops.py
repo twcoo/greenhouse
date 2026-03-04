@@ -296,6 +296,25 @@ class CropGetApiViewTests(
         )
         self.assertIsNone(message)
 
+    def test_get_crop_not_owned(self):
+        self.authenticate()
+
+        another_user = UserFactory(username="shimmer2")
+        another_crop = CropFactory(user=another_user)
+
+        url = reverse("crop-detail", args=[another_crop.id])
+
+        response = self.client.get(url)
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(
+            data,
+        )
+        self.assertEqual(message, "Resource not found.")
+
     def test_get_crop_not_found(self):
         self.authenticate()
 
@@ -350,6 +369,25 @@ class CropUpdateApiViewTests(
         self.authenticate()
 
         response = self.client.put(self.url_not_found, self.payload)
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(
+            data,
+        )
+        self.assertEqual(message, "Resource not found.")
+
+    def test_update_crop_not_owned(self):
+        self.authenticate()
+
+        another_user = UserFactory(username="shimmer2")
+        another_crop = CropFactory(user=another_user)
+
+        url = reverse("crop-detail", args=[another_crop.id])
+
+        response = self.client.put(url, self.payload)
 
         response_status, data, message = self.get_response_data(response)
 
@@ -457,6 +495,25 @@ class CropPartialUpdateApiViewTests(
         )
         self.assertEqual(message, "Resource not found.")
 
+    def test_update_crop_not_owned(self):
+        self.authenticate()
+
+        another_user = UserFactory(username="shimmer2")
+        another_crop = CropFactory(user=another_user)
+
+        url = reverse("crop-detail", args=[another_crop.id])
+
+        response = self.client.patch(url, self.payload)
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(
+            data,
+        )
+        self.assertEqual(message, "Resource not found.")
+
     def test_update_crop_invalid_field_values(self):
         self.authenticate()
 
@@ -521,6 +578,25 @@ class CropDeleteApiViewTests(
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertIsNone(response.data)
+
+    def test_delete_crop_not_owned(self):
+        self.authenticate()
+
+        another_user = UserFactory(username="shimmer2")
+        another_crop = CropFactory(user=another_user)
+
+        url = reverse("crop-detail", args=[another_crop.id])
+
+        response = self.client.delete(url)
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(
+            data,
+        )
+        self.assertEqual(message, "Resource not found.")
 
     def test_delete_crop_not_found(self):
         self.authenticate()
