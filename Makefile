@@ -1,6 +1,6 @@
-.PHONY: lint-app dev test clear-dev-app-db
+.PHONY: lint-backend dev-backend test-backend clear-dev-backend-db
 
-lint-app:
+lint-backend:
 	@uv run black --line-length 80 .
 	@uv run isort .
 	@uv run ruff check .
@@ -9,13 +9,13 @@ lint-app:
 		--ignore-missing-imports \
 		--strict .
 	
-dev-app:
+dev-backend:
 	@docker compose up --build --force-recreate 
 
-test:
-	@uv run python app/manage.py test greenhouse
+test-backend:
+	@uv run python backend/manage.py test greenhouse
 
-clear-dev-app-db:
+clear-dev-backend-db:
 	@docker rm -f greenhouse-db
 	@docker volume rm greenhouse_app-db-data
 

@@ -17,7 +17,7 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.local/bin/:$PATH"
 
 # Copy project files to install dependencies
-WORKDIR /app
+WORKDIR /backend
 COPY pyproject.toml uv.lock ./ 
 
 # Create requirements file 
@@ -44,19 +44,19 @@ RUN groupadd user && \
   useradd --create-home --home-dir /home/user -g user user
 
 # Copy requirements.txt from builder stage
-COPY --from=builder /app/requirements.txt /app/requirements.txt
+COPY --from=builder /backend/requirements.txt /backend/requirements.txt
 
 # Set working directory
-WORKDIR /app
+WORKDIR /backend
 
 # Install dependencies
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN pip install --no-cache-dir -r /backend/requirements.txt
 
 # Copy backend code
-COPY app/ /app
-COPY .env /app 
+COPY backend/ /backend
+COPY .env /backend
 
-# Ensure the app runs as the non-root user
+# Ensure the backend runs as the non-root user
 USER user
 
 # Start Django server

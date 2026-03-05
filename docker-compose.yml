@@ -1,28 +1,28 @@
 services:
-  app-db:
+  backend-db:
     image: "postgres:alpine"
-    container_name: greenhouse-db
+    container_name: backend-db
     environment:
-      - POSTGRES_USER=${APP_DB_USER}
-      - POSTGRES_PASSWORD=${APP_DB_PASSWORD}
-      - POSTGRES_DB=${APP_DB_NAME}
+      - POSTGRES_USER=${BACKEND_DB_USER}
+      - POSTGRES_PASSWORD=${BACKEND_DB_PASSWORD}
+      - POSTGRES_DB=${BACKEND_DB_NAME}
     ports:
       - "5432:5432"
     volumes:
-      - app-db-data:/var/lib/postgresql/data:delegated
-  app:
+      - backend-db-data:/var/lib/postgresql/data:delegated
+  backend:
     build: 
       context: ./ 
       dockerfile: ./dockerfiles/Dockerfile.app
-    container_name: greenhouse-app
+    container_name: backend
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app/
+      - ./backend:/backend/
     env_file: .env
     restart: on-failure:5
     depends_on:
-      - app-db
+      - backend-db
 
 volumes:
-  app-db-data:
+  backend-db-data:

@@ -71,11 +71,11 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-TEST_DB_HOST = config("APP_TEST_DB_HOST", cast=str)
-DB_HOST = config("APP_DB_HOST", cast=str)
-DB_USER = config("APP_DB_USER", cast=str)
-DB_PASSWORD = config("APP_DB_PASSWORD", cast=str)
-DB_NAME = config("APP_DB_NAME", cast=str)
+TEST_DB_HOST = config("BACKEND_TEST_DB_HOST", cast=str)
+DB_HOST = config("BACKEND_DB_HOST", cast=str)
+DB_USER = config("BACKEND_DB_USER", cast=str)
+DB_PASSWORD = config("BACKEND_DB_PASSWORD", cast=str)
+DB_NAME = config("BACKEND_DB_NAME", cast=str)
 
 if "test" in sys.argv:
     DATABASES = {
