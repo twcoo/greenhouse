@@ -8,9 +8,15 @@ lint-backend:
 		--fast-module-lookup \
 		--ignore-missing-imports \
 		--strict .
+
+lint-frontend:
+	@ pnpm lint
 	
 dev-backend:
 	@docker compose up --build --force-recreate 
+
+dev-frontend:
+	@pnpm dev
 
 test-backend:
 	@uv run python backend/manage.py test greenhouse
