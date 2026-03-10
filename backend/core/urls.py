@@ -16,6 +16,9 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path(
+        f"api/{settings.API_VERSION}/setup/", include("greenhouse.urls.setup")
+    ),
     path(f"api/{settings.API_VERSION}/auth/", include("greenhouse.urls.auth")),
     path(
         f"api/{settings.API_VERSION}/crops/", include("greenhouse.urls.crops")

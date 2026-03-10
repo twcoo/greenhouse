@@ -3,17 +3,40 @@ from rest_framework import serializers
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8)
+    password = serializers.CharField(
+        write_only=True,
+        min_length=8,
+        help_text="Enter a strong password (minimum 8 characters).",
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        help_text="Enter the same password again for confirmation.",
+    )
+
+    def validate(self, attrs):
+        if User.objects.filter(is_superuser=True, is_staff=False).exists():
+            raise serializers.ValidationError(
+                "Admin user already exists. Setup cannot be run again."
+            )
+
+        if attrs["password"] != attrs["password2"]:
+            raise serializers.ValidationError(
+                {"password2": "Passwords do not match."}
+            )
+
+        return attrs
 
     class Meta:
         model = User
-        fields = ("username", "email", "password")
+        fields = ("username", "email", "password", "password2")
 
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data["username"],
             email=validated_data.get("email", ""),
             password=validated_data["password"],
+            is_superuser=True,
+            is_staff=False,
         )
 
         return user

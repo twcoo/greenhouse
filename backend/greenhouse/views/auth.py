@@ -2,7 +2,6 @@ from typing import Optional
 
 from django.contrib.auth import login
 from drf_spectacular.utils import extend_schema
-from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
 from knox.views import LogoutView as KnoxLogoutView
 from rest_framework import status
@@ -10,66 +9,16 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from ..openapi.examples import (AUTH_LOGIN_REQUEST_EXAMPLE,
-                                AUTH_REGISTRATION_REQUEST_EXAMPLE)
+from ..openapi.examples import AUTH_LOGIN_REQUEST_EXAMPLE
 from ..openapi.responses import (AUTH_LOGIN_RESPONSE,
                                  AUTH_LOGIN_UNAUTHORIZED_RESPONSE,
                                  AUTH_LOGIN_VALIDATION_RESPONSE,
                                  AUTH_LOGOUT_RESPONSE,
-                                 AUTH_LOGOUT_UNAUTHORIZED_RESPONSE,
-                                 AUTH_REGISTER_CONFLICT_RESPONSE,
-                                 AUTH_REGISTER_VALIDATION_RESPONSE,
-                                 AUTH_REGISTERED_RESPONSE)
-from ..serializers import KnoxLoginRequestSerializer, RegisterSerializer
+                                 AUTH_LOGOUT_UNAUTHORIZED_RESPONSE)
+from ..serializers import KnoxLoginRequestSerializer
 from ..utils.api import CustomAuthentication
 from ..utils.renderers import JSendRenderer
-
-
-@extend_schema(
-    auth=[],
-    operation_id="Register",
-    tags=["Authentication"],
-    description="Allows new users to register by providing their details.",
-    request=RegisterSerializer,
-    examples=[AUTH_REGISTRATION_REQUEST_EXAMPLE],
-    responses={
-        201: AUTH_REGISTERED_RESPONSE,
-        400: AUTH_REGISTER_VALIDATION_RESPONSE,
-        409: AUTH_REGISTER_CONFLICT_RESPONSE,
-    },
-)
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
-    renderer_classes = [JSendRenderer]
-
-    def post(self, request: Request) -> Response:
-        serializer = RegisterSerializer(data=request.data)
-
-        if serializer.is_valid():
-            user = serializer.save()
-            token_instance, token = AuthToken.objects.create(user)
-
-            return Response(
-                {
-                    "expiry": token_instance.expiry,
-                    "token": token,
-                    "username": user.username,
-                },
-                status=status.HTTP_201_CREATED,
-            )
-
-        errors = serializer.errors
-
-        if "username" in errors:
-            if "already exists" in str(errors["username"][0]):
-                return Response(
-                    {"message": "A user with that username already exists."},
-                    status=status.HTTP_409_CONFLICT,
-                )
-
-        return Response({"message": errors}, status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema(

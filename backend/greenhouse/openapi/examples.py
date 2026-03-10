@@ -23,21 +23,70 @@ NO_DATA_RESPONSE_EXAMPLE = OpenApiExample(
     },
 )
 
-# Auth
-AUTH_REGISTRATION_REQUEST_EXAMPLE = OpenApiExample(
-    name="User registration request",
-    description="Example request payload for registering a new user account.",
+# Setup
+SETUP_ADMIN_REQUEST_EXAMPLE = OpenApiExample(
+    name="Initial Admin Setup Request",
+    description="Example request payload for initial admin setup.",
     value={
         "username": "mhillcrest",
         "email": "mhillcrest@example.com",
         "password": "strongPassword$1",
+        "password2": "strongPassword$1",
     },
     request_only=True,
 )
 
-AUTH_REGISTERED_RESPONSE_EXAMPLE = OpenApiExample(
-    name="Successful registration",
-    description="Example response returned after successful registration.",
+SETUP_ADMIN_REQUIRED_FIELDS_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Auth missing required fields",
+    description="Example response returned when required fields are missing in the request payload.",
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "username": ["This field is required."],
+            "password": ["This field is required."],
+            "password2": ["This field is required."],
+        },
+    },
+)
+
+SETUP_ADMIN_REQUIRED_FIELDS_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Missing required fields",
+    description="Example response returned when required fields are missing in the request payload.",
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "non_field_errors": [
+                "Admin user already exists. Setup cannot be run again."
+            ]
+        },
+    },
+)
+
+SETUP_ADMIN_ALREADY_EXISTS_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Admin already exists",
+    description="Example response returned when attempting to create an admin but one already exists.",
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "non_field_errors": [
+                "Admin user already exists. Setup cannot be run again."
+            ]
+        },
+    },
+)
+
+SETUP_ADMIN_CREATED_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Initial Admin Created",
+    description="Example response returned after successfully creating the initial admin user.",
     status_codes=["201"],
     response_only=True,
     value={
@@ -50,6 +99,7 @@ AUTH_REGISTERED_RESPONSE_EXAMPLE = OpenApiExample(
     },
 )
 
+# Auth
 AUTH_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
     name="Auth missing required fields",
     description="Example response returned when required fields are missing in the request payload.",
@@ -62,18 +112,6 @@ AUTH_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
             "username": ["This field is required."],
             "password": ["This field is required."],
         },
-    },
-)
-
-AUTH_REGISTER_CONFLICT_RESPONSE_EXAMPLE = OpenApiExample(
-    name="User is already registered",
-    description="Example response returned when a user attempts to register with a username that already exists.",
-    status_codes=["409"],
-    response_only=True,
-    value={
-        "status": "error",
-        "data": None,
-        "message": "A user with that username already exists.",
     },
 )
 
