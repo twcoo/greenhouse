@@ -12,6 +12,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/views/dashboard/index.vue"),
   },
   {
+    path: "/signup",
+    name: "signup",
+    component: () => import("@/views/signup/index.vue"),
+  },
+  {
     path: "/",
     redirect: "/login",
   },
