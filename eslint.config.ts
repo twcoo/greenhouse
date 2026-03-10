@@ -64,7 +64,7 @@ export default defineConfig([
     },
 
     rules: {
-      'vue/multi-word-component-names': ['error', { ignores: ['App', 'Layout'] }],
+      'vue/multi-word-component-names': ['error', { ignores: ['App', 'Layout', 'index'] }],
       'vue/component-name-in-template-casing': ['error', 'PascalCase'],
       'vue/prop-name-casing': ['error', 'camelCase'],
       'vue/custom-event-name-casing': ['error', 'kebab-case'],
