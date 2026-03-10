@@ -6,7 +6,7 @@ import pluginOxlint from "eslint-plugin-oxlint"
 
 export default defineConfig([
   {
-    ignores: ["dist", "coverage", "node_modules"]
+    ignores: ["dist", "coverage", "node_modules", "frontend/src/components/ui"]
   },
 
   {
@@ -48,6 +48,16 @@ export default defineConfig([
 
   {
     files: ["frontend/src/**/*.vue"],
+
+    languageOptions: {
+      parser: (await import("vue-eslint-parser")).default,
+      parserOptions: {
+        parser: tsParser,
+        ecmaVersion: "latest",
+        sourceType: "module",
+        extraFileExtensions: [".vue"],
+      },
+    },
 
     plugins: {
       vue: pluginVue,
