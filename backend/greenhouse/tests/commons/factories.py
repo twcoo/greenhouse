@@ -14,6 +14,8 @@ class UserFactory(DjangoModelFactory):
 
     username = "shimmer"
     password = "ShimmerDontJump!"
+    is_superuser = True
+    is_staff = False
 
 
 class CropFactory(DjangoModelFactory):
