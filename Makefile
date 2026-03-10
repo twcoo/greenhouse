@@ -10,7 +10,8 @@ lint-backend:
 		--strict .
 
 lint-frontend:
-	@ pnpm lint
+	@pnpm format
+	@pnpm lint
 	
 dev-backend:
 	@docker compose up --build --force-recreate 

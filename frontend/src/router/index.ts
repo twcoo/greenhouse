@@ -1,8 +1,4 @@
-import {
-  createRouter,
-  createWebHistory,
-  type RouteRecordRaw,
-} from "vue-router";
+import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
 
 const routes: RouteRecordRaw[] = [
   {
@@ -19,11 +15,11 @@ const routes: RouteRecordRaw[] = [
     path: "/",
     redirect: "/login",
   },
-];
+]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-});
+})
 
-export default router;
+export default router

@@ -3,6 +3,7 @@ import tsParser from "@typescript-eslint/parser"
 import pluginTs from "@typescript-eslint/eslint-plugin"
 import pluginVue from "eslint-plugin-vue"
 import pluginOxlint from "eslint-plugin-oxlint"
+import prettier from "eslint-config-prettier"
 
 export default defineConfig([
   {
@@ -82,4 +83,6 @@ export default defineConfig([
   },
 
   ...pluginOxlint.buildFromOxlintConfigFile("./.oxlintrc.json"),
+
+  prettier
 ])
