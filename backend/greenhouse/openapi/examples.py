@@ -29,7 +29,6 @@ SETUP_ADMIN_REQUEST_EXAMPLE = OpenApiExample(
     description="Example request payload for initial admin setup.",
     value={
         "username": "mhillcrest",
-        "email": "mhillcrest@example.com",
         "password": "strongPassword$1",
         "password2": "strongPassword$1",
     },
@@ -94,6 +93,7 @@ SETUP_ADMIN_CREATED_RESPONSE_EXAMPLE = OpenApiExample(
         "data": {
             "expiry": "2026-01-20T06:46:33.891979Z",
             "token": "ca57a6fb43553fdbe63488748004731714173689eb7.....",
+            "user": {"username": "mhillcrest"},
         },
         "message": None,
     },

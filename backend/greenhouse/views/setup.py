@@ -40,7 +40,7 @@ class SetupAdminView(APIView):
                 {
                     "expiry": token_instance.expiry,
                     "token": token,
-                    "username": user.username,
+                    "user": {"username": user.username},
                 },
                 status=status.HTTP_201_CREATED,
             )
