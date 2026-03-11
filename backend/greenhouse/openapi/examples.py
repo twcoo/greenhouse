@@ -83,6 +83,18 @@ SETUP_ADMIN_ALREADY_EXISTS_RESPONSE_EXAMPLE = OpenApiExample(
     },
 )
 
+SETUP_ADMIN_PASSWORD_MISMATCH_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Password mismatch",
+    description="Example response returned when the password and password confirmation do not match.",
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": {"password2": ["Passwords do not match."]},
+    },
+)
+
 SETUP_ADMIN_CREATED_RESPONSE_EXAMPLE = OpenApiExample(
     name="Initial Admin Created",
     description="Example response returned after successfully creating the initial admin user.",
@@ -96,6 +108,30 @@ SETUP_ADMIN_CREATED_RESPONSE_EXAMPLE = OpenApiExample(
             "user": {"username": "mhillcrest"},
         },
         "message": None,
+    },
+)
+
+SETUP_STATUS_OK_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Setup status OK",
+    description="Example response returned when the application setup status is OK.",
+    status_codes=["200"],
+    response_only=True,
+    value={
+        "status": "success",
+        "data": None,
+        "message": "ok",
+    },
+)
+
+SETUP_STATUS_REQUIRED_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Setup required",
+    description="Example response returned when the application requires initial setup.",
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": "Setup required.",
     },
 )
 
