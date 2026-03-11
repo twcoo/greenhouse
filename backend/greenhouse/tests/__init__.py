@@ -3,10 +3,11 @@ from .crops import (CropCreateApiViewTests, CropDeleteApiViewTests,
                     CropGetApiViewTests, CropImageUploadApiViewTests,
                     CropListApiViewTests, CropPartialUpdateApiViewTests,
                     CropUpdateApiViewTests)
-from .setup import SetupAdminTests
+from .setup import SetupAdminTests, SetupStatusTests
 
 __all__ = [
     "SetupAdminTests",
+    "SetupStatusTests",
     "AuthLoginTests",
     "AuthLogoutTests",
     "CropCreateApiViewTests",

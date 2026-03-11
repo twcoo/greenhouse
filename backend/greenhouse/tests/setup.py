@@ -13,7 +13,7 @@ class SetupAdminTests(ResponseUtilsMixin, APITestCase):
     def setUp(self):
         self.url = reverse("setup_admin")
 
-    def test_register_success(self):
+    def test_create_admin_success(self):
         response = self.client.post(
             self.url,
             {
@@ -90,7 +90,7 @@ class SetupAdminTests(ResponseUtilsMixin, APITestCase):
             message,
         )
 
-    def test_register_confirm_password_error(self):
+    def test_create_admin_confirm_password_error(self):
         response = self.client.post(
             self.url,
             {
@@ -108,5 +108,42 @@ class SetupAdminTests(ResponseUtilsMixin, APITestCase):
         self.assertIsNone(data)
         self.assertEqual(
             {"password2": ["Passwords do not match."]},
+            message,
+        )
+
+
+class SetupStatusTests(ResponseUtilsMixin, APITestCase):
+    def setUp(self):
+        self.url = reverse("setup_status")
+
+    def test_setup_success(self):
+        UserFactory()
+
+        response = self.client.get(
+            self.url,
+        )
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_status, "success")
+        self.assertIsNone(data)
+        self.assertEqual("ok", message)
+
+    def test_setup_required_error(self):
+        response = self.client.get(
+            self.url,
+        )
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response_status,
+            "error",
+        )
+        self.assertIsNone(data)
+        self.assertEqual(
+            "Setup required.",
             message,
         )
