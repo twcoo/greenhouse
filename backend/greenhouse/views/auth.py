@@ -18,7 +18,6 @@ from ..openapi.responses import (AUTH_LOGIN_RESPONSE,
                                  AUTH_LOGOUT_UNAUTHORIZED_RESPONSE)
 from ..serializers import KnoxLoginRequestSerializer
 from ..utils.api import CustomAuthentication
-from ..utils.renderers import JSendRenderer
 
 
 @extend_schema(
@@ -36,7 +35,6 @@ from ..utils.renderers import JSendRenderer
 )
 class LoginView(KnoxLoginView):
     permission_classes = [AllowAny]
-    renderer_classes = [JSendRenderer]
 
     def post(self, request: Request, format: Optional[str] = None) -> Response:
         serializer = AuthTokenSerializer(data=request.data)
@@ -74,7 +72,6 @@ class LoginView(KnoxLoginView):
 )
 class LogoutView(KnoxLogoutView):
     authentication_classes = [CustomAuthentication]
-    renderer_classes = [JSendRenderer]
 
     def get_post_response(self, request: Request) -> Response:
         return Response(
