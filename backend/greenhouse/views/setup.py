@@ -57,7 +57,7 @@ class SetupAdminView(APIView):
     auth=[],
     operation_id="Setup Status",
     tags=["Setup"],
-    description="Checks whether the initial application setup is required.",
+    description="Checks whether the initial setup is required.",
     responses={
         200: SETUP_STATUS_OK_RESPONSE,
         400: SETUP_STATUS_VALIDATION_RESPONSE,
@@ -72,8 +72,6 @@ class SetupStatusView(APIView):
         ).exists()
 
         if not admin_user_exists:
-            return Response(
-                {"message": "Setup required."}, status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"message": "Setup required."}, status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "ok"}, status.HTTP_200_OK)
