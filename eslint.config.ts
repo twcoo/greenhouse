@@ -38,11 +38,6 @@ export default defineConfig([
           selector: "IfStatement > :not(IfStatement).alternate",
           message: "Avoid `else`. Prefer early returns or ternary operators.",
         },
-        {
-          selector: "TryStatement",
-          message:
-            "Use tryCatch() from @/lib/tryCatch instead of try/catch. Returns Result<T> tuple: [error, null] | [null, data].",
-        },
       ],
     },
   },

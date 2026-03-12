@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
+import { useSetupStore } from "@/stores/setupStore"
 
 const routes: RouteRecordRaw[] = [
   {
@@ -25,6 +26,16 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach(async (to) => {
+  const setupStore = useSetupStore()
+  await setupStore.checkSetup()
+
+  if (setupStore.setupRequired && to.name !== "setup") return { name: "setup" }
+  if (!setupStore.setupRequired && to.name === "setup") return { name: "login" }
+
+  return true
 })
 
 export default router
