@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SetupAdminForm from '@/components/SetupAdminForm.vue';
+import SetupAdminForm from "@/components/SetupAdminForm.vue"
 </script>
 
 <template>

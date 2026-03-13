@@ -3,3 +3,9 @@ export interface APIResponse<T> {
   data: T
   message: string
 }
+
+export interface APIErrorResponse {
+  status: "error"
+  data: null
+  message: Record<string, string[]> | string
+}
