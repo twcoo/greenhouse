@@ -11,15 +11,18 @@ import { AxiosError } from "axios"
 import { APIErrorResponse } from "@/types/api"
 import { IconLoader2 } from "@tabler/icons-vue"
 import { useRouter } from "vue-router"
+import { useSetupStore } from "@/stores/setupStore"
 
+const setupStore = useSetupStore()
 const router = useRouter()
 const { setupAdmin, loading } = useSetup()
 
 const form = reactive<setupAdminForm>({
   username: "",
   password: "",
-  password2: "",
+  password2: ""
 })
+
 
 const errors = ref<Record<string, string>>({})
 
@@ -35,7 +38,8 @@ async function submit() {
 
   try {
     await setupAdmin(result.data)
-    router.push({ name: "login" })
+    setupStore.setupRequired = false
+    router.push({ name: "dashboard" })
   } catch (err) {
     const axiosError = err as AxiosError<APIErrorResponse>
 
@@ -59,16 +63,11 @@ async function submit() {
     </CardHeader>
     <CardContent>
       <form @submit.prevent="submit">
+
         <FieldGroup>
           <Field>
             <FieldLabel for="username"> Username </FieldLabel>
-            <Input
-              v-model="form.username"
-              id="username"
-              type="text"
-              placeholder="jmiller"
-              required
-            />
+            <Input v-model="form.username" id="username" type="text" placeholder="jmiller" required />
             <FieldDescription>
               Choose a unique username. It may contain letters, numbers, underscores, or dots.
             </FieldDescription>
@@ -95,12 +94,13 @@ async function submit() {
             <p v-if="errors.password2" class="text-sm text-red-500">
               {{ errors.password2 }}
             </p>
+
           </Field>
           <FieldGroup>
             <Field>
               <Button type="submit" :disabled="loading">
                 <IconLoader2 v-if="loading" :size="18" class="animate-spin" />
-                {{ loading ? "Creating..." : "Create Account" }}
+                {{ loading ? 'Creating...' : 'Create Account' }}
               </Button>
             </Field>
           </FieldGroup>
