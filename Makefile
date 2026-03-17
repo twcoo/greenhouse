@@ -22,6 +22,9 @@ dev-frontend:
 test-backend:
 	@uv run python backend/manage.py test greenhouse
 
+test-frontend:
+	@pnpm test
+
 clear-dev-backend-db:
 	@docker rm -f backend-db
 	@docker volume rm greenhouse_backend-db-data

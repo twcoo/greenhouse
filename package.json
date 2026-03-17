@@ -10,7 +10,8 @@
     "lint:oxlint": "oxlint frontend --fix --ignore-path .gitignore",
     "lint:eslint": "eslint frontend --fix --cache",
     "lint": "run-s lint:*",
-    "format": "prettier --write frontend"
+    "format": "prettier --write frontend",
+    "test": "vitest run"
   },
   "dependencies": {
     "@tabler/icons-vue": "^3.40.0",
