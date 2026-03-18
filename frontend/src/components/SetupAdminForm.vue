@@ -65,18 +65,12 @@ async function submit() {
         <FieldGroup>
           <Field>
             <FieldLabel for="username"> Username </FieldLabel>
-            <Input
-              v-model="form.username"
-              id="username"
-              type="text"
-              placeholder="jmiller"
-              required
-            />
+            <Input v-model="form.username" id="username" type="text" placeholder="jmiller" required />
             <FieldDescription>
               Choose a unique username. It may contain letters, numbers, underscores, or dots.
             </FieldDescription>
 
-            <p v-if="errors.username" class="text-sm text-red-500">
+            <p data-test="username-error" v-if="errors.username" class="text-sm text-red-500">
               {{ errors.username }}
             </p>
           </Field>
@@ -85,7 +79,7 @@ async function submit() {
             <Input v-model="form.password" id="password" type="password" required />
             <FieldDescription>Must be at least 8 characters long.</FieldDescription>
 
-            <p v-if="errors.password" class="text-sm text-red-500">
+            <p data-test="password-error" v-if="errors.password" class="text-sm text-red-500">
               {{ errors.password }}
             </p>
           </Field>
@@ -95,7 +89,7 @@ async function submit() {
 
             <FieldDescription>Please confirm your password.</FieldDescription>
 
-            <p v-if="errors.password2" class="text-sm text-red-500">
+            <p data-test="password2-error" v-if="errors.password2" class="text-sm text-red-500">
               {{ errors.password2 }}
             </p>
           </Field>
