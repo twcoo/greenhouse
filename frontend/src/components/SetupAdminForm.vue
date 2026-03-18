@@ -108,7 +108,7 @@ async function submit() {
             </Field>
           </FieldGroup>
         </FieldGroup>
-        <p v-if="errors.general" class="text-sm text-red-500 mb-2">
+        <p data-test="general-error" v-if="errors.general" class="text-sm text-red-500 mb-2">
           {{ errors.general }}
         </p>
       </form>

@@ -92,7 +92,9 @@ describe("SetupAdminForm.vue", () => {
 
     await wrapper.get("form").trigger("submit.prevent")
 
-    expect(wrapper.text()).toContain("Something went wrong. Please try again.")
+    const generalError = wrapper.get('[data-test="general-error"]')
+
+    expect(generalError.text().trim()).toBe("Something went wrong. Please try again.")
   })
 
   it("submits and redirects on success", async () => {
