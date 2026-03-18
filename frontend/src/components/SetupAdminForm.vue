@@ -65,7 +65,13 @@ async function submit() {
         <FieldGroup>
           <Field>
             <FieldLabel for="username"> Username </FieldLabel>
-            <Input v-model="form.username" id="username" type="text" placeholder="jmiller" required />
+            <Input
+              v-model="form.username"
+              id="username"
+              type="text"
+              placeholder="jmiller"
+              required
+            />
             <FieldDescription>
               Choose a unique username. It may contain letters, numbers, underscores, or dots.
             </FieldDescription>
