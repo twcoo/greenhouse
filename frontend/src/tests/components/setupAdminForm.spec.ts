@@ -1,82 +1,128 @@
 import { mount } from "@vue/test-utils"
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, vi, beforeEach } from "vitest"
 import SetupAdminForm from "@/components/SetupAdminForm.vue"
 import { createTestingPinia } from "@pinia/testing"
 
 const push = vi.fn()
+const setupAdminMock = vi.fn()
+const loadingMock = vi.fn(() => false)
 
 vi.mock("vue-router", () => ({
   useRouter: () => ({
-    push
-  })
+    push,
+  }),
 }))
-
-const setupAdminMock = vi.fn()
 
 vi.mock("@/composables/useSetup", () => ({
   useSetup: () => ({
     setupAdmin: setupAdminMock,
-    loading: false
-  })
+    get loading() {
+      return loadingMock()
+    },
+  }),
 }))
 
+const mountComponent = () =>
+  mount(SetupAdminForm, {
+    global: {
+      plugins: [createTestingPinia()],
+    },
+  })
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  loadingMock.mockReturnValue(false)
+})
+
 describe("SetupAdminForm.vue", () => {
+  it("renders form fields", () => {
+    const wrapper = mountComponent()
 
-  it("renders the form fields", () => {
-    const wrapper = mount(SetupAdminForm, {
-      global: {
-        plugins: [createTestingPinia()]
-      }
-    })
-
-    expect(wrapper.find("#username").exists()).toBe(true)
-    expect(wrapper.find("#password").exists()).toBe(true)
-    expect(wrapper.find("#password2").exists()).toBe(true)
+    expect(wrapper.get("#username").exists()).toBe(true)
+    expect(wrapper.get("#password").exists()).toBe(true)
+    expect(wrapper.get("#password2").exists()).toBe(true)
   })
 
-  it("shows validation errors when empty", async () => {
-    const wrapper = mount(SetupAdminForm, {
-      global: {
-        plugins: [createTestingPinia()]
-      }
-    })
+  it("shows validation errors on empty submit", async () => {
+    const wrapper = mountComponent()
 
-    await wrapper.find("form").trigger("submit.prevent")
+    await wrapper.get("form").trigger("submit.prevent")
 
-    expect(wrapper.text()).toContain("characters")
+    const usernameError = wrapper.get('[data-test="username-error"]')
+    const passwordError = wrapper.get('[data-test="password-error"]')
+
+    expect(usernameError.text().trim()).toBe("Username must be at least 3 characters")
+    expect(passwordError.text().trim()).toBe("Password must be at least 8 characters")
   })
 
-  it("calls setupAdmin when form is valid", async () => {
-    const wrapper = mount(SetupAdminForm, {
-      global: {
-        plugins: [createTestingPinia()]
-      }
-    })
+  it("displays error when password and confirmation do not match", async () => {
+    const wrapper = mountComponent()
 
-    await wrapper.find("#username").setValue("admin")
-    await wrapper.find("#password").setValue("password123")
-    await wrapper.find("#password2").setValue("password123")
+    await wrapper.get("#username").setValue("admin")
+    await wrapper.get("#password").setValue("password123")
+    await wrapper.get("#password2").setValue("iamdifferent")
 
-    await wrapper.find("form").trigger("submit.prevent")
+    await wrapper.get("form").trigger("submit.prevent")
 
-    expect(setupAdminMock).toHaveBeenCalled()
+    const confirmPasswordError = wrapper.get('[data-test="password2-error"]')
+
+    expect(confirmPasswordError.text().trim()).toBe("Password do not match")
   })
 
-  it("redirects to dashboard on success", async () => {
+  it("allows user to fill the form", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.get("#username").setValue("admin")
+    await wrapper.get("#password").setValue("password123")
+    await wrapper.get("#password2").setValue("password123")
+
+    expect((wrapper.get("#username").element as HTMLInputElement).value).toBe("admin")
+    expect((wrapper.get("#password").element as HTMLInputElement).value).toBe("password123")
+    expect((wrapper.get("#password2").element as HTMLInputElement).value).toBe("password123")
+  })
+
+  it("shows general error when no API response", async () => {
+    setupAdminMock.mockRejectedValueOnce(new Error("Network error"))
+
+    const wrapper = mountComponent()
+
+    await wrapper.get("#username").setValue("admin")
+    await wrapper.get("#password").setValue("password123")
+    await wrapper.get("#password2").setValue("password123")
+
+    await wrapper.get("form").trigger("submit.prevent")
+
+    expect(wrapper.text()).toContain("Something went wrong. Please try again.")
+  })
+
+  it("submits and redirects on success", async () => {
     setupAdminMock.mockResolvedValueOnce(undefined)
 
-    const wrapper = mount(SetupAdminForm, {
-      global: {
-        plugins: [createTestingPinia()]
-      }
+    const wrapper = mountComponent()
+
+    await wrapper.get("#username").setValue("admin")
+    await wrapper.get("#password").setValue("password123")
+    await wrapper.get("#password2").setValue("password123")
+
+    await wrapper.get("form").trigger("submit.prevent")
+
+    expect(setupAdminMock).toHaveBeenCalledWith({
+      username: "admin",
+      password: "password123",
+      password2: "password123",
     })
 
-    await wrapper.find("#username").setValue("admin")
-    await wrapper.find("#password").setValue("password123")
-    await wrapper.find("#password2").setValue("password123")
-
-    await wrapper.find("form").trigger("submit.prevent")
-
     expect(push).toHaveBeenCalledWith({ name: "dashboard" })
+  })
+
+  it("disables button and shows loading text when loading", async () => {
+    loadingMock.mockReturnValue(true)
+
+    const wrapper = mountComponent()
+
+    const button = wrapper.get("button")
+
+    expect(button.attributes("disabled")).toBeDefined()
+    expect(button.text()).toBe("Creating...")
   })
 })
