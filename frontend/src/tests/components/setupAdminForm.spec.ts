@@ -92,9 +92,21 @@ describe("SetupAdminForm.vue", () => {
 
     await wrapper.get("form").trigger("submit.prevent")
 
+
     const generalError = wrapper.get('[data-test="general-error"]')
 
     expect(generalError.text().trim()).toBe("Something went wrong. Please try again.")
+  })
+
+  it("disables button and shows loading text when loading", async () => {
+    loadingMock.mockReturnValue(true)
+
+    const wrapper = mountComponent()
+
+    const button = wrapper.get("button")
+
+    expect(button.attributes("disabled")).toBeDefined()
+    expect(button.text()).toBe("Creating...")
   })
 
   it("submits and redirects on success", async () => {
@@ -115,16 +127,5 @@ describe("SetupAdminForm.vue", () => {
     })
 
     expect(push).toHaveBeenCalledWith({ name: "dashboard" })
-  })
-
-  it("disables button and shows loading text when loading", async () => {
-    loadingMock.mockReturnValue(true)
-
-    const wrapper = mountComponent()
-
-    const button = wrapper.get("button")
-
-    expect(button.attributes("disabled")).toBeDefined()
-    expect(button.text()).toBe("Creating...")
   })
 })
