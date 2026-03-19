@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
@@ -76,6 +77,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = config("CSRF_COOKIE_SECURE")
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS", cast=lambda v: [s.strip() for s in v.split(",")]
+)
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -132,6 +139,8 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "greenhouse.pagination.StandardResultSetPagination",
 }
+
+REST_KNOX = {"TOKEN_TTL": timedelta(hours=1), "AUTO_REFRESH": True}
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Greenhouse",
