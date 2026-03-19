@@ -5,8 +5,7 @@ import SetupAdminForm from "@/components/SetupAdminForm.vue"
 import { createTestingPinia } from "@pinia/testing"
 
 vi.mock("vue-router", () => ({
-  useRouter: () => ({
-  }),
+  useRouter: () => ({}),
 }))
 
 const mountWithPinia = () =>
@@ -17,7 +16,6 @@ const mountWithPinia = () =>
   })
 
 describe("SetupView.vue", () => {
-
   it("renders the SetupAdminForm component", () => {
     const wrapper = mountWithPinia()
 
