@@ -1,6 +1,8 @@
 from typing import Optional
 
 from django.contrib.auth import login
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 from drf_spectacular.utils import extend_schema
 from knox.views import LoginView as KnoxLoginView
 from knox.views import LogoutView as KnoxLogoutView
@@ -43,9 +45,19 @@ class LoginView(KnoxLoginView):
             user = serializer.validated_data["user"]
             login(request, user)
 
-            response = super().post(request, format=format)
+            knox_response = super().post(request, format=format)
 
-            return Response(response.data, status=status.HTTP_200_OK)
+            token = knox_response.data["token"]
+
+            response = Response(
+                {"message": "Login successful"}, status=status.HTTP_200_OK
+            )
+
+            response.set_cookie(
+                key="token", value=token, httponly=True, max_age=60 * 60 * 24
+            )
+
+            return response
 
         non_field = serializer.errors.get("non_field_errors", [])
 
@@ -70,6 +82,7 @@ class LoginView(KnoxLoginView):
         401: AUTH_LOGOUT_UNAUTHORIZED_RESPONSE,
     },
 )
+@method_decorator(csrf_protect, name="dispatch")
 class LogoutView(KnoxLogoutView):
     authentication_classes = [CustomAuthentication]
 

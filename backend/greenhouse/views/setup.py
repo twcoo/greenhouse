@@ -72,6 +72,8 @@ class SetupStatusView(APIView):
         ).exists()
 
         if not admin_user_exists:
-            return Response({"message": "Setup required."}, status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Setup required."}, status.HTTP_400_BAD_REQUEST
+            )
 
         return Response({"message": "ok"}, status.HTTP_200_OK)
