@@ -2,7 +2,7 @@
 import { reactive, ref } from "vue"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Field, FieldDescription, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useSetup } from "@/composables/useSetup"
 import { setupAdminSchema, type setupAdminForm } from "@/schemas/setup.schema"
@@ -75,29 +75,26 @@ async function submit() {
             <FieldDescription>
               Choose a unique username. It may contain letters, numbers, underscores, or dots.
             </FieldDescription>
-
-            <p data-test="username-error" v-if="errors.username" class="text-sm text-red-500">
+            <FieldError data-test="username-error" v-if="errors.username">
               {{ errors.username }}
-            </p>
+            </FieldError>
           </Field>
           <Field>
             <FieldLabel for="password"> Password </FieldLabel>
             <Input v-model="form.password" id="password" type="password" required />
             <FieldDescription>Must be at least 8 characters long.</FieldDescription>
-
-            <p data-test="password-error" v-if="errors.password" class="text-sm text-red-500">
+            <FieldError data-test="password-error" v-if="errors.password">
               {{ errors.password }}
-            </p>
+            </FieldError>
           </Field>
           <Field>
             <FieldLabel for="password2"> Confirm Password </FieldLabel>
             <Input v-model="form.password2" id="password2" type="password" required />
 
             <FieldDescription>Please confirm your password.</FieldDescription>
-
-            <p data-test="password2-error" v-if="errors.password2" class="text-sm text-red-500">
+            <FieldError data-test="password2-error" v-if="errors.password2">
               {{ errors.password2 }}
-            </p>
+            </FieldError>
           </Field>
           <FieldGroup>
             <Field>
