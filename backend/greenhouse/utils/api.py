@@ -2,7 +2,7 @@ from enum import Enum
 
 from django.utils.translation import gettext_lazy as _
 from knox.auth import TokenAuthentication
-from rest_framework import exceptions
+from rest_framework.exceptions import NotAuthenticated
 
 
 class Status(Enum):
@@ -16,7 +16,7 @@ class CustomAuthentication(TokenAuthentication):
 
         if not token:
             msg = _("No credentials provided.")
-            raise exceptions.AuthenticationFailed(msg)
+            raise NotAuthenticated(msg)
 
         # Encode token since authenticate_credentials decodes it
         # I don't want to reimplement the method just to remove the decode

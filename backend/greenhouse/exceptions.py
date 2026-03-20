@@ -1,18 +1,11 @@
 from django.http import Http404
 from rest_framework import status
-from rest_framework.exceptions import (AuthenticationFailed, NotAuthenticated,
-                                       ValidationError)
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework.views import exception_handler
 
 
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
-
-    if isinstance(exc, NotAuthenticated):
-        response.data = {
-            "message": "Authentication credentials were not provided."
-        }
-        response.status_code = status.HTTP_401_UNAUTHORIZED
 
     if isinstance(exc, AuthenticationFailed):
         response.data = {"message": "Invalid token."}
