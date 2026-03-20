@@ -168,11 +168,8 @@ AUTH_LOGIN_RESPONSE_EXAMPLE = OpenApiExample(
     response_only=True,
     value={
         "status": "success",
-        "data": {
-            "expiry": "2026-01-20T07:21:39.160819Z",
-            "token": "ab57a6fb43553fdbe63488748004731714173689eb7.....",
-        },
-        "message": None,
+        "data": None,
+        "message": "Login successful",
     },
 )
 

@@ -117,14 +117,14 @@ class CustomOpenAPIResponseSchema:
 
 class MyAuthenticationScheme(OpenApiAuthenticationExtension):
     target_class = "greenhouse.utils.api.CustomAuthentication"
-    name = "AuthToken"
+    name = "CookieAuth"
 
     def get_security_definition(self, auto_schema):
         return {
             "type": "apiKey",
-            "in": "header",
-            "name": "Authorization",
-            "description": "Token authentication. Format: `Token <token>`",
+            "in": "cookie",
+            "name": "token",
+            "description": "Authentication via HTTP-only cookie. Token is automatically sent by the browser.",
         }
 
 
