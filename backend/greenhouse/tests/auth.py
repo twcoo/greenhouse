@@ -29,9 +29,8 @@ class AuthLoginTests(ResponseUtilsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_status, "success")
-        self.assertIn("token", data)
-        self.assertIn("expiry", data)
-        self.assertIsNone(message)
+        self.assertIsNone(data)
+        self.assertEqual(message, "Login successful")
 
     def test_login_error(self):
         response = self.client.post(
@@ -89,7 +88,7 @@ class AuthLogoutTests(ResponseUtilsMixin, APITestCase):
         self.token_instance, self.token = AuthToken.objects.create(self.user)
 
     def authenticate(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token}")
+        self.client.cookies["token"] = self.token
 
     def test_logout_success(self):
         self.authenticate()
@@ -112,12 +111,12 @@ class AuthLogoutTests(ResponseUtilsMixin, APITestCase):
         self.assertEqual(response_status, "error")
         self.assertIsNone(data)
         self.assertEqual(
-            "Authentication credentials were not provided.",
+            "No credentials provided.",
             message,
         )
 
     def test_logout_with_invalid_token(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Token invalidtoken123")
+        self.client.cookies["token"] = "Invalid token"
 
         response = self.client.post(self.logout_url)
 
