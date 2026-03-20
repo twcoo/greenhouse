@@ -18,6 +18,11 @@ class CustomAuthentication(TokenAuthentication):
             msg = _("No credentials provided.")
             raise exceptions.AuthenticationFailed(msg)
 
-        user, auth_token = self.authenticate_credentials(token.encode("utf-8"))
+        # Encode token since authenticate_credentials decodes it
+        # I don't want to reimplement the method just to remove the decode
+        # https://github.com/jazzband/django-rest-knox/blob/develop/knox/auth.py
+        token = token.encode("utf-8")
+
+        user, auth_token = self.authenticate_credentials(token)
 
         return (user, auth_token)
