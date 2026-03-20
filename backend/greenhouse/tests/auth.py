@@ -27,6 +27,11 @@ class AuthLoginTests(ResponseUtilsMixin, APITestCase):
 
         response_status, data, message = self.get_response_data(response)
 
+        token_cookie = response.cookies.get("token")
+        csrftoken_cookie = response.cookies.get("csrftoken")
+
+        self.assertIsNotNone(token_cookie)
+        self.assertIsNotNone(csrftoken_cookie)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_status, "success")
         self.assertIsNone(data)
