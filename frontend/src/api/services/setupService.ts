@@ -8,6 +8,6 @@ export const createAdmin = async (payload: createAdminPayload): Promise<createAd
   return response.data.data
 }
 
-export const status = async (): Promise<void> => {
+export const getStatus = async (): Promise<void> => {
   await apiClient.get<APIResponse<null>>("/setup/status")
 }

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import { status } from "@/api/services/setupService"
+import { getStatus } from "@/api/services/setupService"
 
 export const useSetupStore = defineStore("setup", () => {
   const setupRequired = ref(false)
@@ -9,7 +9,7 @@ export const useSetupStore = defineStore("setup", () => {
   const checkSetup = async (): Promise<void> => {
     if (!setupChecked.value) {
       try {
-        await status()
+        await getStatus()
         setupRequired.value = false
       } catch {
         setupRequired.value = true
