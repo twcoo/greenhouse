@@ -34,7 +34,7 @@ class AuthLoginTests(ResponseUtilsMixin, APITestCase):
         self.assertIsNotNone(csrftoken_cookie)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_status, "success")
-        self.assertIsNone(data)
+        self.assertEqual(data, {"user": {"username": self.username}})
         self.assertEqual(message, "Login successful")
 
     def test_login_error(self):

@@ -11,27 +11,32 @@ User = get_user_model()
 
 class SetupAdminTests(ResponseUtilsMixin, APITestCase):
     def setUp(self):
+        self.username = "joelM"
+        self.password = "MightyThinIce12"
         self.url = reverse("setup_admin")
 
     def test_create_admin_success(self):
         response = self.client.post(
             self.url,
             {
-                "username": "joelM",
-                "password": "MightyThinIce12",
-                "password2": "MightyThinIce12",
+                "username": self.username,
+                "password": self.password,
+                "password2": self.password,
             },
             format="json",
         )
 
         response_status, data, message = self.get_response_data(response)
 
+        token_cookie = response.cookies.get("token")
+        csrftoken_cookie = response.cookies.get("csrftoken")
+
+        self.assertIsNotNone(token_cookie)
+        self.assertIsNotNone(csrftoken_cookie)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response_status, "success")
-        self.assertIn("token", data)
-        self.assertIn("expiry", data)
-        self.assertIn("user", data)
-        self.assertIsNone(message)
+        self.assertEqual(data, {"user": {"username": self.username}})
+        self.assertEqual(message, "Setup successful")
 
     def test_existing_admin_user_error(self):
         UserFactory()
