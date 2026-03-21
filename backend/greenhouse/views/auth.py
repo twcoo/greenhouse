@@ -20,6 +20,7 @@ from ..openapi.responses import (AUTH_LOGIN_RESPONSE,
                                  AUTH_LOGOUT_UNAUTHORIZED_RESPONSE)
 from ..serializers import KnoxLoginRequestSerializer
 from ..utils.api import CustomAuthentication
+from ..utils.cookie import get_token_max_age
 
 
 @extend_schema(
@@ -50,11 +51,18 @@ class LoginView(KnoxLoginView):
             token = knox_response.data["token"]
 
             response = Response(
-                {"message": "Login successful"}, status=status.HTTP_200_OK
+                {
+                    "user": {"username": user.username},
+                    "message": "Login successful",
+                },
+                status=status.HTTP_200_OK,
             )
 
             response.set_cookie(
-                key="token", value=token, httponly=True, max_age=60 * 60 * 24
+                key="token",
+                value=token,
+                httponly=True,
+                max_age=get_token_max_age(),
             )
 
             return response

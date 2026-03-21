@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
 from drf_spectacular.utils import extend_schema
 from knox.models import AuthToken
 from rest_framework import status
@@ -13,6 +15,7 @@ from ..openapi.responses import (SETUP_ADMIN_CREATED_RESPONSE,
                                  SETUP_STATUS_OK_RESPONSE,
                                  SETUP_STATUS_VALIDATION_RESPONSE)
 from ..serializers import RegisterSerializer
+from ..utils.cookie import get_token_max_age
 
 User = get_user_model()
 
@@ -29,6 +32,7 @@ User = get_user_model()
         400: SETUP_ADMIN_VALIDATION_RESPONSE,
     },
 )
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class SetupAdminView(APIView):
     permission_classes = [AllowAny]
 
@@ -37,16 +41,25 @@ class SetupAdminView(APIView):
 
         if serializer.is_valid():
             user = serializer.save()
-            token_instance, token = AuthToken.objects.create(user)
+            _, token = AuthToken.objects.create(user)
 
-            return Response(
+            response = Response(
                 {
-                    "expiry": token_instance.expiry,
-                    "token": token,
                     "user": {"username": user.username},
+                    "message": "Setup successful",
                 },
                 status=status.HTTP_201_CREATED,
             )
+
+            response.set_cookie(
+                key="token",
+                value=token,
+                httponly=True,
+                samesite="Lax",
+                max_age=get_token_max_age(),
+            )
+
+            return response
 
         errors = serializer.errors
 
