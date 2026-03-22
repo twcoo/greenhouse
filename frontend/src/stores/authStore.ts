@@ -1,10 +1,12 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import { User } from "@/types/user"
+import type { User } from "@/types/user"
 import { authLogin, authLogout } from "@/api/services/authService"
 import type { authLoginPayload } from "@/types/auth"
+import type { AxiosError } from "axios"
+import type { APIErrorResponse } from "@/types/api"
 
-export const useAuthStore = defineStore("setup", () => {
+export const useAuthStore = defineStore("auth", () => {
   const user = ref<User | null>(null)
   const isAuthenticated = ref(false)
   const isLoading = ref<boolean>(false)
@@ -19,9 +21,15 @@ export const useAuthStore = defineStore("setup", () => {
 
       user.value = data.user
       isAuthenticated.value = true
-    } catch {
+    } catch (err) {
       user.value = null
       isAuthenticated.value = false
+
+      const axiosError = err as AxiosError<APIErrorResponse>
+
+      error.value = axiosError.response?.data
+        ? String(axiosError.response.data.message)
+        : "Something went wrong. Please try again."
     } finally {
       isLoading.value = false
     }
