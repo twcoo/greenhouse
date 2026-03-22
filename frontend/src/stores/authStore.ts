@@ -1,14 +1,15 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
+import { useStorage } from "@vueuse/core"
 import type { User } from "@/types/user"
-import { authLogin, authLogout } from "@/api/services/authService"
 import type { authLoginPayload } from "@/types/auth"
 import type { AxiosError } from "axios"
 import type { APIErrorResponse } from "@/types/api"
+import { authLogin, authLogout } from "@/api/services/authService"
 
 export const useAuthStore = defineStore("auth", () => {
-  const user = ref<User | null>(null)
-  const isAuthenticated = ref(false)
+  const user = useStorage<User | null>("user", null)
+  const isAuthenticated = useStorage<boolean>("isAuthenticated", false)
   const isLoading = ref<boolean>(false)
   const error = ref<string | null>(null)
 
@@ -19,7 +20,7 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const data = await authLogin(payload)
 
-      user.value = data.user
+      user.value = JSON.stringify(data.user)
       isAuthenticated.value = true
     } catch (err) {
       user.value = null
