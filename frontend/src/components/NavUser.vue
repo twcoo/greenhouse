@@ -1,17 +1,9 @@
 <script setup lang="ts">
-import {
-  IconCreditCard,
-  IconDotsVertical,
-  IconLogout,
-  IconNotification,
-  IconUserCircle,
-} from "@tabler/icons-vue"
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { IconDotsVertical, IconLogout } from "@tabler/icons-vue"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -23,18 +15,25 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-
-interface User {
-  name: string
-  email: string
-  avatar: string
-}
+import { User } from "@/types/user"
 
 defineProps<{
   user: User
 }>()
 
 const { isMobile } = useSidebar()
+
+function getInitials(username: string): string {
+  if (!username) return ""
+
+  const words = username.trim().split(/\s+/)
+
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase()
+  }
+
+  return (words[0][0] + words[1][0]).toUpperCase()
+}
 </script>
 
 <template>
@@ -47,14 +46,10 @@ const { isMobile } = useSidebar()
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <Avatar class="h-8 w-8 rounded-lg grayscale">
-              <AvatarImage :src="user.avatar" :alt="user.name" />
-              <AvatarFallback class="rounded-lg"> CN </AvatarFallback>
+              <AvatarFallback class="rounded-lg">{{ getInitials(user.username) }}</AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ user.name }}</span>
-              <span class="text-muted-foreground truncate text-xs">
-                {{ user.email }}
-              </span>
+              <span class="truncate font-medium">{{ user.username }}</span>
             </div>
             <IconDotsVertical class="ml-auto size-4" />
           </SidebarMenuButton>
@@ -68,32 +63,13 @@ const { isMobile } = useSidebar()
           <DropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar class="h-8 w-8 rounded-lg">
-                <AvatarImage :src="user.avatar" :alt="user.name" />
-                <AvatarFallback class="rounded-lg"> CN </AvatarFallback>
+                <AvatarFallback class="rounded-lg">{{ getInitials(user.username) }}</AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-medium">{{ user.name }}</span>
-                <span class="text-muted-foreground truncate text-xs">
-                  {{ user.email }}
-                </span>
+                <span class="truncate font-medium">{{ user.username }}</span>
               </div>
             </div>
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <IconUserCircle />
-              Account
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <IconCreditCard />
-              Billing
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <IconNotification />
-              Notifications
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <IconLogout />
