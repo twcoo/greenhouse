@@ -8,7 +8,12 @@ import type { APIErrorResponse } from "@/types/api"
 import { authLogin, authLogout } from "@/api/services/authService"
 
 export const useAuthStore = defineStore("auth", () => {
-  const user = useStorage<User | null>("user", null)
+  const user = useStorage<User | null>("user", null, localStorage, {
+    serializer: {
+      read: (v: string) => (v ? JSON.parse(v) : null),
+      write: (v: User | null) => JSON.stringify(v),
+    },
+  })
   const isAuthenticated = useStorage<boolean>("isAuthenticated", false)
   const isLoading = ref<boolean>(false)
   const error = ref<string | null>(null)
@@ -20,7 +25,7 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const data = await authLogin(payload)
 
-      user.value = JSON.stringify(data.user)
+      user.value = data.user
       isAuthenticated.value = true
     } catch (err) {
       user.value = null
