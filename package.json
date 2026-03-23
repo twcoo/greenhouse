@@ -14,8 +14,13 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@dnd-kit/modifiers": "^9.0.0",
+    "@dnd-kit/vue": "^0.3.2",
     "@tabler/icons-vue": "^3.40.0",
     "@tailwindcss/vite": "^4.2.1",
+    "@tanstack/vue-table": "^8.21.3",
+    "@unovis/ts": "^1.6.4",
+    "@unovis/vue": "^1.6.4",
     "@vueuse/core": "^14.2.1",
     "axios": "^1.13.6",
     "class-variance-authority": "^0.7.1",
