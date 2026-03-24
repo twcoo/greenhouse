@@ -18,7 +18,7 @@ const form = reactive<authLoginForm>({
 })
 const errors = ref<Record<string, string>>({})
 
-async function handleSubmit() {
+async function handleSubmit(): Promise<void> {
   errors.value = {}
 
   const result = authLoginSchema.safeParse(form)

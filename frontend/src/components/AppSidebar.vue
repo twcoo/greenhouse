@@ -13,7 +13,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/stores/authStore"
+import { useRouter } from "vue-router"
 
+const router = useRouter()
 const authStore = useAuthStore()
 
 const data = {
@@ -35,6 +37,11 @@ const data = {
     },
   ],
 }
+
+const handleLogout = async (): Promise<void> => {
+  await authStore.logout()
+  await router.push({ name: "login" })
+}
 </script>
 
 <template>
@@ -55,7 +62,7 @@ const data = {
       <NavMain :items="data.navMain" />
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="authStore.user" />
+      <NavUser v-if="authStore.user" :user="authStore.user" @logout="handleLogout" />
     </SidebarFooter>
   </Sidebar>
 </template>
