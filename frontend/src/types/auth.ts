@@ -1,6 +1,6 @@
 import { User } from "./user"
 
-export interface authLoginResponse {
+export interface authLoginData {
   user: User
 }
 
