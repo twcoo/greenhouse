@@ -29,13 +29,14 @@ const mountComponent = () =>
     },
   })
 
-beforeEach(() => {
+beforeEach((): void => {
   vi.clearAllMocks()
   loadingMock.mockReturnValue(false)
+  push.mockClear()
 })
 
-describe("SetupAdminForm.vue", () => {
-  it("renders form fields", () => {
+describe("SetupAdminForm.vue", (): void => {
+  it("renders form fields", (): void => {
     const wrapper = mountComponent()
 
     expect(wrapper.get("#username").exists()).toBe(true)
@@ -43,7 +44,7 @@ describe("SetupAdminForm.vue", () => {
     expect(wrapper.get("#password2").exists()).toBe(true)
   })
 
-  it("shows validation errors on empty submit", async () => {
+  it("shows validation errors on empty submit", async (): Promise<void> => {
     const wrapper = mountComponent()
 
     await wrapper.get("form").trigger("submit.prevent")
@@ -55,7 +56,7 @@ describe("SetupAdminForm.vue", () => {
     expect(passwordError.text().trim()).toBe("Password must be at least 8 characters")
   })
 
-  it("displays error when password and confirmation do not match", async () => {
+  it("displays error when password and confirmation do not match", async (): Promise<void> => {
     const wrapper = mountComponent()
 
     await wrapper.get("#username").setValue("admin")
@@ -69,7 +70,7 @@ describe("SetupAdminForm.vue", () => {
     expect(confirmPasswordError.text().trim()).toBe("Password do not match")
   })
 
-  it("allows user to fill the form", async () => {
+  it("allows user to fill the form", async (): Promise<void> => {
     const wrapper = mountComponent()
 
     await wrapper.get("#username").setValue("admin")
@@ -81,7 +82,7 @@ describe("SetupAdminForm.vue", () => {
     expect((wrapper.get("#password2").element as HTMLInputElement).value).toBe("password123")
   })
 
-  it("shows general error when no API response", async () => {
+  it("shows general error when no API response", async (): Promise<void> => {
     setupAdminMock.mockRejectedValueOnce(new Error("Network error"))
 
     const wrapper = mountComponent()
@@ -97,7 +98,7 @@ describe("SetupAdminForm.vue", () => {
     expect(generalError.text().trim()).toBe("Something went wrong. Please try again.")
   })
 
-  it("disables button and shows loading text when loading", async () => {
+  it("disables button and shows loading text when loading", async (): Promise<void> => {
     loadingMock.mockReturnValue(true)
 
     const wrapper = mountComponent()
@@ -108,7 +109,7 @@ describe("SetupAdminForm.vue", () => {
     expect(button.text()).toBe("Creating...")
   })
 
-  it("submits and redirects on success", async () => {
+  it("submits and redirects on success", async (): Promise<void> => {
     setupAdminMock.mockResolvedValueOnce(undefined)
 
     const wrapper = mountComponent()
