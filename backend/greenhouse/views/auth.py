@@ -3,7 +3,7 @@ from typing import Optional
 from django.contrib.auth import login
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from knox.views import LoginView as KnoxLoginView
 from knox.views import LogoutView as KnoxLogoutView
 from rest_framework import status
@@ -13,6 +13,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from ..openapi.examples import AUTH_LOGIN_REQUEST_EXAMPLE
+from ..openapi.parameters import CSRFTOKEN_PARAM
 from ..openapi.responses import (AUTH_LOGIN_RESPONSE,
                                  AUTH_LOGIN_UNAUTHORIZED_RESPONSE,
                                  AUTH_LOGIN_VALIDATION_RESPONSE,
@@ -85,6 +86,7 @@ class LoginView(KnoxLoginView):
     operation_id="Logout",
     tags=["Authentication"],
     description="Allows users to logout by providing their token.",
+    parameters=CSRFTOKEN_PARAM,
     responses={
         200: AUTH_LOGOUT_RESPONSE,
         401: AUTH_LOGOUT_UNAUTHORIZED_RESPONSE,
