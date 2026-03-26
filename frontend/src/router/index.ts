@@ -4,6 +4,11 @@ import { useAuthStore } from "@/stores/authStore"
 
 const routes: RouteRecordRaw[] = [
   {
+    path: "/setup",
+    name: "setup",
+    component: () => import("@/views/setup/index.vue"),
+  },
+  {
     path: "/login",
     name: "login",
     component: () => import("@/views/login/index.vue"),
@@ -15,10 +20,18 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/setup",
-    name: "setup",
-    component: () => import("@/views/setup/index.vue"),
+    path: "/crops",
+    name: "crops",
+    component: () => import("@/views/crops/index.vue"),
+    meta: { requiresAuth: true },
   },
+  {
+    path: "/planting-locations",
+    name: "planting-locations",
+    component: () => import("@/views/planting-locations/index.vue"),
+    meta: { requiresAuth: true },
+  },
+
   {
     path: "/",
     redirect: "/login",
