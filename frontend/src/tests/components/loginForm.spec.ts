@@ -27,9 +27,7 @@ const createAuthStoreMock = (overrides = {}) => ({
 beforeEach((): void => {
   loginMock = vi.fn()
 
-  vi.mocked(useAuthStore).mockReturnValue(
-    createAuthStoreMock()
-  )
+  vi.mocked(useAuthStore).mockReturnValue(createAuthStoreMock())
 
   push.mockClear()
 })
@@ -63,7 +61,7 @@ describe("LoginForm.vue", (): void => {
     vi.mocked(useAuthStore).mockReturnValueOnce(
       createAuthStoreMock({
         isAuthenticated: true,
-      })
+      }),
     )
 
     const wrapper = mountComponent()
@@ -85,20 +83,19 @@ describe("LoginForm.vue", (): void => {
     vi.mocked(useAuthStore).mockReturnValueOnce(
       createAuthStoreMock({
         error: "Invalid credentials",
-      })
+      }),
     )
 
     const wrapper = mountComponent()
 
-    expect(wrapper.find('[data-test="general-error"]').text())
-      .toContain("Invalid credentials")
+    expect(wrapper.find('[data-test="general-error"]').text()).toContain("Invalid credentials")
   })
 
   it("disables button and shows loading state", (): void => {
     vi.mocked(useAuthStore).mockReturnValueOnce(
       createAuthStoreMock({
         loading: true,
-      })
+      }),
     )
 
     const wrapper = mountComponent()

@@ -27,7 +27,11 @@ defineProps<{
       <SidebarMenu>
         <SidebarMenuItem v-for="item in items" :key="item.title">
           <SidebarMenuButton as-child :tooltip="item.title">
-            <router-link :to="item.to" class="flex items-center gap-2" active-class="bg-muted font-medium">
+            <router-link
+              :to="item.to"
+              class="flex items-center gap-2"
+              active-class="bg-muted font-medium"
+            >
               <component :is="item.icon" v-if="item.icon" />
               <span>{{ item.title }}</span>
             </router-link>
