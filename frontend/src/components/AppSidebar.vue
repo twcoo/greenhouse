@@ -22,17 +22,17 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      to: { name: "dashboard" },
       icon: IconDashboard,
     },
     {
       title: "Crops",
-      url: "#",
+      to: { name: "crops" },
       icon: IconPlant,
     },
     {
       title: "Planting Locations",
-      url: "#",
+      to: { name: "planting-locations" },
       icon: IconMap2,
     },
   ],
