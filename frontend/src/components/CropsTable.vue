@@ -2,16 +2,7 @@
 import BaseDataTable from "@/components/BaseDataTable.vue"
 import { h } from "vue"
 import type { ColumnDef } from "@tanstack/vue-table"
-
-interface Crop {
-  id: number
-  name: string
-  scientific_name: string
-  category: string
-  sunlight_requirement: string
-  min_days_to_harvest: number
-  max_days_to_harvest: number
-}
+import { Crop } from "@/types/crop"
 
 // Column definitions with sorting and filtering enabled
 const columns: ColumnDef<Crop>[] = [

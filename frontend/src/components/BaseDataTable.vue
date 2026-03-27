@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="TData">
-import { ref, computed, watch } from "vue"
+import { ref, computed } from "vue"
 import type {
   ColumnDef,
   SortingState,
@@ -14,7 +14,6 @@ import {
   getFilteredRowModel,
   useVueTable,
 } from "@tanstack/vue-table"
-
 import {
   Table,
   TableBody,
@@ -31,20 +30,15 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { toTitleCase } from "@/utils/formatting"
 
 const props = defineProps<{
   data: TData[]
   columns: ColumnDef<TData>[]
   filterableColumns?: (keyof TData)[]
-  searchableColumns?: (keyof TData)[] // optional, columns that are searchable
+  searchableColumns?: (keyof TData)[]
 }>()
 
 const sorting = ref<SortingState>([])
@@ -52,62 +46,46 @@ const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
 const rowSelection = ref({})
 const pageSizes = [5, 10, 20, 50]
-
-// --- Multi-column checklist filters state ---
-const activeFilters = ref<Record<string, Set<string>>>({})
-
-// --- Search state ---
 const searchTerm = ref("")
 
-function getUniqueValues(columnKey: keyof TData) {
-  return Array.from(new Set(props.data.map((item) => String(item[columnKey]))))
+// Filter
+const filterFns = {
+  includesMultiple: (row, columnId, filterValue: string[]) => {
+    if (!filterValue?.length) return true
+    return filterValue.includes(String(row.getValue(columnId)))
+  },
 }
 
-function toggleFilter(column: keyof TData, value: string) {
-  if (!activeFilters.value[column]) activeFilters.value[column] = new Set()
-  if (activeFilters.value[column].has(value)) activeFilters.value[column].delete(value)
-  else activeFilters.value[column].add(value)
-}
+const filterOptionsMap = computed(() => {
+  const map: Record<string, Set<unknown>> = {}
 
-// Computed filtered data based on checklist selections + search
-const filteredData = computed(() => {
-  let data = props.data
+  if (!props.filterableColumns) return map
 
-  // Apply checklist filters
-  if (props.filterableColumns && Object.keys(activeFilters.value).length > 0) {
-    data = data.filter((item) =>
-      Object.entries(activeFilters.value).every(([col, values]) => {
-        if (!values.size) return true
-        return values.has(String(item[col as keyof TData]))
-      }),
-    )
+  for (const col of props.filterableColumns) {
+    map[col as string] = new Set()
   }
 
-  // Apply search
-  if (searchTerm.value.trim()) {
-    const term = searchTerm.value.toLowerCase()
-    const colsToSearch = props.searchableColumns?.length
-      ? props.searchableColumns
-      : (props.columns.map((c) => c.accessorKey).filter(Boolean) as (keyof TData)[])
-    data = data.filter((item) =>
-      colsToSearch.some((col) =>
-        String(item[col] ?? "")
-          .toLowerCase()
-          .includes(term),
-      ),
-    )
+  for (const item of props.data) {
+    for (const col of props.filterableColumns) {
+      map[col as string].add(item[col])
+    }
   }
 
-  return data
+  return map
 })
+
+function getFilterOptions(columnKey: keyof TData) {
+  return [...(filterOptionsMap.value[columnKey as string] ?? [])]
+}
 
 const table = useVueTable({
   get data() {
-    return filteredData.value
+    return props.data
   },
   get columns() {
     return props.columns
   },
+  filterFns,
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
@@ -146,32 +124,35 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
 
 <template>
   <div class="w-full flex flex-col gap-4">
-    <!-- Global / column search -->
-    <div class="flex flex-wrap gap-2 items-center">
-      <Input placeholder="Search..." v-model="searchTerm" class="max-w-sm" />
-    </div>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <!-- Search -->
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <div class="relative w-80 lg:w-96">
+          <Input placeholder="Search..." v-model="searchTerm" class="pr-2 w-full" />
+        </div>
+      </div>
 
-    <!-- Multi-column checklist filters -->
-    <div v-if="filterableColumns?.length" class="flex flex-wrap gap-2">
-      <div v-for="col in filterableColumns" :key="col">
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button size="sm" variant="outline">{{ String(col) }}</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem
-              v-for="value in getUniqueValues(col)"
-              :key="value"
-              class="flex items-center gap-2"
-            >
-              <Checkbox
-                :model-value="activeFilters[col]?.has(value) || false"
-                @update:model-value="() => toggleFilter(col, value)"
-              />
-              <span>{{ value }}</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <!-- Dynamic filters -->
+      <div v-if="filterableColumns?.length" class="flex flex-wrap gap-2 items-center">
+        <Label for="rows-per-page" class="text-sm font-medium"> Filter By: </Label>
+        <div v-for="col in filterableColumns" :key="col">
+          <Select :model-value="table.getColumn(col as string)?.getFilterValue() ?? ''" @update:model-value="(value) => {
+            const column = table.getColumn(col as string)
+            column?.setFilterValue(value || undefined)
+          }">
+            <SelectTrigger class="w-[250px]">
+              <SelectValue :placeholder="`${toTitleCase(col as string)}`" />
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem :value="null">All</SelectItem>
+                  <SelectItem v-for="value in getFilterOptions(col)" :key="value" :value="value">
+                    {{ value }}
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </SelectTrigger>
+          </Select>
+        </div>
       </div>
     </div>
 
@@ -181,13 +162,8 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
         <TableHeader>
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <TableHead v-for="header in headerGroup.headers" :key="header.id">
-              <Button
-                v-if="header.column.getCanSort()"
-                variant="ghost"
-                size="sm"
-                class="flex items-center gap-1"
-                @click="header.column.toggleSorting(header.column.getIsSorted() === 'asc')"
-              >
+              <Button v-if="header.column.getCanSort()" variant="ghost" size="sm" class="flex items-center gap-1"
+                @click="header.column.toggleSorting(header.column.getIsSorted() === 'asc')">
                 <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
                 <span v-if="header.column.getIsSorted() === 'asc'">⬆️</span>
                 <span v-else-if="header.column.getIsSorted() === 'desc'">⬇️</span>
@@ -219,11 +195,9 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
     <!-- Pagination -->
     <div class="flex flex-wrap items-center justify-between gap-2 py-4">
       <div class="flex items-center gap-2">
-        <span class="text-sm text-muted-foreground">Rows per page:</span>
-        <Select
-          v-model="table.getState().pagination.pageSize"
-          @update:model-value="(val) => table.setPageSize(Number(val))"
-        >
+        <Label for="rows-per-page" class="text-sm font-medium"> Rows per page </Label>
+        <Select v-model="table.getState().pagination.pageSize"
+          @update:model-value="(val) => table.setPageSize(Number(val))">
           <SelectTrigger class="w-20">
             <SelectValue :placeholder="`${table.getState().pagination.pageSize}`" />
           </SelectTrigger>
@@ -233,35 +207,19 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
         </Select>
       </div>
 
-      <div class="text-sm text-muted-foreground">
+      <div class="text-sm font-medium">
         {{ table.getState().pagination.pageIndex + 1 }} of {{ table.getPageCount() }} pages
       </div>
 
       <div class="flex gap-1">
-        <Button
-          size="sm"
-          variant="outline"
-          :disabled="!table.getCanPreviousPage()"
-          @click="table.previousPage()"
-          >Previous</Button
-        >
-        <Button
-          v-for="page in pages"
-          :key="page"
-          size="sm"
-          variant="outline"
+        <Button size="sm" variant="outline" :disabled="!table.getCanPreviousPage()"
+          @click="table.previousPage()">Previous</Button>
+        <Button v-for="page in pages" :key="page" size="sm" variant="outline"
           :class="{ 'bg-primary text-white': table.getState().pagination.pageIndex === page - 1 }"
-          @click="table.setPageIndex(page - 1)"
-        >
+          @click="table.setPageIndex(page - 1)">
           {{ page }}
         </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          :disabled="!table.getCanNextPage()"
-          @click="table.nextPage()"
-          >Next</Button
-        >
+        <Button size="sm" variant="outline" :disabled="!table.getCanNextPage()" @click="table.nextPage()">Next</Button>
       </div>
     </div>
   </div>
