@@ -1,6 +1,10 @@
 <script setup lang="ts" generic="TData">
 import { ref, computed } from "vue"
-import type { ColumnDef, SortingState, ColumnFiltersState } from "@tanstack/vue-table"
+import type {
+  ColumnDef,
+  SortingState,
+  ColumnFiltersState,
+} from "@tanstack/vue-table"
 import {
   FlexRender,
   getCoreRowModel,
@@ -29,7 +33,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toTitleCase } from "@/utils/formatting"
-import { IconSortAscending, IconSortDescending } from "@tabler/icons-vue"
+import { IconSortAscending, IconSortDescending, IconGhost2 } from '@tabler/icons-vue';
 
 const props = defineProps<{
   data: TData[]
@@ -37,7 +41,7 @@ const props = defineProps<{
   filterableColumns?: (keyof TData)[]
 }>()
 
-// States and constants
+// States and constants 
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const pageSizes = [5, 10, 20, 50]
@@ -99,7 +103,9 @@ const table = useVueTable({
   },
   onGlobalFilterChange: (updaterOrValue) => {
     searchTerm.value =
-      typeof updaterOrValue === "function" ? updaterOrValue(searchTerm.value) : updaterOrValue
+      typeof updaterOrValue === 'function'
+        ? updaterOrValue(searchTerm.value)
+        : updaterOrValue
   },
   onSortingChange: (val) => {
     sorting.value = typeof val === "function" ? val(sorting.value) : val
@@ -127,15 +133,10 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
       <div v-if="filterableColumns?.length" class="flex flex-wrap gap-2 items-center">
         <Label for="rows-per-page" class="text-sm font-medium"> Filter By: </Label>
         <div v-for="col in filterableColumns" :key="col">
-          <Select
-            :model-value="table.getColumn(col as string)?.getFilterValue() ?? ''"
-            @update:model-value="
-              (value) => {
-                const column = table.getColumn(col as string)
-                column?.setFilterValue(value || undefined)
-              }
-            "
-          >
+          <Select :model-value="table.getColumn(col as string)?.getFilterValue() ?? ''" @update:model-value="(value) => {
+            const column = table.getColumn(col as string)
+            column?.setFilterValue(value || undefined)
+          }">
             <SelectTrigger class="w-[200px]">
               <SelectValue :placeholder="`${toTitleCase(col as string)}`" />
               <SelectContent>
@@ -158,19 +159,14 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
         <TableHeader>
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <TableHead v-for="header in headerGroup.headers" :key="header.id">
-              <Button
-                v-if="header.column.getCanSort()"
-                variant="ghost"
-                size="sm"
-                class="flex items-center gap-1"
-                @click="header.column.toggleSorting(header.column.getIsSorted() === 'asc')"
-              >
+              <Button v-if="header.column.getCanSort()" variant="ghost" size="sm" class="flex items-center gap-1"
+                @click="header.column.toggleSorting(header.column.getIsSorted() === 'asc')">
                 <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
                 <span v-if="header.column.getIsSorted() === 'asc'">
-                  <IconSortAscending stroke="{1}" />
+                  <IconSortAscending stroke={1} />
                 </span>
                 <span v-else-if="header.column.getIsSorted() === 'desc'">
-                  <IconSortDescending stroke="{1}" />
+                  <IconSortDescending stroke={1} />
                 </span>
               </Button>
               <div v-else>
@@ -189,8 +185,11 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
             </TableRow>
           </template>
           <TableRow v-else>
-            <TableCell :col-span="props.columns.length" class="text-center h-24">
-              No results.
+            <TableCell :col-span="props.columns.length" class="align-middle text-center">
+              <div class="flex flex-col items-center justify-center h-full gap-2">
+                <IconGhost2 stroke={2} class="w-6 h-6 text-muted-foreground" />
+                <span>No results.</span>
+              </div>
             </TableCell>
           </TableRow>
         </TableBody>
@@ -201,10 +200,8 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
     <div class="flex flex-wrap items-center justify-between gap-2 py-4">
       <div class="flex items-center gap-2">
         <Label for="rows-per-page" class="text-sm font-medium"> Rows per page </Label>
-        <Select
-          v-model="table.getState().pagination.pageSize"
-          @update:model-value="(val) => table.setPageSize(Number(val))"
-        >
+        <Select v-model="table.getState().pagination.pageSize"
+          @update:model-value="(val) => table.setPageSize(Number(val))">
           <SelectTrigger class="w-20">
             <SelectValue :placeholder="`${table.getState().pagination.pageSize}`" />
           </SelectTrigger>
@@ -219,30 +216,14 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
       </div>
 
       <div class="flex gap-1">
-        <Button
-          size="sm"
-          variant="outline"
-          :disabled="!table.getCanPreviousPage()"
-          @click="table.previousPage()"
-          >Previous</Button
-        >
-        <Button
-          v-for="page in pages"
-          :key="page"
-          size="sm"
-          variant="outline"
+        <Button size="sm" variant="outline" :disabled="!table.getCanPreviousPage()"
+          @click="table.previousPage()">Previous</Button>
+        <Button v-for="page in pages" :key="page" size="sm" variant="outline"
           :class="{ 'bg-primary text-white': table.getState().pagination.pageIndex === page - 1 }"
-          @click="table.setPageIndex(page - 1)"
-        >
+          @click="table.setPageIndex(page - 1)">
           {{ page }}
         </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          :disabled="!table.getCanNextPage()"
-          @click="table.nextPage()"
-          >Next</Button
-        >
+        <Button size="sm" variant="outline" :disabled="!table.getCanNextPage()" @click="table.nextPage()">Next</Button>
       </div>
     </div>
   </div>
