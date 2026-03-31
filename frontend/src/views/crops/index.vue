@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from "@/layouts/AppLayout.vue"
-import CropsTable from "@/components/CropsTable.vue"
+import CropsTable from "@/components/crops/CropsTable.vue"
 import { Button } from "@/components/ui/button"
 import { IconPlus } from "@tabler/icons-vue"
 

@@ -1,11 +1,8 @@
-<script setup lang="ts">
-import BaseDataTable from "@/components/BaseDataTable.vue"
-import { h } from "vue"
 import type { ColumnDef } from "@tanstack/vue-table"
+import { h } from "vue"
 import { Crop } from "@/types/crop"
 
-// Column definitions with sorting and filtering enabled
-const columns: ColumnDef<Crop>[] = [
+export const columns: ColumnDef<Crop>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -43,16 +40,3 @@ const columns: ColumnDef<Crop>[] = [
     enableSorting: true,
   },
 ]
-
-defineProps<{
-  data: Crop[]
-}>()
-</script>
-
-<template>
-  <BaseDataTable
-    :data="data"
-    :columns="columns"
-    :filterableColumns="['category', 'sunlight_requirement']"
-  />
-</template>
