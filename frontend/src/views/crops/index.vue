@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import AppLayout from "@/layouts/AppLayout.vue"
 import CropsTable from "@/components/crops/CropsTable.vue"
-import { Button } from "@/components/ui/button"
-import { IconPlus } from "@tabler/icons-vue"
+import CropsDialog from "@/components/crops/CropsDialog.vue"
 
 const data = [
   {
@@ -91,10 +90,7 @@ const data = [
 <template>
   <AppLayout>
     <div class="flex justify-end w-full">
-      <Button variant="outline" size="sm">
-        <IconPlus />
-        <span class="hidden lg:inline">Add Crop</span>
-      </Button>
+      <CropsDialog mode="create" />
     </div>
     <CropsTable :data="data" />
   </AppLayout>

@@ -1,6 +1,6 @@
 import type { ColumnDef } from "@tanstack/vue-table"
 import { h } from "vue"
-import { Crop } from "@/types/crop"
+import type { Crop } from "@/types/crop"
 
 export const columns: ColumnDef<Crop>[] = [
   {
