@@ -36,15 +36,17 @@ apiClient.interceptors.response.use(
     return response
   },
   (error) => {
-    // Automatically redirects unauth requests to login
-    const unauthorizedCodes = [401, 403]
-    if (error.response && unauthorizedCodes.includes(error.response.status)) {
-      if (router.currentRoute.value.name !== "login") {
-        const authStore = useAuthStore()
-        authStore.logout()
-        authStore.error = "Your session has expired. Please login again."
-        router.push({ name: "login" })
-      }
+    const status = error.response?.status
+    const isLoginPage = router.currentRoute.value.name === "login"
+
+    if ([401, 403].includes(status) && !isLoginPage) {
+      const authStore = useAuthStore()
+
+      authStore.clearAuth()
+      authStore.error = "Your session has expired. Please login again."
+
+      const redirectTo = router.currentRoute.value.name
+      router.push({ name: "login", query: { redirectTo: redirectTo } })
     }
 
     return Promise.reject(error)

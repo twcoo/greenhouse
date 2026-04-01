@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { useAuthStore } from "@/stores/authStore"
 import { authLoginSchema, type authLoginForm } from "@/schemas/auth.schema"
 import { IconLoader2 } from "@tabler/icons-vue"
 import { zodToFormErrors } from "@/utils/formErrors"
 
 const authStore = useAuthStore()
+const route = useRoute()
 const router = useRouter()
 const form = reactive<authLoginForm>({
   username: "",
@@ -31,7 +32,9 @@ async function handleSubmit(): Promise<void> {
   await authStore.login(result.data)
 
   if (authStore.isAuthenticated) {
-    router.push({ name: "dashboard" })
+    const redirectTo = route.query?.redirectTo
+
+    router.push(redirectTo || { name: "dashboard" })
   }
 }
 </script>
