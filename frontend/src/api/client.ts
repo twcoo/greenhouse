@@ -1,6 +1,8 @@
 import axios from "axios"
 import Cookies from "js-cookie"
+import router from "@/router"
 import { decamelizeKeys, camelizeKeys } from "humps"
+import { useAuthStore } from "@/stores/authStore"
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -16,19 +18,35 @@ apiClient.interceptors.request.use((config) => {
     config.data = decamelizeKeys(config.data)
   }
 
-  const token = Cookies.get("csrftoken")
+  const csrfToken = Cookies.get("csrftoken")
 
-  if (token) {
-    config.headers["X-CSRFToken"] = token
+  if (csrfToken) {
+    config.headers["X-CSRFToken"] = csrfToken
   }
 
   return config
 })
 
-apiClient.interceptors.response.use((response) => {
-  if (response.data) {
-    response.data = camelizeKeys(response.data)
-  }
+apiClient.interceptors.response.use(
+  (response) => {
+    if (response.data) {
+      response.data = camelizeKeys(response.data)
+    }
 
-  return response
-})
+    return response
+  },
+  (error) => {
+    // Automatically redirects unauth requests to login
+    const unauthorizedCodes = [401, 403]
+    if (error.response && unauthorizedCodes.includes(error.response.status)) {
+      if (router.currentRoute.value.name !== "login") {
+        const authStore = useAuthStore()
+        authStore.logout()
+        authStore.error = "Your session has expired. Please login again."
+        router.push({ name: "login" })
+      }
+    }
+
+    return Promise.reject(error)
+  },
+)
