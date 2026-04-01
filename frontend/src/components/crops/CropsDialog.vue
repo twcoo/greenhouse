@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue"
+import { computed, reactive, ref } from "vue"
 import { Button } from "@/components/ui/button"
 import { IconPlus } from "@tabler/icons-vue"
 import {
@@ -19,42 +19,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { FieldGroup, Field, FieldLabel, FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { cropsSchema, type cropsForm } from "@/schemas/crops.schema"
+import { cropsSchema, type cropsForm } from "@/schemas/crops.schemas"
+import type { cropPayload } from "@/types/crop"
+import { zodToFormErrors } from "@/utils/formErrors"
+import { IconLoader2 } from "@tabler/icons-vue"
 
 const props = defineProps<{
   mode: "create" | "edit"
+  loading: boolean
 }>()
 
+const emit = defineEmits<{ (e: "submit", payload: cropPayload): void }>()
 const actionLabel = computed(() => (props.mode === "create" ? "Add" : "Update"))
 
 const form = reactive<cropsForm>({
   name: "",
   scientificName: "",
-  category: "",
-  sunlightRequirement: "",
+  category: "VEGETABLE",
+  sunlightRequirement: "FULL SUN",
   minDaysToHarvest: 0,
   maxDaysToHarvest: 0,
 })
 
+const errors = ref<Record<string, string>>({})
+
 async function handleSubmit(): Promise<void> {
-  // errors.value = {}
-  //
-  // const result = cropsSchema.safeParse(form)
-  //
-  // if (!result.success) {
-  //   errors.value = zodToFormErrors(result.error)
-  //   return
-  // }
-  //
+  console.log(form)
+  errors.value = {}
+
+  const result = cropsSchema.safeParse(form)
+
+  if (!result.success) {
+    errors.value = zodToFormErrors(result.error)
+    return
+  }
   // // await authStore.login(result.data)
 }
 </script>
 
 <template>
   <Dialog>
-    <form @submit.prevent="handleSubmit">
+    <form id="crop-form" @submit.prevent="handleSubmit">
       <DialogTrigger as-child>
         <Button variant="outline">
           <IconPlus />
@@ -72,29 +79,38 @@ async function handleSubmit(): Promise<void> {
             }}
           </DialogDescription>
         </DialogHeader>
-        <div class="grid gap-4">
-          <div class="grid gap-3">
-            <Label for="name">Name</Label>
+        <FieldGroup>
+          <Field>
+            <FieldLabel for="name">Name</FieldLabel>
             <Input v-model="form.name" id="name" name="name" />
-          </div>
-          <div class="grid gap-3">
-            <Label for="scientificName">Scientific Name</Label>
-            <Input v-model="form.scientifiName" id="scientificName" name="scientificName" />
-          </div>
-          <div class="grid gap-3">
-            <Label for="category">Category</Label>
+            <FieldError data-test="name" v-if="errors.name">
+              {{ errors.name }}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel for="name">Scientific Name</FieldLabel>
+            <Input v-model="form.scientificName" id="scientificName" name="scientificName" />
+            <FieldError data-test="scientificName" v-if="errors.scientificName">
+              {{ errors.scientificName }}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel for="category">Category</FieldLabel>
             <Select id="category" v-model="form.category">
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="vegetable"> Vegetable </SelectItem>
-                <SelectItem value="fruit"> Fruit </SelectItem>
+                <SelectItem value="VEGETABLE"> Vegetable </SelectItem>
+                <SelectItem value="FRUIT"> Fruit </SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div class="grid gap-3">
-            <Label for="sunlightRequirement">Sunlight Requirement</Label>
+            <FieldError data-test="category" v-if="errors.category">
+              {{ errors.category }}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel for="sunlightRequirement">Sunlight Requirement</FieldLabel>
             <Select id="sunlightRequirement" v-model="form.sunlightRequirement">
               <SelectTrigger class="w-full">
                 <SelectValue placeholder="Select sunlight requirement" />
@@ -105,21 +121,33 @@ async function handleSubmit(): Promise<void> {
                 <SelectItem value="FULL SHADE"> Full Shade </SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div class="grid gap-3">
-            <Label for="minDaysToHarvest">Min Days To Harvest</Label>
+            <FieldError data-test="sunlightRequirement" v-if="errors.sunlightRequirement">
+              {{ errors.sunlightRequirement }}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel for="minDaysToHarvest">Min Days To Harvest</FieldLabel>
             <Input type="number" id="minDaysToHarvest" name="minDaysToHarvest" />
-          </div>
-          <div class="grid gap-3">
-            <Label for="maxDaysToHarvest">Max Days To Harvest</Label>
+            <FieldError data-test="minDaysToHarvest" v-if="errors.minDaysToHarvest">
+              {{ errors.minDaysToHarvest }}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel for="maxDaysToHarvest">Max Days To Harvest</FieldLabel>
             <Input type="number" id="maxDaysToHarvest" name="maxDaysToHarvest" />
-          </div>
-        </div>
+            <FieldError data-test="maxDaysToHarvest" v-if="errors.maxDaysToHarvest">
+              {{ errors.maxDaysToHarvest }}
+            </FieldError>
+          </Field>
+        </FieldGroup>
         <DialogFooter>
           <DialogClose as-child>
             <Button variant="outline"> Cancel </Button>
           </DialogClose>
-          <Button type="submit"> Save </Button>
+          <Button type="submit" form="crop-form">
+            <IconLoader2 v-if="loading" :size="18" class="animate-spin" />
+            {{ loading ? "Saving..." : "Save" }}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </form>
