@@ -1,5 +1,6 @@
 import axios from "axios"
 import Cookies from "js-cookie"
+import { decamelizeKeys, camelizeKeys } from "humps"
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -11,6 +12,10 @@ export const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use((config) => {
+  if (config.data) {
+    config.data = decamelizeKeys(config.data)
+  }
+
   const token = Cookies.get("csrftoken")
 
   if (token) {
@@ -18,4 +23,12 @@ apiClient.interceptors.request.use((config) => {
   }
 
   return config
+})
+
+apiClient.interceptors.response.use((response) => {
+  if (response.data) {
+    response.data = camelizeKeys(response.data)
+  }
+
+  return response
 })
