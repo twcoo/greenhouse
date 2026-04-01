@@ -5,11 +5,11 @@ import type { User } from "@/types/user"
 import type { authLoginPayload } from "@/types/auth"
 import type { AxiosError } from "axios"
 import type { APIErrorResponse } from "@/types/api"
-import { useCookies } from "@vueuse/integrations/useCookies"
+import { useCookies } from '@vueuse/integrations/useCookies'
 import { authLogin, authLogout } from "@/api/services/authService"
 
 export const useAuthStore = defineStore("auth", () => {
-  const cookies = useCookies(["csrftoken", "token"])
+  const cookies = useCookies(['csrftoken', 'token'])
   const user = useStorage<User | null>("user", null, localStorage, {
     serializer: {
       read: (v: string) => (v ? JSON.parse(v) : null),
@@ -55,11 +55,11 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  const clearAuth = () => {
+  const clearAuth = (): void => {
     user.value = null
     isAuthenticated.value = false
     cookies.remove("csrftoken")
-    cookies.remove("token")
+    cookies.remove('token')
   }
 
   return { user, isAuthenticated, isLoading, error, login, logout, clearAuth }
