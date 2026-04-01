@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue"
+import { computed, reactive, ref, watch } from "vue"
 import { Button } from "@/components/ui/button"
 import { IconPlus } from "@tabler/icons-vue"
 import {
@@ -33,34 +33,50 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (e: "submit", payload: cropPayload): void }>()
 const actionLabel = computed(() => (props.mode === "create" ? "Add" : "Update"))
+const isDialogOpen = ref<boolean>(false)
 
-const form = reactive<cropsForm>({
+const formInitialState: cropsForm = {
   name: "",
   scientificName: "",
   category: "VEGETABLE",
   sunlightRequirement: "FULL SUN",
   minDaysToHarvest: 0,
   maxDaysToHarvest: 0,
-})
+}
+
+const form = reactive<cropsForm>({ ...formInitialState })
 
 const errors = ref<Record<string, string>>({})
 
-async function handleSubmit(): Promise<void> {
-  console.log(form)
+function resetForm() {
+  Object.assign(form, formInitialState)
   errors.value = {}
+}
 
+async function handleSubmit(): Promise<void> {
   const result = cropsSchema.safeParse(form)
 
   if (!result.success) {
     errors.value = zodToFormErrors(result.error)
     return
   }
-  // // await authStore.login(result.data)
+
+  emit("submit", result.data)
 }
+
+watch(
+  () => props.loading,
+  (isLoading: boolean) => {
+    if (!isLoading) {
+      isDialogOpen.value = false
+      resetForm()
+    }
+  },
+)
 </script>
 
 <template>
-  <Dialog>
+  <Dialog v-model:open="isDialogOpen">
     <form id="crop-form" @submit.prevent="handleSubmit">
       <DialogTrigger as-child>
         <Button variant="outline">
@@ -127,14 +143,24 @@ async function handleSubmit(): Promise<void> {
           </Field>
           <Field>
             <FieldLabel for="minDaysToHarvest">Min Days To Harvest</FieldLabel>
-            <Input type="number" id="minDaysToHarvest" name="minDaysToHarvest" />
+            <Input
+              v-model="form.minDaysToHarvest"
+              type="number"
+              id="minDaysToHarvest"
+              name="minDaysToHarvest"
+            />
             <FieldError data-test="minDaysToHarvest" v-if="errors.minDaysToHarvest">
               {{ errors.minDaysToHarvest }}
             </FieldError>
           </Field>
           <Field>
             <FieldLabel for="maxDaysToHarvest">Max Days To Harvest</FieldLabel>
-            <Input type="number" id="maxDaysToHarvest" name="maxDaysToHarvest" />
+            <Input
+              v-model="form.maxDaysToHarvest"
+              type="number"
+              id="maxDaysToHarvest"
+              name="maxDaysToHarvest"
+            />
             <FieldError data-test="maxDaysToHarvest" v-if="errors.maxDaysToHarvest">
               {{ errors.maxDaysToHarvest }}
             </FieldError>

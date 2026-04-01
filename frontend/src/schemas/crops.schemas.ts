@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const CategoryEnum = z.enum(["VEGATABLE", "FRUIT"])
+export const CategoryEnum = z.enum(["VEGETABLE", "FRUIT"])
 export const SunlightRequirementEnum = z.enum(["FULL SUN", "PART SUN", "FULL SHADE"])
 
 export const cropsSchema = z

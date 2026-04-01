@@ -1,9 +1,18 @@
 export interface Crop {
   id: number
   name: string
-  scientific_name: string
+  scientificName: string
   category: string
-  sunlight_requirement: string
-  min_days_to_harvest: number
-  max_days_to_harvest: number
+  sunlightRequirement: string
+  minDaysToHarvest: number
+  maxDaysToHarvest: number
+}
+
+export interface cropPayload {
+  name: string
+  scientificName: string
+  category: string
+  sunlightRequirement: string
+  minDaysToHarvest: number
+  maxDaysToHarvest: number
 }

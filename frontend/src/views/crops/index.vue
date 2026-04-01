@@ -2,6 +2,10 @@
 import AppLayout from "@/layouts/AppLayout.vue"
 import CropsTable from "@/components/crops/CropsTable.vue"
 import CropsDialog from "@/components/crops/CropsDialog.vue"
+import { useCrop } from "@/composables/useCrops"
+import type { cropPayload } from "@/types/crop"
+
+const { loading, createCrop } = useCrop()
 
 const data = [
   {
@@ -85,12 +89,16 @@ const data = [
     max_days_to_harvest: 150,
   },
 ]
+
+async function handleCreateCrop(payload: cropPayload): Promise<void> {
+  await createCrop(payload)
+}
 </script>
 
 <template>
   <AppLayout>
     <div class="flex justify-end w-full">
-      <CropsDialog mode="create" />
+      <CropsDialog mode="create" :loading="loading" @submit="handleCreateCrop" />
     </div>
     <CropsTable :data="data" />
   </AppLayout>
