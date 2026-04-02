@@ -1,9 +1,10 @@
 export function toTitleCase(str: string): string {
-  return (
-    str
-      // replace underscores with spaces
-      .replace(/_/g, " ")
-      // capitalize first letter of each word
-      .replace(/\b\w/g, (char) => char.toUpperCase())
-  )
+  if (!str) return "";
+
+  return str
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/_/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
