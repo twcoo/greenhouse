@@ -1,28 +1,44 @@
-import { ref } from "vue"
-import { createCrop as createCropRequest } from "@/api/services/cropsService"
+import { computed, type Ref } from "vue"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query"
+import { cropService } from "@/api/services/cropsService"
 import type { Crop, cropPayload } from "@/types/crop"
 import type { APIErrorResponse } from "@/types/api"
 import type { AxiosError } from "axios"
 
-export function useCrop() {
-  const loading = ref(false)
+export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }>) {
+  const queryClient = useQueryClient()
 
-  const createCrop = async (payload: cropPayload): Promise<Crop | void> => {
-    loading.value = true
+  const {
+    data: crops,
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['crops', pagination],
+    queryFn: () => {
+      const page = pagination?.value ? pagination.value.pageIndex + 1 : 1
+      const size = pagination?.value ? pagination.value.pageSize : 10
+      return cropService.getAll(page, size)
+    },
+  })
 
-    try {
-      const data = await createCropRequest(payload)
-
-      return data
-    } catch (err) {
-      throw err as AxiosError<APIErrorResponse>
-    } finally {
-      loading.value = false
+  const createMutation = useMutation({
+    mutationFn: (payload: cropPayload): Promise<Crop> => cropService.create(payload),
+    onSuccess: (): void => {
+      queryClient.invalidateQueries({ queryKey: ['crops'] })
+    },
+    onError: (err: AxiosError<APIErrorResponse>) => {
+      throw err
     }
-  }
+  })
+
+  const loading = computed((): boolean => isLoading.value || createMutation.isPending.value)
 
   return {
-    loading,
-    createCrop,
+    crops,
+    isLoading: loading,
+    error,
+    createCrop: createMutation.mutateAsync,
+    fetchCrops: refetch
   }
 }
