@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="TData">
-import { ref, computed } from "vue"
-import type { ColumnDef, SortingState, ColumnFiltersState, PaginationState } from "@tanstack/vue-table"
+import { ref, computed, watch } from "vue"
+import { ColumnDef, SortingState, ColumnFiltersState, PaginationState } from "@tanstack/vue-table"
 import {
   FlexRender,
   getCoreRowModel,
@@ -29,34 +29,27 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toTitleCase } from "@/utils/formatting"
 import { IconSortAscending, IconSortDescending, IconGhost2 } from "@tabler/icons-vue"
+import { Ref } from "vue"
 
 const props = defineProps<{
   data: TData[]
   columns: ColumnDef<TData>[]
   filterableColumns?: (keyof TData)[]
-  rowCount: number // Total items from backend (e.g., 100)
+  rowCount: number
+  pagination: Ref<PaginationState>
 }>()
 
-// 1. Define the emit to tell the Parent to fetch new data
 const emit = defineEmits<{
-  (e: 'paginationChange', value: PaginationState): void
+  (e: "pagination-change", value: PaginationState): void
 }>()
 
-// States
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const pageSizes = [5, 10, 20, 50]
 const searchTerm = ref("")
 
-// 2. Local pagination state that TanStack Table will control
-const pagination = ref<PaginationState>({
-  pageIndex: 0,
-  pageSize: 10,
-})
-
-// Filter Logic
 const filterFns = {
-  includesMultiple: (row: any, columnId: string, filterValue: string[]) => {
+  includesMultiple: (row, columnId, filterValue) => {
     if (!filterValue?.length) return true
     return filterValue.includes(String(row.getValue(columnId)))
   },
@@ -80,35 +73,41 @@ function getFilterOptions(columnKey: keyof TData) {
   return [...(filterOptionsMap.value[columnKey as string] ?? [])]
 }
 
-// 3. Vue Table Configuration for MANUAL mode
 const table = useVueTable({
-  manualPagination: true, // Stop client-side slicing
-  rowCount: props.rowCount, // Total count for page calculation
-  get data() { return props.data },
-  get columns() { return props.columns },
+  manualPagination: true,
+  rowCount: 12,
+  get data() {
+    return props.data
+  },
+  get columns() {
+    return props.columns
+  },
   filterFns,
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
-
   state: {
-    get pagination() { return pagination.value },
-    get globalFilter() { return searchTerm.value },
-    get sorting() { return sorting.value },
-    get columnFilters() { return columnFilters.value },
+    get pagination() {
+      return props.pagination
+    },
+    get globalFilter() {
+      return searchTerm.value
+    },
+    get sorting() {
+      return sorting.value
+    },
+    get columnFilters() {
+      return columnFilters.value
+    },
   },
-
-  // 4. Update local state and emit to parent when user clicks pages
   onPaginationChange: (updaterOrValue) => {
-    pagination.value = typeof updaterOrValue === "function"
-      ? updaterOrValue(pagination.value)
-      : updaterOrValue
-
-    emit('paginationChange', pagination.value)
+    const nextState =
+      typeof updaterOrValue === "function" ? updaterOrValue(props.pagination) : updaterOrValue
+    emit("pagination-change", nextState)
   },
-
   onGlobalFilterChange: (updaterOrValue) => {
-    searchTerm.value = typeof updaterOrValue === "function" ? updaterOrValue(searchTerm.value) : updaterOrValue
+    searchTerm.value =
+      typeof updaterOrValue === "function" ? updaterOrValue(searchTerm.value) : updaterOrValue
   },
   onSortingChange: (val) => {
     sorting.value = typeof val === "function" ? val(sorting.value) : val
@@ -118,7 +117,28 @@ const table = useVueTable({
   },
 })
 
-const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i) => i + 1))
+const pages = computed(() => {
+  const total = table.getPageCount()
+  const current = table.getState().pagination.pageIndex + 1
+
+  // Logic to show a limited range, e.g., 5 pages centered around current
+  let start = Math.max(1, current - 2)
+  let end = Math.min(total, start + 4)
+
+  if (end - start < 4) {
+    start = Math.max(1, end - 4)
+  }
+
+  const range = []
+  for (let i = start; i <= end; i++) {
+    range.push(i)
+  }
+  return range
+})
+
+console.log(props.rowCount)
+console.log(table.getCanPreviousPage())
+console.log(table.getCanNextPage())
 </script>
 
 <template>
@@ -133,8 +153,12 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
       <div v-if="filterableColumns?.length" class="flex flex-wrap gap-2 items-center">
         <Label class="text-sm font-medium"> Filter By: </Label>
         <div v-for="col in filterableColumns" :key="col">
-          <Select :model-value="table.getColumn(col as string)?.getFilterValue() ?? ''"
-            @update:model-value="(value) => table.getColumn(col as string)?.setFilterValue(value || undefined)">
+          <Select
+            :model-value="table.getColumn(col as string)?.getFilterValue() ?? ''"
+            @update:model-value="
+              (value) => table.getColumn(col as string)?.setFilterValue(value || undefined)
+            "
+          >
             <SelectTrigger class="w-[200px]">
               <SelectValue :placeholder="`${toTitleCase(col as string)}`" />
               <SelectContent>
@@ -156,8 +180,13 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
         <TableHeader>
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <TableHead v-for="header in headerGroup.headers" :key="header.id">
-              <Button v-if="header.column.getCanSort()" variant="ghost" size="sm" class="flex items-center gap-1"
-                @click="header.column.toggleSorting(header.column.getIsSorted() === 'asc')">
+              <Button
+                v-if="header.column.getCanSort()"
+                variant="ghost"
+                size="sm"
+                class="flex items-center gap-1"
+                @click="header.column.toggleSorting(header.column.getIsSorted() === 'asc')"
+              >
                 <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
                 <span v-if="header.column.getIsSorted() === 'asc'">
                   <IconSortAscending :size="16" />
@@ -196,35 +225,57 @@ const pages = computed(() => Array.from({ length: table.getPageCount() }, (_, i)
     <div class="flex flex-wrap items-center justify-between gap-4 py-4">
       <div class="flex items-center gap-2">
         <Label class="text-sm font-medium">Rows per page</Label>
-        <Select :model-value="`${table.getState().pagination.pageSize}`"
-          @update:model-value="(val) => table.setPageSize(Number(val))">
+        <Select
+          :model-value="`${table.getState().pagination.pageSize}`"
+          @update:model-value="(val) => table.setPageSize(val)"
+        >
           <SelectTrigger class="w-20">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="size in pageSizes" :key="size" :value="`${size}`">{{ size }}</SelectItem>
+            <SelectItem v-for="size in pageSizes" :key="size" :value="`${size}`">{{
+              size
+            }}</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div class="text-sm font-medium">
-        Page {{ table.getState().pagination.pageIndex + 1 }} of {{ table.getPageCount() }}
+        Page {{ pagination.pageIndex + 1 }} of {{ table.getPageCount() }}
       </div>
 
       <div class="flex items-center gap-1">
-        <Button size="sm" variant="outline" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
+        <Button
+          size="sm"
+          variant="outline"
+          :disabled="!table.getCanPreviousPage()"
+          @click="table.previousPage()"
+        >
           Previous
         </Button>
 
         <div class="hidden sm:flex gap-1">
-          <Button v-for="page in pages" :key="page" size="sm" variant="outline"
-            :class="{ 'bg-primary text-primary-foreground hover:bg-primary/90': table.getState().pagination.pageIndex === page - 1 }"
-            @click="table.setPageIndex(page - 1)">
+          <Button
+            v-for="page in pages"
+            :key="page"
+            size="sm"
+            variant="outline"
+            :class="{
+              'bg-primary text-primary-foreground hover:bg-primary':
+                pagination.pageIndex === page - 1,
+            }"
+            @click="table.setPageIndex(page - 1)"
+          >
             {{ page }}
           </Button>
         </div>
 
-        <Button size="sm" variant="outline" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
+        <Button
+          size="sm"
+          variant="outline"
+          :disabled="!table.getCanNextPage()"
+          @click="table.nextPage()"
+        >
           Next
         </Button>
       </div>

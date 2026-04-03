@@ -10,9 +10,9 @@ export const columns: ColumnDef<Crop>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: "scientific_name",
+    accessorKey: "scientificName",
     header: "Scientific Name",
-    cell: ({ row }) => h("div", row.getValue("scientific_name")),
+    cell: ({ row }) => h("div", row.getValue("scientificName")),
     enableSorting: true,
   },
   {
@@ -22,21 +22,21 @@ export const columns: ColumnDef<Crop>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: "sunlight_requirement",
+    accessorKey: "sunlightRequirement",
     header: "Sunlight",
-    cell: ({ row }) => h("div", row.getValue("sunlight_requirement")),
+    cell: ({ row }) => h("div", row.getValue("sunlightRequirement")),
     enableSorting: true,
   },
   {
-    accessorKey: "min_days_to_harvest",
+    accessorKey: "minDaysToHarvest",
     header: "Min Days to Harvest",
-    cell: ({ row }) => h("div", String(row.getValue("min_days_to_harvest"))),
+    cell: ({ row }) => h("div", String(row.getValue("minDaysToHarvest"))),
     enableSorting: true,
   },
   {
-    accessorKey: "max_days_to_harvest",
+    accessorKey: "maxDaysToHarvest",
     header: "Max Days to Harvest",
-    cell: ({ row }) => h("div", String(row.getValue("max_days_to_harvest"))),
+    cell: ({ row }) => h("div", String(row.getValue("maxDaysToHarvest"))),
     enableSorting: true,
   },
 ]

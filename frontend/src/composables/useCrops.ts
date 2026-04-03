@@ -12,9 +12,9 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
     data: crops,
     isLoading,
     error,
-    refetch
+    refetch,
   } = useQuery({
-    queryKey: ['crops', pagination],
+    queryKey: ["crops", pagination],
     queryFn: () => {
       const page = pagination?.value ? pagination.value.pageIndex + 1 : 1
       const size = pagination?.value ? pagination.value.pageSize : 10
@@ -25,11 +25,11 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
   const createMutation = useMutation({
     mutationFn: (payload: cropPayload): Promise<Crop> => cropService.create(payload),
     onSuccess: (): void => {
-      queryClient.invalidateQueries({ queryKey: ['crops'] })
+      queryClient.invalidateQueries({ queryKey: ["crops"] })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err
-    }
+    },
   })
 
   const loading = computed((): boolean => isLoading.value || createMutation.isPending.value)
@@ -39,6 +39,6 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
     isLoading: loading,
     error,
     createCrop: createMutation.mutateAsync,
-    fetchCrops: refetch
+    fetchCrops: refetch,
   }
 }

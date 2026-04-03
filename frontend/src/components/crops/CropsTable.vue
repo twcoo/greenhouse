@@ -12,6 +12,6 @@ defineProps<{
   <BaseDataTable
     :data="data"
     :columns="columns"
-    :filterableColumns="['category', 'sunlight_requirement']"
+    :filterableColumns="['category', 'sunlightRequirement']"
   />
 </template>
