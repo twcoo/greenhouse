@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="TData">
-import { ref, computed, watch } from "vue"
+import { ref, computed } from "vue"
 import { ColumnDef, SortingState, ColumnFiltersState, PaginationState } from "@tanstack/vue-table"
 import {
   FlexRender,

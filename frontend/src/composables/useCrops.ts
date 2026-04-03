@@ -11,6 +11,7 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
   const {
     data: crops,
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
@@ -32,7 +33,9 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
     },
   })
 
-  const loading = computed((): boolean => isLoading.value || createMutation.isPending.value)
+  const loading = computed(
+    (): boolean => isLoading.value || isFetching.value || createMutation.isPending.value,
+  )
 
   return {
     crops,
