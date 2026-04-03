@@ -28,8 +28,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toTitleCase } from "@/utils/formatting"
-import { IconSortAscending, IconSortDescending, IconGhost2 } from "@tabler/icons-vue"
 import { Ref } from "vue"
+import { IconGhost2 } from "@tabler/icons-vue"
 
 const props = defineProps<{
   data: TData[]
@@ -75,7 +75,7 @@ function getFilterOptions(columnKey: keyof TData) {
 
 const table = useVueTable({
   manualPagination: true,
-  rowCount: 12,
+  rowCount: props.rowCount,
   get data() {
     return props.data
   },
@@ -118,27 +118,40 @@ const table = useVueTable({
 })
 
 const pages = computed(() => {
+  // 1. Get the total count of pages available (e.g., 20)
   const total = table.getPageCount()
+
+  // 2. Get the current page index.
+  // We add 1 because TanStack is 0-indexed (Index 0 = Page 1)
   const current = table.getState().pagination.pageIndex + 1
 
-  // Logic to show a limited range, e.g., 5 pages centered around current
+  // 3. Define the starting point of our window.
+  // We want the current page to be in the middle, so we subtract 2.
+  // Math.max(1, ...) ensures we never go below Page 1 (prevents 0 or negative numbers).
   let start = Math.max(1, current - 2)
+
+  // 4. Define the end point of our window.
+  // We want to show a spread of 5 buttons total, so we add 4 to the 'start'.
+  // Math.min(total, ...) ensures we never go past the last page.
   let end = Math.min(total, start + 4)
 
+  // 5. The "Left-Side" Correction:
+  // If we are near the end (e.g., Page 20 of 20), the 'end' is capped.
+  // This check ensures that if we have fewer than 5 buttons visible,
+  // we push the 'start' back to fill the gap so we always show 5 buttons if possible.
   if (end - start < 4) {
     start = Math.max(1, end - 4)
   }
 
+  // 6. Generate the actual array of numbers.
+  // If start is 8 and end is 12, this creates: [8, 9, 10, 11, 12]
   const range = []
   for (let i = start; i <= end; i++) {
     range.push(i)
   }
+
   return range
 })
-
-console.log(props.rowCount)
-console.log(table.getCanPreviousPage())
-console.log(table.getCanNextPage())
 </script>
 
 <template>
@@ -180,24 +193,7 @@ console.log(table.getCanNextPage())
         <TableHeader>
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <TableHead v-for="header in headerGroup.headers" :key="header.id">
-              <Button
-                v-if="header.column.getCanSort()"
-                variant="ghost"
-                size="sm"
-                class="flex items-center gap-1"
-                @click="header.column.toggleSorting(header.column.getIsSorted() === 'asc')"
-              >
-                <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
-                <span v-if="header.column.getIsSorted() === 'asc'">
-                  <IconSortAscending :size="16" />
-                </span>
-                <span v-else-if="header.column.getIsSorted() === 'desc'">
-                  <IconSortDescending :size="16" />
-                </span>
-              </Button>
-              <div v-else class="px-3 py-2">
-                <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
-              </div>
+              <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -211,10 +207,12 @@ console.log(table.getCanNextPage())
             </TableRow>
           </template>
           <TableRow v-else>
-            <TableCell :col-span="columns.length" class="h-32 text-center">
+            <TableCell :colspan="columns.length" class="h-32 text-center">
               <div class="flex flex-col items-center justify-center gap-2">
                 <IconGhost2 class="w-8 h-8 text-muted-foreground" />
-                <span class="text-muted-foreground">No results found.</span>
+                <span class="text-muted-foreground">
+                  {{ searchTerm ? "No results found." : "No data available." }}
+                </span>
               </div>
             </TableCell>
           </TableRow>
@@ -222,7 +220,10 @@ console.log(table.getCanNextPage())
       </Table>
     </div>
 
-    <div class="flex flex-wrap items-center justify-between gap-4 py-4">
+    <div
+      v-if="table.getRowModel().rows.length"
+      class="flex flex-wrap items-center justify-between gap-4 py-4"
+    >
       <div class="flex items-center gap-2">
         <Label class="text-sm font-medium">Rows per page</Label>
         <Select
