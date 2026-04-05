@@ -49,6 +49,6 @@ export const columns: ColumnDef<Crop>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => h(TableActions, { row }),
+    cell: ({ row, table }) => h(TableActions, { row, table }),
   },
 ]
