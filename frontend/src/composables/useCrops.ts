@@ -33,6 +33,16 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
     },
   })
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: number): Promise<void> => cropService.delete(id),
+    onSuccess: (): void => {
+      queryClient.invalidateQueries({ queryKey: ["crops"] })
+    },
+    onError: (err: AxiosError<APIErrorResponse>) => {
+      throw err
+    },
+  })
+
   const loading = computed(
     (): boolean => isLoading.value || isFetching.value || createMutation.isPending.value,
   )
@@ -42,6 +52,7 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
     isLoading: loading,
     error,
     createCrop: createMutation.mutateAsync,
+    deleteCrop: deleteMutation.mutateAsync,
     fetchCrops: refetch,
   }
 }

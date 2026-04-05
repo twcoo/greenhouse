@@ -15,4 +15,8 @@ export const cropService = {
     const response = await apiClient.post<APIResponse<Crop>>("/crops/", payload)
     return response.data.data
   },
+
+  async delete(id: number): Promise<void> {
+    await apiClient.delete<APIResponse<Crop>>(`/crops/${id}`)
+  },
 }

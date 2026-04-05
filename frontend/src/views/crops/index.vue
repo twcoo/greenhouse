@@ -9,7 +9,7 @@ import type { cropPayload } from "@/types/crop"
 
 const pagination = ref({ pageIndex: 0, pageSize: 10 })
 
-const { isLoading, createCrop, crops } = useCrop(pagination)
+const { isLoading, createCrop, crops, deleteCrop } = useCrop(pagination)
 
 function handlePaginationChange(newState: { pageIndex: number; pageSize: number }) {
   pagination.value = newState
@@ -17,6 +17,10 @@ function handlePaginationChange(newState: { pageIndex: number; pageSize: number 
 
 async function handleCreateCrop(payload: cropPayload): Promise<void> {
   await createCrop(payload)
+}
+
+async function handleDeleteCrop(id): Promise<void> {
+  await deleteCrop(id)
 }
 </script>
 
@@ -35,6 +39,7 @@ async function handleCreateCrop(payload: cropPayload): Promise<void> {
       :rowCount="crops.count"
       :pagination="pagination"
       @pagination-change="handlePaginationChange"
+      @delete="handleDeleteCrop"
     />
   </AppLayout>
 </template>
