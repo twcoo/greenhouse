@@ -12,7 +12,7 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
     data: crops,
     isLoading,
     isFetching,
-    error,
+    isError,
     refetch,
   } = useQuery({
     queryKey: ["crops", pagination],
@@ -50,7 +50,8 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
   return {
     crops,
     isLoading: loading,
-    error,
+    isError,
+    createError: createMutation.isError,
     createCrop: createMutation.mutateAsync,
     deleteCrop: deleteMutation.mutateAsync,
     fetchCrops: refetch,
