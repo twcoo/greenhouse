@@ -36,6 +36,10 @@ apiClient.interceptors.response.use(
     return response
   },
   (error) => {
+    if (error.response?.data) {
+      error.response.data = camelizeKeys(error.response.data)
+    }
+
     const status = error.response?.status
     const isLoginPage = router.currentRoute.value.name === "login"
 
