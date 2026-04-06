@@ -9,14 +9,18 @@ import type { cropPayload } from "@/types/crop"
 
 const pagination = ref({ pageIndex: 0, pageSize: 10 })
 
-const { isLoading, createCrop, crops, deleteCrop } = useCrop(pagination)
+const { isLoading, createError, createCrop, crops, deleteCrop } = useCrop(pagination)
 
 function handlePaginationChange(newState: { pageIndex: number; pageSize: number }) {
   pagination.value = newState
 }
 
-async function handleCreateCrop(payload: cropPayload): Promise<void> {
-  await createCrop(payload)
+async function handleCreateCrop(payload: cropPayload, onError: (err: any) => void): Promise<void> {
+  try {
+    await createCrop(payload)
+  } catch (err) {
+    onError(err)
+  }
 }
 
 async function handleDeleteCrop(id): Promise<void> {
@@ -27,7 +31,12 @@ async function handleDeleteCrop(id): Promise<void> {
 <template>
   <AppLayout>
     <div class="flex justify-end w-full mb-4">
-      <CropsDialog mode="create" :loading="isLoading" @submit="handleCreateCrop" />
+      <CropsDialog
+        mode="create"
+        :isLoading="isLoading"
+        :isError="createError"
+        @submit="handleCreateCrop"
+      />
     </div>
     <div v-if="isLoading" class="flex items-center justify-center gap-2">
       <IconLoader2 :size="18" class="animate-spin" />

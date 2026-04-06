@@ -23,15 +23,18 @@ import { FieldGroup, Field, FieldLabel, FieldError } from "@/components/ui/field
 import { Input } from "@/components/ui/input"
 import { cropsSchema, type cropsForm } from "@/schemas/crops.schemas"
 import type { cropPayload } from "@/types/crop"
-import { zodToFormErrors } from "@/utils/formErrors"
+import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
+import { AxiosError } from "axios"
+import { APIErrorResponse } from "@/types/api"
 import { IconLoader2 } from "@tabler/icons-vue"
 
 const props = defineProps<{
   mode: "create" | "edit"
-  loading: boolean
+  isLoading: boolean
+  isError: boolean
 }>()
 
-const emit = defineEmits<{ (e: "submit", payload: cropPayload): void }>()
+const emit = defineEmits<{ (e: "submit", payload: cropPayload, onError: (err: any) => void): void }>()
 const actionLabel = computed(() => (props.mode === "create" ? "Add" : "Update"))
 const isDialogOpen = ref<boolean>(false)
 
@@ -61,17 +64,28 @@ async function handleSubmit(): Promise<void> {
     return
   }
 
-  emit("submit", result.data)
+  emit("submit",
+    result.data,
+    (err: unknown) => {
+      const axiosError = err as AxiosError<APIErrorResponse>;
+
+      if (axiosError.response?.data) {
+        const apiErrors = axiosError.response.data.message;
+        errors.value = apiToFormErrors(apiErrors);
+      } else {
+        errors.value.general = "Something went wrong. Please try again.";
+      }
+    })
 }
 
 watch(
-  () => props.loading,
-  (isLoading: boolean) => {
-    if (!isLoading) {
-      isDialogOpen.value = false
-      resetForm()
+  () => [props.isLoading, props.isError],
+  ([isLoading, isError]) => {
+    if (!isLoading && !isError) {
+      isDialogOpen.value = false;
+      resetForm();
     }
-  },
+  }
 )
 </script>
 
@@ -143,24 +157,14 @@ watch(
           </Field>
           <Field>
             <FieldLabel for="minDaysToHarvest">Min Days To Harvest</FieldLabel>
-            <Input
-              v-model="form.minDaysToHarvest"
-              type="number"
-              id="minDaysToHarvest"
-              name="minDaysToHarvest"
-            />
+            <Input v-model="form.minDaysToHarvest" type="number" id="minDaysToHarvest" name="minDaysToHarvest" />
             <FieldError data-test="minDaysToHarvest" v-if="errors.minDaysToHarvest">
               {{ errors.minDaysToHarvest }}
             </FieldError>
           </Field>
           <Field>
             <FieldLabel for="maxDaysToHarvest">Max Days To Harvest</FieldLabel>
-            <Input
-              v-model="form.maxDaysToHarvest"
-              type="number"
-              id="maxDaysToHarvest"
-              name="maxDaysToHarvest"
-            />
+            <Input v-model="form.maxDaysToHarvest" type="number" id="maxDaysToHarvest" name="maxDaysToHarvest" />
             <FieldError data-test="maxDaysToHarvest" v-if="errors.maxDaysToHarvest">
               {{ errors.maxDaysToHarvest }}
             </FieldError>
@@ -171,10 +175,15 @@ watch(
             <Button variant="outline"> Cancel </Button>
           </DialogClose>
           <Button type="submit" form="crop-form">
-            <IconLoader2 v-if="loading" :size="18" class="animate-spin" />
-            {{ loading ? "Saving..." : "Save" }}
+            <IconLoader2 v-if="isLoading" :size="18" class="animate-spin" />
+            {{ isLoading ? "Saving..." : "Save" }}
           </Button>
         </DialogFooter>
+
+        <p data-test="general-error" v-if="errors.general" class="text-sm text-red-500 m-2 text-center">
+          {{ errors.general }}
+        </p>
+
       </DialogContent>
     </form>
   </Dialog>
