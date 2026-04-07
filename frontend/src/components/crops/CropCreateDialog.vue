@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue"
+import { reactive, ref, watch } from "vue"
 import { Button } from "@/components/ui/button"
-import { IconPlus } from "@tabler/icons-vue"
 import {
   Dialog,
   DialogClose,
@@ -10,7 +9,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import {
   Select,
@@ -28,8 +26,8 @@ import { AxiosError } from "axios"
 import { APIErrorResponse } from "@/types/api"
 import { IconLoader2 } from "@tabler/icons-vue"
 
+const open = defineModel<boolean>("open")
 const props = defineProps<{
-  mode: "create" | "edit"
   isLoading: boolean
   isError: boolean
 }>()
@@ -37,8 +35,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "submit", payload: cropPayload, onError: (err: any) => void): void
 }>()
-const actionLabel = computed(() => (props.mode === "create" ? "Add" : "Update"))
-const isDialogOpen = ref<boolean>(false)
 
 const formInitialState: cropsForm = {
   name: "",
@@ -82,7 +78,7 @@ watch(
   () => [props.isLoading, props.isError],
   ([isLoading, isError]) => {
     if (!isLoading && !isError) {
-      isDialogOpen.value = false
+      open.value = false
       resetForm()
     }
   },
@@ -90,23 +86,13 @@ watch(
 </script>
 
 <template>
-  <Dialog v-model:open="isDialogOpen">
+  <Dialog v-model:open="open">
     <form id="crop-form" @submit.prevent="handleSubmit">
-      <DialogTrigger as-child>
-        <Button variant="outline">
-          <IconPlus />
-          <span class="hidden lg:inline">{{ actionLabel }} Crop</span>
-        </Button>
-      </DialogTrigger>
       <DialogContent class="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{{ actionLabel }} Crop</DialogTitle>
+          <DialogTitle>Add Crop</DialogTitle>
           <DialogDescription>
-            {{
-              mode === "create"
-                ? "Add a new crop to your list. Fill in the details below."
-                : "Update the details of this crop. Click save when you're done."
-            }}
+            Add a new crop to your list. Fill in the details below.
           </DialogDescription>
         </DialogHeader>
         <FieldGroup>
@@ -189,7 +175,6 @@ watch(
             {{ isLoading ? "Saving..." : "Save" }}
           </Button>
         </DialogFooter>
-
         <p
           data-test="general-error"
           v-if="errors.general"
