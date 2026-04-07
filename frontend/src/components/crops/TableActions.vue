@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import type { Crop } from "@/types/crop"
 
 interface RowProps {
   row: {
@@ -32,8 +33,8 @@ const props = defineProps<RowProps>()
 
 const isDeleteDialogOpen = ref<boolean>(false)
 
-const handleUpdate = (id: number) => {
-  console.log(id)
+const handleUpdate = async (id: number, crop: Crop) => {
+  await props.table.options.meta.update(id, crop)
 }
 
 const handleDelete = () => {
@@ -54,7 +55,9 @@ const confirmDelete = async (id: number) => {
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-      <DropdownMenuItem @click="handleUpdate(props.row.original.id)"> Update </DropdownMenuItem>
+      <DropdownMenuItem @click="handleUpdate(props.row.original.id, props.row.original)">
+        Update
+      </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem @click="handleDelete">Delete</DropdownMenuItem>
     </DropdownMenuContent>

@@ -42,6 +42,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "pagination-change", value: PaginationState): void
   (e: "delete", value: number): void
+  (e: "update", id: number, data: any): void
 }>()
 
 const sorting = ref<SortingState>([])
@@ -85,6 +86,7 @@ const table = useVueTable({
   },
   meta: {
     delete: (id: number) => emit("delete", id),
+    update: (id: number, data: any) => emit("update", id, data),
   },
   filterFns,
   getCoreRowModel: getCoreRowModel(),
