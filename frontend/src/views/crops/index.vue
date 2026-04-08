@@ -16,7 +16,7 @@ const openUpdateDialog = ref<booelan>(false)
 const cropIdToUpdate = ref<number | null>(null)
 const cropUpdateFormState = ref<cropPayload | null>(null)
 
-const { crops, isLoading, createError, updateError, createCrop, updateCrop, deleteCrop } =
+const { crops, isLoading, createError, isUpdateSuccess, createCrop, updateCrop, deleteCrop } =
   useCrop(pagination)
 
 function handlePaginationChange(newState: { pageIndex: number; pageSize: number }) {
@@ -41,8 +41,12 @@ const setUpdateDialog = async (id: number, crop: cropPayload): Promise<void> => 
   openUpdateDialog.value = true
 }
 
-const handleUpdateCrop = async (id: number, payload: cropPayload) => {
-  await updateCrop({ id, payload })
+const handleUpdateCrop = async (id: number, payload: cropPayload, onError: (err: any) => void) => {
+  try {
+    await updateCrop({ id, payload })
+  } catch (err) {
+    onError(err)
+  }
 }
 </script>
 
@@ -64,12 +68,12 @@ const handleUpdateCrop = async (id: number, payload: cropPayload) => {
 
     <!-- Update Crop Dialog -->
     <CropUpdateDialog
-      :key="cropIdToUpdate"
+      :key="`${cropIdToUpdate}-${openUpdateDialog}`"
       v-model:open="openUpdateDialog"
       :id="cropIdToUpdate"
-      :isLoading="isLoading"
-      :isError="updateError"
       :cropsFormInitialState="cropUpdateFormState"
+      :isLoading="isLoading"
+      :isUpdateSuccess="isUpdateSuccess"
       @submit="handleUpdateCrop"
     >
     </CropUpdateDialog>

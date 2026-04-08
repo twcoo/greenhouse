@@ -27,35 +27,19 @@ import { APIErrorResponse } from "@/types/api"
 import { IconLoader2 } from "@tabler/icons-vue"
 
 const open = defineModel<boolean>("open")
-
 const props = defineProps<{
   id: number | null
-  isLoading: boolean
-  isError: boolean
   cropsFormInitialState: cropsForm
+  isLoading: boolean
+  isUpdateSuccess: boolean
 }>()
 
 const emit = defineEmits<{
   (e: "submit", id: number, payload: cropPayload, onError: (err: any) => void): void
 }>()
 
-const formInitialState: cropsForm = {
-  name: "",
-  scientificName: "",
-  category: "VEGETABLE",
-  sunlightRequirement: "FULL SUN",
-  minDaysToHarvest: 0,
-  maxDaysToHarvest: 0,
-}
-
 const form = reactive<cropsForm>({ ...props.cropsFormInitialState })
-
 const errors = ref<Record<string, string>>({})
-
-function resetForm() {
-  Object.assign(form, formInitialState)
-  errors.value = {}
-}
 
 async function handleSubmit(): Promise<void> {
   const result = cropsSchema.safeParse(form)
@@ -78,12 +62,9 @@ async function handleSubmit(): Promise<void> {
 }
 
 watch(
-  () => [props.isLoading, props.isError],
-  ([isLoading, isError]) => {
-    if (!isLoading && !isError) {
-      open.value = false
-      resetForm()
-    }
+  () => props.isUpdateSuccess,
+  (success) => {
+    if (success) open.value = false
   },
 )
 </script>

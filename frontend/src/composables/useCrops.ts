@@ -10,9 +10,9 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
 
   const {
     data: crops,
-    isLoading,
+    isLoading: isQueryLoading,
     isFetching,
-    isError,
+    isError: isQueryError,
     refetch,
   } = useQuery({
     queryKey: ["crops", pagination],
@@ -55,15 +55,31 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
   })
 
   const loading = computed(
-    (): boolean => isLoading.value || isFetching.value || createMutation.isPending.value,
+    (): boolean =>
+      isQueryLoading.value ||
+      isFetching.value ||
+      createMutation.isPending.value ||
+      updateMutation.isPending.value ||
+      deleteMutation.isPending.value,
   )
 
   return {
+    // Data
     crops,
+
+    // Status States
     isLoading: loading,
-    isError,
+    isQueryError,
     createError: createMutation.isError,
     updateError: updateMutation.isError,
+    deleteError: deleteMutation.isError,
+
+    // Success States
+    isCreateSuccess: createMutation.isSuccess,
+    isUpdateSuccess: updateMutation.isSuccess,
+    isDeleteSuccess: deleteMutation.isSuccess,
+
+    // Actions
     createCrop: createMutation.mutateAsync,
     updateCrop: updateMutation.mutateAsync,
     deleteCrop: deleteMutation.mutateAsync,
