@@ -33,6 +33,17 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
     },
   })
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: cropPayload }): Promise<void> =>
+      cropService.update(id, payload),
+    onSuccess: (): void => {
+      queryClient.invalidateQueries({ queryKey: ["crops"] })
+    },
+    onError: (err: AxiosError<APIErrorResponse>) => {
+      throw err
+    },
+  })
+
   const deleteMutation = useMutation({
     mutationFn: (id: number): Promise<void> => cropService.delete(id),
     onSuccess: (): void => {
@@ -52,7 +63,9 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
     isLoading: loading,
     isError,
     createError: createMutation.isError,
+    updateError: updateMutation.isError,
     createCrop: createMutation.mutateAsync,
+    updateCrop: updateMutation.mutateAsync,
     deleteCrop: deleteMutation.mutateAsync,
     fetchCrops: refetch,
   }

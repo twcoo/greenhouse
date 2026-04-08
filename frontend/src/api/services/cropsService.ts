@@ -16,6 +16,10 @@ export const cropService = {
     return response.data.data
   },
 
+  async update(id: number, payload: cropPayload): Promise<void> {
+    await apiClient.put<APIResponse<Crop>>(`/crops/${id}`, payload)
+  },
+
   async delete(id: number): Promise<void> {
     await apiClient.delete<APIResponse<Crop>>(`/crops/${id}`)
   },

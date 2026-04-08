@@ -31,6 +31,7 @@ const open = defineModel<boolean>("open")
 const props = defineProps<{
   id: number | null
   isLoading: boolean
+  isError: boolean
   cropsFormInitialState: cropsForm
 }>()
 
@@ -76,15 +77,15 @@ async function handleSubmit(): Promise<void> {
   })
 }
 
-// watch(
-//   () => [props.isLoading, props.isError],
-//   ([isLoading, isError]) => {
-//     if (!isLoading && !isError) {
-//       open.value = false
-//       resetForm()
-//     }
-//   },
-// )
+watch(
+  () => [props.isLoading, props.isError],
+  ([isLoading, isError]) => {
+    if (!isLoading && !isError) {
+      open.value = false
+      resetForm()
+    }
+  },
+)
 </script>
 
 <template>
