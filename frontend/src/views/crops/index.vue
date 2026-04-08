@@ -13,7 +13,7 @@ const pagination = ref({ pageIndex: 0, pageSize: 10 })
 const openCreateDialog = ref<boolean>(false)
 
 const openUpdateDialog = ref<booelan>(false)
-const cropIdToUpdate = ref<number | null>(null)
+const cropIdToUpdate = ref<number>(0)
 const cropUpdateFormState = ref<cropPayload | null>(null)
 
 const { crops, isLoading, createError, isUpdateSuccess, createCrop, updateCrop, deleteCrop } =
@@ -68,7 +68,6 @@ const handleUpdateCrop = async (id: number, payload: cropPayload, onError: (err:
 
     <!-- Update Crop Dialog -->
     <CropUpdateDialog
-      :key="`${cropIdToUpdate}-${openUpdateDialog}`"
       v-model:open="openUpdateDialog"
       :id="cropIdToUpdate"
       :cropsFormInitialState="cropUpdateFormState"

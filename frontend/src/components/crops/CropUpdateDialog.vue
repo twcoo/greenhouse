@@ -23,25 +23,31 @@ import { cropsSchema, type cropsForm } from "@/schemas/crops.schemas"
 import type { cropPayload } from "@/types/crop"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
 import { AxiosError } from "axios"
-import { APIErrorResponse } from "@/types/api"
+import type { APIErrorResponse } from "@/types/api"
 import { IconLoader2 } from "@tabler/icons-vue"
 
 const open = defineModel<boolean>("open")
 const props = defineProps<{
-  id: number | null
+  id: number
   cropsFormInitialState: cropsForm
   isLoading: boolean
   isUpdateSuccess: boolean
 }>()
 
 const emit = defineEmits<{
-  (e: "submit", id: number, payload: cropPayload, onError: (err: any) => void): void
+  (e: "submit", id: number, payload: cropPayload, onError: (err: unknown) => void): void
 }>()
 
 const form = reactive<cropsForm>({ ...props.cropsFormInitialState })
 const errors = ref<Record<string, string>>({})
 
-async function handleSubmit(): Promise<void> {
+// Watch for crop to update change
+watch(() => props.cropsFormInitialState, (newVal) => {
+  Object.assign(form, newVal)
+  errors.value = {}
+}, { deep: true })
+
+const handleSubmit = async (): Promise<void> => {
   const result = cropsSchema.safeParse(form)
 
   if (!result.success) {
@@ -51,20 +57,31 @@ async function handleSubmit(): Promise<void> {
 
   emit("submit", props.id, result.data, (err: unknown) => {
     const axiosError = err as AxiosError<APIErrorResponse>
-
     if (axiosError.response?.data) {
-      const apiErrors = axiosError.response.data.message
-      errors.value = apiToFormErrors(apiErrors)
+      errors.value = apiToFormErrors(axiosError.response.data.message)
     } else {
       errors.value.general = "Something went wrong. Please try again."
     }
   })
 }
 
+// Automatically reset the
+// form if it's closed and opened again
+watch(
+  open,
+  (isOpen) => {
+    if (!isOpen) {
+      errors.value = {}
+      Object.assign(form, props.cropsFormInitialState)
+    }
+  },
+)
+
+// Automatically close on success
 watch(
   () => props.isUpdateSuccess,
   (success) => {
-    if (success) open.value = false
+    if (success) open.value = false;
   },
 )
 </script>
@@ -127,24 +144,14 @@ watch(
           </Field>
           <Field>
             <FieldLabel for="minDaysToHarvest">Min Days To Harvest</FieldLabel>
-            <Input
-              v-model="form.minDaysToHarvest"
-              type="number"
-              id="minDaysToHarvest"
-              name="minDaysToHarvest"
-            />
+            <Input v-model.number="form.minDaysToHarvest" type="number" id="minDaysToHarvest" name="minDaysToHarvest" />
             <FieldError data-test="minDaysToHarvest" v-if="errors.minDaysToHarvest">
               {{ errors.minDaysToHarvest }}
             </FieldError>
           </Field>
           <Field>
             <FieldLabel for="maxDaysToHarvest">Max Days To Harvest</FieldLabel>
-            <Input
-              v-model="form.maxDaysToHarvest"
-              type="number"
-              id="maxDaysToHarvest"
-              name="maxDaysToHarvest"
-            />
+            <Input v-model.number="form.maxDaysToHarvest" type="number" id="maxDaysToHarvest" name="maxDaysToHarvest" />
             <FieldError data-test="maxDaysToHarvest" v-if="errors.maxDaysToHarvest">
               {{ errors.maxDaysToHarvest }}
             </FieldError>
@@ -154,16 +161,12 @@ watch(
           <DialogClose as-child>
             <Button variant="outline"> Cancel </Button>
           </DialogClose>
-          <Button type="submit" form="update-crop-form">
+          <Button type="submit" form="update-crop-form" :disabled="isLoading">
             <IconLoader2 v-if="isLoading" :size="18" class="animate-spin" />
             {{ isLoading ? "Saving..." : "Save" }}
           </Button>
         </DialogFooter>
-        <p
-          data-test="general-error"
-          v-if="errors.general"
-          class="text-sm text-red-500 m-2 text-center"
-        >
+        <p data-test="general-error" v-if="errors.general" class="text-sm text-red-500 m-2 text-center">
           {{ errors.general }}
         </p>
       </DialogContent>
