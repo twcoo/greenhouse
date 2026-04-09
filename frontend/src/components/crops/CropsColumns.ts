@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/vue-table"
 import { h } from "vue"
 import type { Crop } from "@/types/crop"
-import TableActions from "./TableActions.vue"
+import CropTableActions from "./CropTableActions.vue"
 
 export const columns: ColumnDef<Crop>[] = [
   {
@@ -49,6 +49,6 @@ export const columns: ColumnDef<Crop>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row, table }) => h(TableActions, { row, table }),
+    cell: ({ row, table }) => h(CropTableActions, { row, table }),
   },
 ]
