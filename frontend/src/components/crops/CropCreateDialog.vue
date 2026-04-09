@@ -41,8 +41,8 @@ const formInitialState: cropsForm = {
   scientificName: "",
   category: "VEGETABLE",
   sunlightRequirement: "FULL SUN",
-  minDaysToHarvest: 0,
-  maxDaysToHarvest: 0,
+  minDaysToHarvest: 1,
+  maxDaysToHarvest: 2,
 }
 
 const form = reactive<cropsForm>({ ...formInitialState })
