@@ -17,17 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import type { cropPayload } from "@/types/crop"
+import type { APIErrorResponse } from "@/types/api"
 import { FieldGroup, Field, FieldLabel, FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { cropsSchema, type cropsForm } from "@/schemas/crops.schemas"
-import type { cropPayload } from "@/types/crop"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
 import { AxiosError } from "axios"
-import { APIErrorResponse } from "@/types/api"
 import { IconLoader2 } from "@tabler/icons-vue"
 
 const open = defineModel<boolean>("open")
-const props = defineProps<{
+const { isLoading, isCreateSuccess } = defineProps<{
   isLoading: boolean
   isCreateSuccess: boolean
 }>()
@@ -74,7 +74,7 @@ const resetForm = (): void => {
 }
 
 watch(
-  () => props.isCreateSuccess,
+  () => isCreateSuccess,
   (success) => {
     if (success) {
       open.value = false

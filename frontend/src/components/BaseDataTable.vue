@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="TData">
 import { ref, computed } from "vue"
-import { ColumnDef, SortingState, ColumnFiltersState, PaginationState } from "@tanstack/vue-table"
+import type { ColumnDef, SortingState, ColumnFiltersState } from "@tanstack/vue-table"
+import type { PaginationState } from "@/types/pagination"
 import {
   FlexRender,
   getCoreRowModel,
@@ -28,21 +29,20 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toTitleCase } from "@/utils/formatting"
-import type { Ref } from "vue"
 import { IconGhost2 } from "@tabler/icons-vue"
 
-const props = defineProps<{
-  data: TData[]
+const { tableData, columns, filterableColumns, rowCount, pagination } = defineProps<{
+  tableData: TData[]
   columns: ColumnDef<TData>[]
   filterableColumns?: (keyof TData)[]
   rowCount: number
-  pagination: Ref<PaginationState>
+  pagination: PaginationState
 }>()
 
 const emit = defineEmits<{
   (e: "pagination-change", value: PaginationState): void
   (e: "delete", value: number): void
-  (e: "update", id: number, data: any): void
+  (e: "update", id: number, data: unknown): void
 }>()
 
 const sorting = ref<SortingState>([])
@@ -59,12 +59,12 @@ const filterFns = {
 
 const filterOptionsMap = computed(() => {
   const map: Record<string, Set<unknown>> = {}
-  if (!props.filterableColumns) return map
-  for (const col of props.filterableColumns) {
+  if (!filterableColumns) return map
+  for (const col of filterableColumns) {
     map[col as string] = new Set()
   }
-  for (const item of props.data) {
-    for (const col of props.filterableColumns) {
+  for (const item of tableData) {
+    for (const col of filterableColumns) {
       map[col as string].add(item[col])
     }
   }
@@ -77,16 +77,16 @@ function getFilterOptions(columnKey: keyof TData) {
 
 const table = useVueTable({
   manualPagination: true,
-  rowCount: props.rowCount,
+  rowCount: rowCount,
   get data() {
-    return props.data
+    return tableData
   },
   get columns() {
-    return props.columns
+    return columns
   },
   meta: {
     delete: (id: number) => emit("delete", id),
-    update: (id: number, data: any) => emit("update", id, data),
+    update: (id: number, data: unknown) => emit("update", id, data),
   },
   filterFns,
   getCoreRowModel: getCoreRowModel(),
@@ -94,7 +94,7 @@ const table = useVueTable({
   getFilteredRowModel: getFilteredRowModel(),
   state: {
     get pagination() {
-      return props.pagination
+      return pagination
     },
     get globalFilter() {
       return searchTerm.value
@@ -108,7 +108,7 @@ const table = useVueTable({
   },
   onPaginationChange: (updaterOrValue) => {
     const nextState =
-      typeof updaterOrValue === "function" ? updaterOrValue(props.pagination) : updaterOrValue
+      typeof updaterOrValue === "function" ? updaterOrValue(pagination) : updaterOrValue
     emit("pagination-change", nextState)
   },
   onGlobalFilterChange: (updaterOrValue) => {

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="TData">
 import { ref } from "vue"
 import { MoreHorizontal } from "lucide-vue-next"
 import { Button } from "@/components/ui/button"
@@ -21,20 +21,21 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import type { Crop } from "@/types/crop"
+import type { Table } from "@tanstack/vue-table"
 
 interface RowProps {
   row: {
-    original: any
+    original: Crop
   }
-  table: any
+  table: Table<TData>
 }
 
-const props = defineProps<RowProps>()
+const { row, table } = defineProps<RowProps>()
 
 const isDeleteDialogOpen = ref<boolean>(false)
 
 const handleUpdate = async (id: number, crop: Crop) => {
-  await props.table.options.meta.update(id, crop)
+  await table.options.meta.update(id, crop)
 }
 
 const handleDelete = () => {
@@ -42,7 +43,7 @@ const handleDelete = () => {
 }
 
 const confirmDelete = async (id: number) => {
-  await props.table.options.meta.delete(id)
+  await table.options.meta.delete(id)
 }
 </script>
 
@@ -55,7 +56,7 @@ const confirmDelete = async (id: number) => {
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-      <DropdownMenuItem @click="handleUpdate(props.row.original.id, props.row.original)">
+      <DropdownMenuItem @click="handleUpdate(row.original.id, row.original)">
         Update
       </DropdownMenuItem>
       <DropdownMenuSeparator />

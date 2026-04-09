@@ -21,8 +21,9 @@ const openUpdateDialog = ref<boolean>(false)
 const cropIdToUpdate = ref<number>(0)
 const cropUpdateFormState = ref<cropsForm | null>(null)
 
-// Crop Composable 
-const { crops, isLoading, isCreateSuccess, isUpdateSuccess, createCrop, updateCrop, deleteCrop } = useCrop(pagination)
+// Crop Composable
+const { crops, isLoading, isCreateSuccess, isUpdateSuccess, createCrop, updateCrop, deleteCrop } =
+  useCrop(pagination)
 
 const handlePaginationChange = (newState: { pageIndex: number; pageSize: number }) => {
   pagination.value = newState
@@ -34,7 +35,10 @@ const setUpdateDialog = async (id: number, crop: cropsForm): Promise<void> => {
   openUpdateDialog.value = true
 }
 
-const handleCreateCrop = async (payload: cropPayload, onError: (err: unknown) => void): Promise<void> => {
+const handleCreateCrop = async (
+  payload: cropPayload,
+  onError: (err: unknown) => void,
+): Promise<void> => {
   try {
     await createCrop(payload)
   } catch (err) {
@@ -42,7 +46,11 @@ const handleCreateCrop = async (payload: cropPayload, onError: (err: unknown) =>
   }
 }
 
-const handleUpdateCrop = async (id: number, payload: cropPayload, onError: (err: unknown) => Promise<void>) => {
+const handleUpdateCrop = async (
+  id: number,
+  payload: cropPayload,
+  onError: (err: unknown) => void,
+) => {
   try {
     await updateCrop({ id, payload })
   } catch (err) {
@@ -63,14 +71,24 @@ const handleDeleteCrop = async (id: number): Promise<void> => {
         <IconPlus />
         <span class="hidden lg:inline">Add Crop</span>
       </Button>
-      <CropCreateDialog v-model:open="openCreateDialog" :isLoading="isLoading" :isCreateSuccess="isCreateSuccess"
-        @submit="handleCreateCrop" />
+      <CropCreateDialog
+        v-model:open="openCreateDialog"
+        :isLoading="isLoading"
+        :isCreateSuccess="isCreateSuccess"
+        @submit="handleCreateCrop"
+      />
     </div>
 
     <!-- Update Crop Dialog -->
-    <CropUpdateDialog v-if="cropUpdateFormState" v-model:open="openUpdateDialog" :id="cropIdToUpdate"
-      :cropsFormInitialState="cropUpdateFormState" :isLoading="isLoading" :isUpdateSuccess="isUpdateSuccess"
-      @submit="handleUpdateCrop">
+    <CropUpdateDialog
+      v-if="cropUpdateFormState"
+      v-model:open="openUpdateDialog"
+      :id="cropIdToUpdate"
+      :cropsFormInitialState="cropUpdateFormState"
+      :isLoading="isLoading"
+      :isUpdateSuccess="isUpdateSuccess"
+      @submit="handleUpdateCrop"
+    >
     </CropUpdateDialog>
 
     <!-- Crops Table -->
@@ -79,7 +97,14 @@ const handleDeleteCrop = async (id: number): Promise<void> => {
       <span>Fetching crops...</span>
     </div>
 
-    <CropsTable v-else-if="crops" :data="crops.results" :rowCount="crops.count" :pagination="pagination"
-      @pagination-change="handlePaginationChange" @delete="handleDeleteCrop" @update="setUpdateDialog" />
+    <CropsTable
+      v-else-if="crops"
+      :data="crops.results"
+      :rowCount="crops.count"
+      :pagination="pagination"
+      @pagination-change="handlePaginationChange"
+      @delete="handleDeleteCrop"
+      @update="setUpdateDialog"
+    />
   </AppLayout>
 </template>

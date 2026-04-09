@@ -27,7 +27,7 @@ import type { APIErrorResponse } from "@/types/api"
 import { IconLoader2 } from "@tabler/icons-vue"
 
 const open = defineModel<boolean>("open")
-const props = defineProps<{
+const { id, cropsFormInitialState, isLoading, isUpdateSuccess } = defineProps<{
   id: number
   cropsFormInitialState: cropsForm
   isLoading: boolean
@@ -35,15 +35,15 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: "submit", id: number, payload: cropPayload, onError: (err: unknown) => Promise<void>): void
+  (e: "submit", id: number, payload: cropPayload, onError: (err: unknown) => void): void
 }>()
 
-const form = reactive<cropsForm>({ ...props.cropsFormInitialState })
+const form = reactive<cropsForm>({ ...cropsFormInitialState })
 const errors = ref<Record<string, string>>({})
 
 // Watch for crop to update change
 watch(
-  () => props.cropsFormInitialState,
+  () => cropsFormInitialState,
   (newVal) => {
     Object.assign(form, newVal)
     errors.value = {}
@@ -59,7 +59,7 @@ const handleSubmit = async (): Promise<void> => {
     return
   }
 
-  emit("submit", props.id, result.data, (err: unknown) => {
+  emit("submit", id, result.data, (err: unknown) => {
     const axiosError = err as AxiosError<APIErrorResponse>
     if (axiosError.response?.data) {
       errors.value = apiToFormErrors(axiosError.response.data.message)
@@ -74,13 +74,13 @@ const handleSubmit = async (): Promise<void> => {
 watch(open, (isOpen) => {
   if (!isOpen) {
     errors.value = {}
-    Object.assign(form, props.cropsFormInitialState)
+    Object.assign(form, cropsFormInitialState)
   }
 })
 
 // Automatically close on success
 watch(
-  () => props.isUpdateSuccess,
+  () => isUpdateSuccess,
   (success) => {
     if (success) open.value = false
   },

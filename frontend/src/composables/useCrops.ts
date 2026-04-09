@@ -1,7 +1,7 @@
 import { computed, type Ref } from "vue"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query"
 import { cropService } from "@/api/services/cropsService"
-import type { Crop, cropPayload } from "@/types/crop"
+import type { cropPayload } from "@/types/crop"
 import type { APIErrorResponse } from "@/types/api"
 import type { AxiosError } from "axios"
 
@@ -24,7 +24,7 @@ export function useCrop(pagination?: Ref<{ pageIndex: number; pageSize: number }
   })
 
   const createMutation = useMutation({
-    mutationFn: (payload: cropPayload): Promise<Crop> => cropService.create(payload),
+    mutationFn: (payload: cropPayload): Promise<void> => cropService.create(payload),
     onSuccess: (): void => {
       queryClient.invalidateQueries({ queryKey: ["crops"] })
     },
