@@ -16,7 +16,7 @@ const openUpdateDialog = ref<booelan>(false)
 const cropIdToUpdate = ref<number>(0)
 const cropUpdateFormState = ref<cropPayload | null>(null)
 
-const { crops, isLoading, createError, isUpdateSuccess, createCrop, updateCrop, deleteCrop } =
+const { crops, isLoading, isCreateSuccess, isUpdateSuccess, createCrop, updateCrop, deleteCrop } =
   useCrop(pagination)
 
 function handlePaginationChange(newState: { pageIndex: number; pageSize: number }) {
@@ -61,7 +61,7 @@ const handleUpdateCrop = async (id: number, payload: cropPayload, onError: (err:
       <CropCreateDialog
         v-model:open="openCreateDialog"
         :isLoading="isLoading"
-        :isError="createError"
+        :isCreateSuccess="isCreateSuccess"
         @submit="handleCreateCrop"
       />
     </div>

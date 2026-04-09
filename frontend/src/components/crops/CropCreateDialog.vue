@@ -29,11 +29,11 @@ import { IconLoader2 } from "@tabler/icons-vue"
 const open = defineModel<boolean>("open")
 const props = defineProps<{
   isLoading: boolean
-  isError: boolean
+  isCreateSuccess: boolean
 }>()
 
 const emit = defineEmits<{
-  (e: "submit", payload: cropPayload, onError: (err: any) => void): void
+  (e: "submit", payload: cropPayload, onError: (err: unknown) => void): void
 }>()
 
 const formInitialState: cropsForm = {
@@ -46,15 +46,9 @@ const formInitialState: cropsForm = {
 }
 
 const form = reactive<cropsForm>({ ...formInitialState })
-
 const errors = ref<Record<string, string>>({})
 
-function resetForm() {
-  Object.assign(form, formInitialState)
-  errors.value = {}
-}
-
-async function handleSubmit(): Promise<void> {
+const handleSubmit = async (): Promise<void> => {
   const result = cropsSchema.safeParse(form)
 
   if (!result.success) {
@@ -64,20 +58,25 @@ async function handleSubmit(): Promise<void> {
 
   emit("submit", result.data, (err: unknown) => {
     const axiosError = err as AxiosError<APIErrorResponse>
-
     if (axiosError.response?.data) {
-      const apiErrors = axiosError.response.data.message
-      errors.value = apiToFormErrors(apiErrors)
+      errors.value = apiToFormErrors(axiosError.response.data.message)
     } else {
       errors.value.general = "Something went wrong. Please try again."
     }
   })
 }
 
+// Automatically close and
+// reset form on success 
+const resetForm = (): void => {
+  Object.assign(form, formInitialState)
+  errors.value = {}
+}
+
 watch(
-  () => [props.isLoading, props.isError],
-  ([isLoading, isError]) => {
-    if (!isLoading && !isError) {
+  () => props.isCreateSuccess,
+  (success) => {
+    if (success) {
       open.value = false
       resetForm()
     }
@@ -143,24 +142,14 @@ watch(
           </Field>
           <Field>
             <FieldLabel for="minDaysToHarvest">Min Days To Harvest</FieldLabel>
-            <Input
-              v-model="form.minDaysToHarvest"
-              type="number"
-              id="minDaysToHarvest"
-              name="minDaysToHarvest"
-            />
+            <Input v-model="form.minDaysToHarvest" type="number" id="minDaysToHarvest" name="minDaysToHarvest" />
             <FieldError data-test="minDaysToHarvest" v-if="errors.minDaysToHarvest">
               {{ errors.minDaysToHarvest }}
             </FieldError>
           </Field>
           <Field>
             <FieldLabel for="maxDaysToHarvest">Max Days To Harvest</FieldLabel>
-            <Input
-              v-model="form.maxDaysToHarvest"
-              type="number"
-              id="maxDaysToHarvest"
-              name="maxDaysToHarvest"
-            />
+            <Input v-model="form.maxDaysToHarvest" type="number" id="maxDaysToHarvest" name="maxDaysToHarvest" />
             <FieldError data-test="maxDaysToHarvest" v-if="errors.maxDaysToHarvest">
               {{ errors.maxDaysToHarvest }}
             </FieldError>
@@ -175,11 +164,7 @@ watch(
             {{ isLoading ? "Saving..." : "Save" }}
           </Button>
         </DialogFooter>
-        <p
-          data-test="general-error"
-          v-if="errors.general"
-          class="text-sm text-red-500 m-2 text-center"
-        >
+        <p data-test="general-error" v-if="errors.general" class="text-sm text-red-500 m-2 text-center">
           {{ errors.general }}
         </p>
       </DialogContent>

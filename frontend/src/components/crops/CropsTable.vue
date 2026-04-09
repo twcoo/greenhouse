@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseDataTable from "@/components/BaseDataTable.vue"
 import { Crop } from "@/types/crop"
-import { columns } from "./CropsColumns"
+import { columns } from "./CropColumns"
 
 defineProps<{
   data: Crop[]

@@ -42,10 +42,14 @@ const form = reactive<cropsForm>({ ...props.cropsFormInitialState })
 const errors = ref<Record<string, string>>({})
 
 // Watch for crop to update change
-watch(() => props.cropsFormInitialState, (newVal) => {
-  Object.assign(form, newVal)
-  errors.value = {}
-}, { deep: true })
+watch(
+  () => props.cropsFormInitialState,
+  (newVal) => {
+    Object.assign(form, newVal)
+    errors.value = {}
+  },
+  { deep: true },
+)
 
 const handleSubmit = async (): Promise<void> => {
   const result = cropsSchema.safeParse(form)
@@ -67,21 +71,18 @@ const handleSubmit = async (): Promise<void> => {
 
 // Automatically reset the
 // form if it's closed and opened again
-watch(
-  open,
-  (isOpen) => {
-    if (!isOpen) {
-      errors.value = {}
-      Object.assign(form, props.cropsFormInitialState)
-    }
-  },
-)
+watch(open, (isOpen) => {
+  if (!isOpen) {
+    errors.value = {}
+    Object.assign(form, props.cropsFormInitialState)
+  }
+})
 
 // Automatically close on success
 watch(
   () => props.isUpdateSuccess,
   (success) => {
-    if (success) open.value = false;
+    if (success) open.value = false
   },
 )
 </script>
@@ -144,14 +145,24 @@ watch(
           </Field>
           <Field>
             <FieldLabel for="minDaysToHarvest">Min Days To Harvest</FieldLabel>
-            <Input v-model.number="form.minDaysToHarvest" type="number" id="minDaysToHarvest" name="minDaysToHarvest" />
+            <Input
+              v-model.number="form.minDaysToHarvest"
+              type="number"
+              id="minDaysToHarvest"
+              name="minDaysToHarvest"
+            />
             <FieldError data-test="minDaysToHarvest" v-if="errors.minDaysToHarvest">
               {{ errors.minDaysToHarvest }}
             </FieldError>
           </Field>
           <Field>
             <FieldLabel for="maxDaysToHarvest">Max Days To Harvest</FieldLabel>
-            <Input v-model.number="form.maxDaysToHarvest" type="number" id="maxDaysToHarvest" name="maxDaysToHarvest" />
+            <Input
+              v-model.number="form.maxDaysToHarvest"
+              type="number"
+              id="maxDaysToHarvest"
+              name="maxDaysToHarvest"
+            />
             <FieldError data-test="maxDaysToHarvest" v-if="errors.maxDaysToHarvest">
               {{ errors.maxDaysToHarvest }}
             </FieldError>
@@ -166,7 +177,11 @@ watch(
             {{ isLoading ? "Saving..." : "Save" }}
           </Button>
         </DialogFooter>
-        <p data-test="general-error" v-if="errors.general" class="text-sm text-red-500 m-2 text-center">
+        <p
+          data-test="general-error"
+          v-if="errors.general"
+          class="text-sm text-red-500 m-2 text-center"
+        >
           {{ errors.general }}
         </p>
       </DialogContent>
