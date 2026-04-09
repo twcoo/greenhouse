@@ -12,6 +12,7 @@ lint-backend:
 lint-frontend:
 	@pnpm format
 	@pnpm lint
+	@pnpm build
 	
 dev-backend:
 	@docker compose up --build --force-recreate 

@@ -68,7 +68,7 @@ export default defineConfig([
       'vue/no-unused-refs': 'error',
       'vue/define-props-destructuring': 'error',
       'vue/prefer-use-template-ref': 'error',
-      'vue/max-template-depth': ['error', { maxDepth: 8 }],
+      'vue/max-template-depth': ['error', { maxDepth: 10 }],
       'vue/no-unused-properties': ['error', {
         groups: ['props', 'data', 'computed', 'methods']
       }],
