@@ -35,7 +35,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: "submit", id: number, payload: cropPayload, onError: (err: unknown) => void): void
+  (e: "submit", id: number, payload: cropPayload, onError: (err: unknown) => Promise<void>): void
 }>()
 
 const form = reactive<cropsForm>({ ...props.cropsFormInitialState })
