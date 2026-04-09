@@ -1,9 +1,9 @@
 import { apiClient } from "@/api/client"
-import type { APIResponse, PaginatedAPIResponse } from "@/types/api"
+import type { APIResponse, PaginatedAPIResponse, PaginatedResponse } from "@/types/api"
 import type { Crop, cropPayload } from "@/types/crop"
 
 export const cropService = {
-  async getAll(page: number = 1, pageSize: number = 10): Promise<PaginatedAPIResponse<Crop>> {
+  async getAll(page: number = 1, pageSize: number = 10): Promise<PaginatedResponse<Crop>> {
     const response = await apiClient.get<PaginatedAPIResponse<Crop>>(
       `/crops/?page=${page}&page_size=${pageSize}`,
     )
@@ -11,9 +11,8 @@ export const cropService = {
     return response.data.data
   },
 
-  async create(payload: cropPayload): Promise<Crop> {
-    const response = await apiClient.post<APIResponse<Crop>>("/crops/", payload)
-    return response.data.data
+  async create(payload: cropPayload): Promise<void> {
+    await apiClient.post<APIResponse<Crop>>("/crops/", payload)
   },
 
   async update(id: number, payload: cropPayload): Promise<void> {
