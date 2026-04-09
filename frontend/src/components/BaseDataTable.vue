@@ -77,12 +77,14 @@ function getFilterOptions(columnKey: keyof TData) {
 
 const table = useVueTable({
   manualPagination: true,
-  rowCount: rowCount,
   get data() {
     return tableData
   },
   get columns() {
     return columns
+  },
+  get rowCount() {
+    return rowCount
   },
   meta: {
     delete: (id: number) => emit("delete", id),

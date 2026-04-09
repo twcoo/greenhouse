@@ -60,6 +60,7 @@ const handleUpdateCrop = async (
 
 const handleDeleteCrop = async (id: number): Promise<void> => {
   await deleteCrop(id)
+  pagination.value = { ...pagination.value, pageIndex: 0 }
 }
 </script>
 
