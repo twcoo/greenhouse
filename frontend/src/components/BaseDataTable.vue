@@ -35,7 +35,6 @@ const props = defineProps<{
   data: TData[]
   columns: ColumnDef<TData>[]
   filterableColumns?: (keyof TData)[]
-  rowCount: number
   pagination: Ref<PaginationState>
 }>()
 
@@ -77,7 +76,6 @@ function getFilterOptions(columnKey: keyof TData) {
 
 const table = useVueTable({
   manualPagination: true,
-  rowCount: props.rowCount,
   get data() {
     return props.data
   },

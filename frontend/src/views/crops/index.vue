@@ -12,27 +12,15 @@ import Button from "@/components/ui/button/Button.vue"
 const pagination = ref({ pageIndex: 0, pageSize: 10 })
 const openCreateDialog = ref<boolean>(false)
 
-const openUpdateDialog = ref<booelan>(false)
+const openUpdateDialog = ref<boolean>(false)
 const cropIdToUpdate = ref<number>(0)
 const cropUpdateFormState = ref<cropPayload | null>(null)
 
 const { crops, isLoading, isCreateSuccess, isUpdateSuccess, createCrop, updateCrop, deleteCrop } =
   useCrop(pagination)
 
-function handlePaginationChange(newState: { pageIndex: number; pageSize: number }) {
+const handlePaginationChange = (newState: { pageIndex: number; pageSize: number }) => {
   pagination.value = newState
-}
-
-async function handleCreateCrop(payload: cropPayload, onError: (err: any) => void): Promise<void> {
-  try {
-    await createCrop(payload)
-  } catch (err) {
-    onError(err)
-  }
-}
-
-async function handleDeleteCrop(id): Promise<void> {
-  await deleteCrop(id)
 }
 
 const setUpdateDialog = async (id: number, crop: cropPayload): Promise<void> => {
@@ -41,12 +29,31 @@ const setUpdateDialog = async (id: number, crop: cropPayload): Promise<void> => 
   openUpdateDialog.value = true
 }
 
-const handleUpdateCrop = async (id: number, payload: cropPayload, onError: (err: any) => void) => {
+const handleCreateCrop = async (
+  payload: cropPayload,
+  onError: (err: unknown) => void,
+): Promise<void> => {
+  try {
+    await createCrop(payload)
+  } catch (err) {
+    onError(err)
+  }
+}
+
+const handleUpdateCrop = async (
+  id: number,
+  payload: cropPayload,
+  onError: (err: unknown) => Promise<void>,
+) => {
   try {
     await updateCrop({ id, payload })
   } catch (err) {
     onError(err)
   }
+}
+
+const handleDeleteCrop = async (id: number): Promise<void> => {
+  await deleteCrop(id)
 }
 </script>
 
@@ -85,7 +92,6 @@ const handleUpdateCrop = async (id: number, payload: cropPayload, onError: (err:
     <CropsTable
       v-else
       :data="crops.results"
-      :rowCount="crops.count"
       :pagination="pagination"
       @pagination-change="handlePaginationChange"
       @delete="handleDeleteCrop"

@@ -67,7 +67,7 @@ const handleSubmit = async (): Promise<void> => {
 }
 
 // Automatically close and
-// reset form on success 
+// reset form on success
 const resetForm = (): void => {
   Object.assign(form, formInitialState)
   errors.value = {}
@@ -142,14 +142,24 @@ watch(
           </Field>
           <Field>
             <FieldLabel for="minDaysToHarvest">Min Days To Harvest</FieldLabel>
-            <Input v-model="form.minDaysToHarvest" type="number" id="minDaysToHarvest" name="minDaysToHarvest" />
+            <Input
+              v-model="form.minDaysToHarvest"
+              type="number"
+              id="minDaysToHarvest"
+              name="minDaysToHarvest"
+            />
             <FieldError data-test="minDaysToHarvest" v-if="errors.minDaysToHarvest">
               {{ errors.minDaysToHarvest }}
             </FieldError>
           </Field>
           <Field>
             <FieldLabel for="maxDaysToHarvest">Max Days To Harvest</FieldLabel>
-            <Input v-model="form.maxDaysToHarvest" type="number" id="maxDaysToHarvest" name="maxDaysToHarvest" />
+            <Input
+              v-model="form.maxDaysToHarvest"
+              type="number"
+              id="maxDaysToHarvest"
+              name="maxDaysToHarvest"
+            />
             <FieldError data-test="maxDaysToHarvest" v-if="errors.maxDaysToHarvest">
               {{ errors.maxDaysToHarvest }}
             </FieldError>
@@ -164,7 +174,11 @@ watch(
             {{ isLoading ? "Saving..." : "Save" }}
           </Button>
         </DialogFooter>
-        <p data-test="general-error" v-if="errors.general" class="text-sm text-red-500 m-2 text-center">
+        <p
+          data-test="general-error"
+          v-if="errors.general"
+          class="text-sm text-red-500 m-2 text-center"
+        >
           {{ errors.general }}
         </p>
       </DialogContent>
