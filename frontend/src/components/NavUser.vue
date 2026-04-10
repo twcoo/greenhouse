@@ -15,7 +15,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { User } from "@/types/user"
+import type { User } from "@/types/user"
 
 defineProps<{
   user: User
@@ -25,16 +25,18 @@ const emit = defineEmits(["logout"])
 
 const { isMobile } = useSidebar()
 
-function getInitials(username: string): string {
+const getInitials = (username: string): string => {
   if (!username) return ""
 
   const words = username.trim().split(/\s+/)
+  const first = words[0] || ""
+  const second = words[1] || ""
 
-  if (words.length === 1) {
-    return words[0].slice(0, 2).toUpperCase()
+  if (!second) {
+    return first.slice(0, 2).toUpperCase()
   }
 
-  return (words[0][0] + words[1][0]).toUpperCase()
+  return (first.charAt(0) + second.charAt(0)).toUpperCase()
 }
 
 const handleLogout = () => {

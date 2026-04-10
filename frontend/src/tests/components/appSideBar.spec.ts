@@ -7,6 +7,18 @@ import { useAuthStore } from "@/stores/authStore"
 const push = vi.fn()
 let logoutMock: ReturnType<typeof vi.fn>
 
+const createAuthStoreMock = (overrides = {}): ReturnType<typeof useAuthStore> =>
+  ({
+    user: { username: "krubus" },
+    logout: logoutMock,
+    isAuthenticated: true,
+    isLoading: false,
+    error: null,
+    login: vi.fn(),
+    clearAuth: vi.fn(),
+    ...overrides,
+  }) as unknown as ReturnType<typeof useAuthStore>
+
 vi.mock("vue-router", () => ({
   useRouter: () => ({
     push,
@@ -20,10 +32,7 @@ vi.mock("@/stores/authStore", () => ({
 beforeEach(() => {
   logoutMock = vi.fn().mockResolvedValue(undefined)
 
-  vi.mocked(useAuthStore).mockReturnValue({
-    user: { username: "krubus" },
-    logout: logoutMock,
-  })
+  vi.mocked(useAuthStore).mockReturnValue(createAuthStoreMock())
 })
 
 const mountComponent = () =>
@@ -47,10 +56,11 @@ describe("AppSidebar.vue", () => {
   })
 
   it("does not show NavUser when no user is logged in", (): void => {
-    vi.mocked(useAuthStore).mockReturnValueOnce({
-      user: null,
-      logout: vi.fn(),
-    })
+    vi.mocked(useAuthStore).mockReturnValueOnce(
+      createAuthStoreMock({
+        user: null,
+      }),
+    )
 
     const wrapper = mountComponent()
 

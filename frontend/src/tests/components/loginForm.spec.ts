@@ -16,13 +16,17 @@ vi.mock("@/stores/authStore", () => ({
 
 let loginMock: ReturnType<typeof vi.fn>
 
-const createAuthStoreMock = (overrides = {}) => ({
-  login: loginMock,
-  isAuthenticated: false,
-  loading: false,
-  error: "",
-  ...overrides,
-})
+const createAuthStoreMock = (overrides = {}): ReturnType<typeof useAuthStore> =>
+  ({
+    login: loginMock,
+    isAuthenticated: false,
+    isLoading: false,
+    error: null,
+    logout: vi.fn(),
+    clearAuth: vi.fn(),
+    user: null,
+    ...overrides,
+  }) as unknown as ReturnType<typeof useAuthStore>
 
 beforeEach((): void => {
   loginMock = vi.fn()
@@ -94,7 +98,7 @@ describe("LoginForm.vue", (): void => {
   it("disables button and shows loading state", (): void => {
     vi.mocked(useAuthStore).mockReturnValueOnce(
       createAuthStoreMock({
-        loading: true,
+        isLoading: true,
       }),
     )
 

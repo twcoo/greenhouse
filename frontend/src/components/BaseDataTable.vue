@@ -1,6 +1,12 @@
 <script setup lang="ts" generic="TData">
 import { ref, computed } from "vue"
-import type { ColumnDef, SortingState, ColumnFiltersState } from "@tanstack/vue-table"
+import type {
+  ColumnDef,
+  SortingState,
+  ColumnFiltersState,
+  FilterFn,
+  Row,
+} from "@tanstack/vue-table"
 import type { PaginationState } from "@/types/pagination"
 import {
   FlexRender,
@@ -50,11 +56,31 @@ const columnFilters = ref<ColumnFiltersState>([])
 const pageSizes = [5, 10, 20, 50]
 const searchTerm = ref("")
 
+/**
+ * We use a generic <TData> to represent the shape of your table row.
+ * We type filterValue as unknown initially, then narrow it.
+ */
+const includesMultiple: FilterFn<unknown> = (
+  row: Row<unknown>,
+  columnId: string,
+  filterValue: unknown,
+) => {
+  // 1. Narrowing: Ensure filterValue is actually an array
+  if (!Array.isArray(filterValue) || filterValue.length === 0) {
+    return true
+  }
+
+  // 2. Safely get and stringify the cell value
+  const cellValue = row.getValue(columnId)
+  const searchableValue = cellValue !== null && cellValue !== undefined ? String(cellValue) : ""
+
+  // 3. Narrowing: Ensure the array contains the value
+  // We cast to string[] here because we've already checked it's an array
+  return (filterValue as unknown[]).some((val) => String(val) === searchableValue)
+}
+
 const filterFns = {
-  includesMultiple: (row, columnId, filterValue) => {
-    if (!filterValue?.length) return true
-    return filterValue.includes(String(row.getValue(columnId)))
-  },
+  includesMultiple,
 }
 
 const filterOptionsMap = computed(() => {
@@ -65,13 +91,13 @@ const filterOptionsMap = computed(() => {
   }
   for (const item of tableData) {
     for (const col of filterableColumns) {
-      map[col as string].add(item[col])
+      map[col as string]?.add(item[col])
     }
   }
   return map
 })
 
-function getFilterOptions(columnKey: keyof TData) {
+const getFilterOptions = (columnKey: keyof TData) => {
   return [...(filterOptionsMap.value[columnKey as string] ?? [])]
 }
 
@@ -185,7 +211,11 @@ const pages = computed(() => {
               <SelectContent>
                 <SelectGroup>
                   <SelectItem :value="null">All</SelectItem>
-                  <SelectItem v-for="value in getFilterOptions(col)" :key="value" :value="value">
+                  <SelectItem
+                    v-for="value in getFilterOptions(col)"
+                    :key="String(value)"
+                    :value="value as any"
+                  >
                     {{ value }}
                   </SelectItem>
                 </SelectGroup>
@@ -236,7 +266,7 @@ const pages = computed(() => {
         <Label class="text-sm font-medium">Rows per page</Label>
         <Select
           :model-value="`${table.getState().pagination.pageSize}`"
-          @update:model-value="(val) => table.setPageSize(val)"
+          @update:model-value="(val) => table.setPageSize(val as number)"
         >
           <SelectTrigger class="w-20">
             <SelectValue />

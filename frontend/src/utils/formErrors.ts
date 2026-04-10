@@ -22,7 +22,7 @@ export function apiToFormErrors(
   }
 
   for (const key in apiErrors) {
-    errors[key] = apiErrors[key][0]
+    errors[key] = apiErrors[key]?.[0] ?? ""
   }
 
   return errors

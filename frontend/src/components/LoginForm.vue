@@ -6,14 +6,14 @@ import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field
 import { Input } from "@/components/ui/input"
 import { useRoute, useRouter } from "vue-router"
 import { useAuthStore } from "@/stores/authStore"
-import { authLoginSchema, type authLoginForm } from "@/schemas/auth.schema"
+import { authLoginSchema, type loginForm } from "@/schemas/auth.schema"
 import { IconLoader2 } from "@tabler/icons-vue"
 import { zodToFormErrors } from "@/utils/formErrors"
 
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
-const form = reactive<authLoginForm>({
+const form = reactive<loginForm>({
   username: "",
   password: "",
 })
@@ -33,8 +33,9 @@ async function handleSubmit(): Promise<void> {
 
   if (authStore.isAuthenticated) {
     const redirectTo = route.query?.redirectTo
+    const target = Array.isArray(redirectTo) ? redirectTo[0] : redirectTo
 
-    router.push(redirectTo || { name: "dashboard" })
+    router.push(target || { name: "dashboard" })
   }
 }
 </script>
@@ -72,9 +73,9 @@ async function handleSubmit(): Promise<void> {
               </FieldError>
             </Field>
             <Field>
-              <Button type="submit" :disabled="authStore.loading">
-                <IconLoader2 v-if="authStore.loading" :size="18" class="animate-spin" />
-                {{ authStore.loading ? "Logging in..." : "Login" }}
+              <Button type="submit" :disabled="authStore.isLoading">
+                <IconLoader2 v-if="authStore.isLoading" :size="18" class="animate-spin" />
+                {{ authStore.isLoading ? "Logging in..." : "Login" }}
               </Button>
             </Field>
           </FieldGroup>

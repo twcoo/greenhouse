@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="TData">
+<script setup lang="ts">
 import { ref } from "vue"
 import { MoreHorizontal } from "lucide-vue-next"
 import { Button } from "@/components/ui/button"
@@ -27,7 +27,7 @@ interface RowProps {
   row: {
     original: Crop
   }
-  table: Table<TData>
+  table: Table<Crop>
 }
 
 const { row, table } = defineProps<RowProps>()
@@ -35,7 +35,7 @@ const { row, table } = defineProps<RowProps>()
 const isDeleteDialogOpen = ref<boolean>(false)
 
 const handleUpdate = async (id: number, crop: Crop) => {
-  await table.options.meta.update(id, crop)
+  await table.options.meta?.update(id, crop)
 }
 
 const handleDelete = () => {
@@ -43,7 +43,7 @@ const handleDelete = () => {
 }
 
 const confirmDelete = async (id: number) => {
-  await table.options.meta.delete(id)
+  await table.options.meta?.delete(id)
 }
 </script>
 

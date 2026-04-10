@@ -50,7 +50,7 @@ apiClient.interceptors.response.use(
       authStore.error = "Your session has expired. Please login again."
 
       const redirectTo = router.currentRoute.value.name
-      router.push({ name: "login", query: { redirectTo: redirectTo } })
+      router.push({ name: "login", query: { redirectTo: redirectTo as string } })
     }
 
     return Promise.reject(error)

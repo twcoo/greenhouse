@@ -39,9 +39,9 @@ describe("SetupAdminForm.vue", (): void => {
   it("renders form fields", (): void => {
     const wrapper = mountComponent()
 
-    expect(wrapper.get("#username").exists()).toBe(true)
-    expect(wrapper.get("#password").exists()).toBe(true)
-    expect(wrapper.get("#password2").exists()).toBe(true)
+    expect(wrapper.find("#username").exists()).toBe(true)
+    expect(wrapper.find("#password").exists()).toBe(true)
+    expect(wrapper.find("#password2").exists()).toBe(true)
   })
 
   it("shows validation errors on empty submit", async (): Promise<void> => {

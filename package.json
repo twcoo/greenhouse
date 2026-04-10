@@ -20,6 +20,8 @@
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/vue-query": "^5.96.1",
     "@tanstack/vue-table": "^8.21.3",
+    "@types/humps": "^2.0.6",
+    "@types/js-cookie": "^3.0.6",
     "@unovis/ts": "^1.6.4",
     "@unovis/vue": "^1.6.4",
     "@vueuse/core": "^14.2.1",
