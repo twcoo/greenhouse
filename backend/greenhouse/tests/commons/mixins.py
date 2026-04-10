@@ -22,9 +22,9 @@ class RequiredAuthTestsMixin:
         return self.client.generic(method=self.http_method, path=self.url)
 
     def authenticate(self):
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token}")
+        self.client.cookies["token"] = self.token
 
-    def test_required_auth_header(self):
+    def test_required_auth_cookie(self):
         response = self._request()
 
         response_json = response.json()
@@ -33,11 +33,11 @@ class RequiredAuthTestsMixin:
         self.assertIsNone(response_json["data"])
         self.assertEqual(
             response_json["message"],
-            "Authentication credentials were not provided.",
+            "No credentials provided.",
         )
 
     def test_required_valid_token(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Token Invalid Token")
+        self.client.cookies["token"] = "Invalid Token"
 
         response = self._request()
 
