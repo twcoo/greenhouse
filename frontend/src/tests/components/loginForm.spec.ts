@@ -11,10 +11,12 @@ vi.mock("@/stores/authStore", () => ({
 }))
 
 beforeEach((): void => {
-  vi.mocked(useAuthStore).mockReturnValue(createAuthStoreMock({
-    isAuthenticated: false,
-    user: null,
-  }))
+  vi.mocked(useAuthStore).mockReturnValue(
+    createAuthStoreMock({
+      isAuthenticated: false,
+      user: null,
+    }),
+  )
 })
 
 const mountComponent = () =>

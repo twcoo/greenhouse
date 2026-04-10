@@ -23,5 +23,8 @@
     "frontend/src/**/*.ts",
     "frontend/src/**/*.tsx",
     "frontend/src/**/*.vue"
+  ],
+  "exclude": [
+    "frontend/src/tests/**/*"
   ]
 }
