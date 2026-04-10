@@ -318,7 +318,9 @@ MIN_AND_MAX_DAYS_HARVEST_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
         "status": "error",
         "data": None,
         "message": {
-            "min_days_to_harvest": ["Cannot be greater than max_days_to_harvest."],
+            "min_days_to_harvest": [
+                "Cannot be greater than max_days_to_harvest."
+            ],
             "max_days_to_harvest": ["Cannot be less than min_days_to_harvest."],
         },
     },
@@ -499,7 +501,9 @@ PLANTING_LOCATION_POT_HEIGHT_REQUIRED_VALIDATION_RESPONSE_EXAMPLE = OpenApiExamp
     value={
         "status": "error",
         "data": None,
-        "message": {"height": ["Height is required for pot or nursery pot locations."]},
+        "message": {
+            "height": ["Height is required for pot or nursery pot locations."]
+        },
     },
 )
 
@@ -613,7 +617,9 @@ GROUND_LOCATION_HEIGHT_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
     value={
         "status": "error",
         "data": None,
-        "message": {"height": ["Height must not be provided for ground locations."]},
+        "message": {
+            "height": ["Height must not be provided for ground locations."]
+        },
     },
 )
 
@@ -625,7 +631,9 @@ POT_LOCATION_LENGTH_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
     value={
         "status": "error",
         "data": None,
-        "message": {"length": ["Length must not be provided for ground locations."]},
+        "message": {
+            "length": ["Length must not be provided for ground locations."]
+        },
     },
 )
 
@@ -698,7 +706,9 @@ UPLOAD_IMAGE_UNSUPPORTED_EXTENSION_ERROR_EXAMPLE = OpenApiExample(
         "status": "error",
         "data": None,
         "message": {
-            "image": ["Unsupported file extension. Please upload a .jpg or .png image."]
+            "image": [
+                "Unsupported file extension. Please upload a .jpg or .png image."
+            ]
         },
     },
 )
