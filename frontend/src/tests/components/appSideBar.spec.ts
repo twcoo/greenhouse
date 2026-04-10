@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import AppSidebar from "@/components/AppSidebar.vue"
 import { createTestingPinia } from "@pinia/testing"
 import { useAuthStore } from "@/stores/authStore"
+import { IconDashboard, IconPlant, IconMap2 } from "@tabler/icons-vue"
 
 const push = vi.fn()
 let logoutMock: ReturnType<typeof vi.fn>
@@ -88,15 +89,18 @@ describe("AppSidebar.vue", () => {
     expect(items).toEqual([
       expect.objectContaining({
         title: "Dashboard",
-        url: "#",
+        to: { name: "dashboard" },
+        icon: IconDashboard,
       }),
       expect.objectContaining({
         title: "Crops",
-        url: "#",
+        to: { name: "crops" },
+        icon: IconPlant,
       }),
       expect.objectContaining({
         title: "Planting Locations",
-        url: "#",
+        to: { name: "planting-locations" },
+        icon: IconMap2,
       }),
     ])
   })

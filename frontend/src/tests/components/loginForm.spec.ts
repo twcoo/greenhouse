@@ -8,6 +8,7 @@ const push = vi.fn()
 
 vi.mock("vue-router", () => ({
   useRouter: () => ({ push }),
+  useRoute: () => ({ query: {} }),
 }))
 
 vi.mock("@/stores/authStore", () => ({
