@@ -43,3 +43,6 @@
 ## Security
 - No committed secrets (.env).
 - Protected API endpoints by default.
+
+## Agent Interaction
+- Always provide a brief, technical explanation of actions taken or planned when executing a task.
