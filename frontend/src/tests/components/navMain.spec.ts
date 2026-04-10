@@ -1,5 +1,5 @@
 import { mount, RouterLinkStub } from "@vue/test-utils"
-import { describe, it, expect, } from "vitest"
+import { describe, it, expect } from "vitest"
 import NavMain from "@/components/NavMain.vue"
 import { defineComponent, h } from "vue"
 
@@ -49,7 +49,7 @@ describe("NavMain.vue", () => {
     const wrapper = mountComponent()
     const text = wrapper.text()
 
-    mockItems.forEach(item => {
+    mockItems.forEach((item) => {
       expect(text).toContain(item.title)
     })
   })
@@ -71,9 +71,7 @@ describe("NavMain.vue", () => {
 
   it("does not render icon when not provided", () => {
     const wrapper = mountComponent({
-      items: [
-        { title: "No Icon", to: "/no-icon" }
-      ]
+      items: [{ title: "No Icon", to: "/no-icon" }],
     })
 
     const icons = wrapper.findAll('[data-test="nav-icon"]')
