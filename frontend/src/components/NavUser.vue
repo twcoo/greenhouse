@@ -54,7 +54,9 @@ const handleLogout = () => {
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <Avatar class="h-8 w-8 rounded-lg grayscale">
-              <AvatarFallback class="rounded-lg">{{ getInitials(user?.username) }}</AvatarFallback>
+              <AvatarFallback data-test="avatar-fallback" class="rounded-lg"
+                >{{ getInitials(user?.username) }}
+              </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
               <span class="truncate font-medium">{{ user?.username }}</span>
@@ -71,7 +73,7 @@ const handleLogout = () => {
           <DropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar class="h-8 w-8 rounded-lg">
-                <AvatarFallback class="rounded-lg">{{
+                <AvatarFallback data-test="avatar-fallback-mobile" class="rounded-lg">{{
                   getInitials(user?.username)
                 }}</AvatarFallback>
               </Avatar>
@@ -81,7 +83,7 @@ const handleLogout = () => {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem @click="handleLogout">
+          <DropdownMenuItem @select="handleLogout" data-test="logout">
             <IconLogout />
             Log out
           </DropdownMenuItem>
