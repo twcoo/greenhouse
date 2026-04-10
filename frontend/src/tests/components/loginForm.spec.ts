@@ -3,38 +3,18 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import LoginForm from "@/components/LoginForm.vue"
 import { useAuthStore } from "@/stores/authStore"
 import { createTestingPinia } from "@pinia/testing"
-
-const push = vi.fn()
-
-vi.mock("vue-router", () => ({
-  useRouter: () => ({ push }),
-  useRoute: () => ({ query: {} }),
-}))
+import { createAuthStoreMock } from "../utils/test-utils"
+import { mockPush } from "../setup"
 
 vi.mock("@/stores/authStore", () => ({
   useAuthStore: vi.fn(),
 }))
 
-let loginMock: ReturnType<typeof vi.fn>
-
-const createAuthStoreMock = (overrides = {}): ReturnType<typeof useAuthStore> =>
-  ({
-    login: loginMock,
-    isAuthenticated: false,
-    isLoading: false,
-    error: null,
-    logout: vi.fn(),
-    clearAuth: vi.fn(),
-    user: null,
-    ...overrides,
-  }) as unknown as ReturnType<typeof useAuthStore>
-
 beforeEach((): void => {
-  loginMock = vi.fn()
-
-  vi.mocked(useAuthStore).mockReturnValue(createAuthStoreMock())
-
-  push.mockClear()
+  vi.mocked(useAuthStore).mockReturnValue(createAuthStoreMock({
+    isAuthenticated: false,
+    user: null,
+  }))
 })
 
 const mountComponent = () =>
@@ -63,11 +43,10 @@ describe("LoginForm.vue", (): void => {
   })
 
   it("calls login and redirects on success", async (): Promise<void> => {
-    vi.mocked(useAuthStore).mockReturnValueOnce(
-      createAuthStoreMock({
-        isAuthenticated: true,
-      }),
-    )
+    const storeMock = createAuthStoreMock({
+      isAuthenticated: true,
+    })
+    vi.mocked(useAuthStore).mockReturnValue(storeMock)
 
     const wrapper = mountComponent()
 
@@ -76,12 +55,11 @@ describe("LoginForm.vue", (): void => {
 
     await wrapper.find("form").trigger("submit.prevent")
 
-    expect(loginMock).toHaveBeenCalledWith({
+    expect(storeMock.login).toHaveBeenCalledWith({
       username: "krubus",
       password: "123456",
     })
-
-    expect(push).toHaveBeenCalledWith({ name: "dashboard" })
+    expect(mockPush).toHaveBeenCalledWith({ name: "dashboard" })
   })
 
   it("displays general error from store", (): void => {

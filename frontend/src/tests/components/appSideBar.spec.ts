@@ -4,35 +4,14 @@ import AppSidebar from "@/components/AppSidebar.vue"
 import { createTestingPinia } from "@pinia/testing"
 import { useAuthStore } from "@/stores/authStore"
 import { IconDashboard, IconPlant, IconMap2 } from "@tabler/icons-vue"
-
-const push = vi.fn()
-let logoutMock: ReturnType<typeof vi.fn>
-
-const createAuthStoreMock = (overrides = {}): ReturnType<typeof useAuthStore> =>
-  ({
-    user: { username: "krubus" },
-    logout: logoutMock,
-    isAuthenticated: true,
-    isLoading: false,
-    error: null,
-    login: vi.fn(),
-    clearAuth: vi.fn(),
-    ...overrides,
-  }) as unknown as ReturnType<typeof useAuthStore>
-
-vi.mock("vue-router", () => ({
-  useRouter: () => ({
-    push,
-  }),
-}))
+import { createAuthStoreMock } from "../utils/test-utils"
+import { mockPush } from "../setup"
 
 vi.mock("@/stores/authStore", () => ({
   useAuthStore: vi.fn(),
 }))
 
 beforeEach(() => {
-  logoutMock = vi.fn().mockResolvedValue(undefined)
-
   vi.mocked(useAuthStore).mockReturnValue(createAuthStoreMock())
 })
 
@@ -73,8 +52,8 @@ describe("AppSidebar.vue", () => {
 
     await wrapper.findComponent({ name: "NavUser" }).vm.$emit("logout")
 
-    expect(logoutMock).toHaveBeenCalled()
-    expect(push).toHaveBeenCalledWith({ name: "login" })
+    expect(vi.mocked(useAuthStore)().logout).toHaveBeenCalled()
+    expect(mockPush).toHaveBeenCalledWith({ name: "login" })
   })
 
   it("passes correct navMain items to NavMain", (): void => {

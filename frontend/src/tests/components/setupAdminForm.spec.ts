@@ -1,22 +1,11 @@
 import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import SetupAdminForm from "@/components/SetupAdminForm.vue"
-import { createRouter, createWebHistory } from "vue-router"
 import { createTestingPinia } from "@pinia/testing"
+import { mockPush } from "../setup"
 
-const push = vi.fn()
 const setupAdminMock = vi.fn()
 const loadingMock = vi.fn(() => false)
-
-vi.mock("vue-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("vue-router")>()
-  return {
-    ...actual,
-    useRouter: () => ({
-      push,
-    }),
-  }
-})
 
 vi.mock("@/composables/useSetup", () => ({
   useSetup: () => ({
@@ -27,14 +16,6 @@ vi.mock("@/composables/useSetup", () => ({
   }),
 }))
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    { path: "/setup", component: { render: () => null } },
-    { path: "/dashboard", name: "dashboard", component: { render: () => null } },
-  ],
-})
-
 const mountComponent = () =>
   mount(SetupAdminForm, {
     global: {
@@ -42,7 +23,6 @@ const mountComponent = () =>
         createTestingPinia({
           createSpy: vi.fn,
         }),
-        router,
       ],
     },
   })
@@ -50,7 +30,6 @@ const mountComponent = () =>
 beforeEach((): void => {
   vi.clearAllMocks()
   loadingMock.mockReturnValue(false)
-  push.mockClear()
 })
 
 describe("SetupAdminForm.vue", (): void => {
@@ -144,6 +123,6 @@ describe("SetupAdminForm.vue", (): void => {
       password2: "password123",
     })
 
-    expect(push).toHaveBeenCalledWith({ name: "dashboard" })
+    expect(mockPush).toHaveBeenCalledWith({ name: "dashboard" })
   })
 })

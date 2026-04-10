@@ -17,7 +17,8 @@ const config = defineConfig({
 const tstConfig = testConfig({
   test: {
     environment: "jsdom",
-    globals: true
+    globals: true,
+    setupFiles: ["./frontend/src/tests/setup.ts"]
   },
 })
 
