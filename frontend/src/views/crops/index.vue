@@ -10,6 +10,8 @@ import type { cropPayload } from "@/types/crop"
 import type { cropsForm } from "@/schemas/crops.schemas"
 import Button from "@/components/ui/button/Button.vue"
 
+const searchTerm = ref<string>("")
+
 // Pagination Refs
 const pagination = ref({ pageIndex: 0, pageSize: 10 })
 
@@ -83,6 +85,7 @@ const handleDeleteCrop = async (id: number): Promise<void> => {
     <!-- Update Crop Dialog -->
     <CropUpdateDialog
       v-if="cropUpdateFormState"
+      v-model:searchTerm="searchTerm"
       v-model:open="openUpdateDialog"
       :id="cropIdToUpdate"
       :cropsFormInitialState="cropUpdateFormState"
@@ -102,6 +105,7 @@ const handleDeleteCrop = async (id: number): Promise<void> => {
       v-else-if="crops"
       :data="crops.results"
       :rowCount="crops.count"
+      :searchTerm="searchTerm"
       :pagination="pagination"
       @pagination-change="handlePaginationChange"
       @delete="handleDeleteCrop"

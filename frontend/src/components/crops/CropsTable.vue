@@ -4,6 +4,8 @@ import type { Crop } from "@/types/crop"
 import { columns } from "./CropColumns"
 import type { PaginationState } from "@/types/pagination"
 
+const searchTerm = defineModel<string>("searchTerm", { default: "" })
+
 defineProps<{
   data: Crop[]
   rowCount: number
@@ -13,6 +15,7 @@ defineProps<{
 
 <template>
   <BaseDataTable
+    v-model:searchTerm="searchTerm"
     :tableData="data"
     :columns="columns"
     :filterableColumns="['category', 'sunlightRequirement']"

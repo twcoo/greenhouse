@@ -37,11 +37,14 @@ import { Label } from "@/components/ui/label"
 import { toTitleCase } from "@/utils/formatting"
 import { IconGhost2 } from "@tabler/icons-vue"
 
+const searchTerm = defineModel<string>("searchTerm", { default: "" })
+
 const { tableData, columns, filterableColumns, rowCount, pagination } = defineProps<{
   tableData: TData[]
   columns: ColumnDef<TData>[]
   filterableColumns?: (keyof TData)[]
   rowCount: number
+  searchTerm: string
   pagination: PaginationState
 }>()
 
@@ -54,7 +57,6 @@ const emit = defineEmits<{
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const pageSizes = [5, 10, 20, 50]
-const searchTerm = ref("")
 
 /**
  * We use a generic <TData> to represent the shape of your table row.
