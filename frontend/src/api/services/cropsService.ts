@@ -3,10 +3,18 @@ import type { APIResponse, PaginatedAPIResponse, PaginatedResponse } from "@/typ
 import type { Crop, cropPayload } from "@/types/crop"
 
 export const cropService = {
-  async getAll(page: number = 1, pageSize: number = 10): Promise<PaginatedResponse<Crop>> {
-    const response = await apiClient.get<PaginatedAPIResponse<Crop>>(
-      `/crops/?page=${page}&page_size=${pageSize}`,
-    )
+  async getAll(
+    page: number = 1,
+    pageSize: number = 10,
+    search: string = "",
+  ): Promise<PaginatedResponse<Crop>> {
+    const response = await apiClient.get<PaginatedAPIResponse<Crop>>("/crops/", {
+      params: {
+        page,
+        page_size: pageSize,
+        search: search || undefined,
+      },
+    })
 
     return response.data.data
   },
