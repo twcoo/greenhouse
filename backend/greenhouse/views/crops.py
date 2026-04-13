@@ -2,6 +2,7 @@ from typing import Any
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
@@ -52,6 +53,8 @@ class CropListAPIView(
     mixins.CreateModelMixin,
     GenericAPIView,
 ):
+    filter_backends = [SearchFilter]
+    search_fields = ["name", "scientific_name"]
     authentication_classes = [CustomAuthentication]
     permission_classes = [IsAuthenticated]
 
