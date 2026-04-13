@@ -44,7 +44,6 @@ const { tableData, columns, filterableColumns, rowCount, pagination } = definePr
   columns: ColumnDef<TData>[]
   filterableColumns?: (keyof TData)[]
   rowCount: number
-  searchTerm: string
   pagination: PaginationState
 }>()
 
@@ -105,6 +104,7 @@ const getFilterOptions = (columnKey: keyof TData) => {
 
 const table = useVueTable({
   manualPagination: true,
+  manualFiltering: true,
   get data() {
     return tableData
   },

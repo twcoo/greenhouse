@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
+import { watchDebounced } from "@vueuse/core"
 import AppLayout from "@/layouts/AppLayout.vue"
 import CropsTable from "@/components/crops/CropsTable.vue"
 import CropCreateDialog from "@/components/crops/CropCreateDialog.vue"
@@ -10,6 +11,7 @@ import type { cropPayload } from "@/types/crop"
 import type { cropsForm } from "@/schemas/crops.schemas"
 import Button from "@/components/ui/button/Button.vue"
 
+// Search Refs
 const searchTerm = ref<string>("")
 
 // Pagination Refs
@@ -24,10 +26,18 @@ const cropIdToUpdate = ref<number>(0)
 const cropUpdateFormState = ref<cropsForm | null>(null)
 
 // Crop Composable
-const { crops, isLoading, isCreateSuccess, isUpdateSuccess, createCrop, updateCrop, deleteCrop } =
-  useCrop(pagination)
+const {
+  crops,
+  isLoading,
+  isCreateSuccess,
+  isUpdateSuccess,
+  createCrop,
+  updateCrop,
+  deleteCrop,
+  fetchCrops,
+} = useCrop(pagination, searchTerm)
 
-const handlePaginationChange = (newState: { pageIndex: number; pageSize: number }) => {
+const handlePaginationChange = (newState: { pageIndex: number; pageSize: number }): void => {
   pagination.value = newState
 }
 
@@ -64,6 +74,14 @@ const handleDeleteCrop = async (id: number): Promise<void> => {
   await deleteCrop(id)
   pagination.value = { ...pagination.value, pageIndex: 0 }
 }
+
+watchDebounced(
+  searchTerm,
+  () => {
+    fetchCrops()
+  },
+  { debounce: 500 },
+)
 </script>
 
 <template>
@@ -105,7 +123,7 @@ const handleDeleteCrop = async (id: number): Promise<void> => {
       v-else-if="crops"
       :data="crops.results"
       :rowCount="crops.count"
-      :searchTerm="searchTerm"
+      v-model:searchTerm="searchTerm"
       :pagination="pagination"
       @pagination-change="handlePaginationChange"
       @delete="handleDeleteCrop"
