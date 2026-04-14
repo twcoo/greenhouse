@@ -114,8 +114,11 @@ watchDebounced(
     </CropUpdateDialog>
 
     <!-- Crops Table -->
-    <div v-if="isLoading && !crops?.results?.length">
-      <IconLoader2 class="animate-spin" />
+    <div
+      v-if="isLoading && !crops?.results?.length"
+      class="fixed inset-0 flex flex-col items-center justify-center bg-white/50"
+    >
+      <IconLoader2 class="animate-spin h-10 w-10 mb-2" />
       <span>Fetching crops...</span>
     </div>
 
