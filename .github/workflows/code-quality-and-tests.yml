@@ -7,6 +7,29 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: greenhouse
+          POSTGRES_PASSWORD: greenhouse
+          POSTGRES_DB: greenhouse
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      SECRET_KEY: ci-secret-key-not-used-in-production
+      BACKEND_TEST_DB_HOST: localhost
+      BACKEND_DB_USER: greenhouse
+      BACKEND_DB_PASSWORD: greenhouse
+      BACKEND_DB_NAME: greenhouse
+
     steps:
       - uses: actions/checkout@v4
 
@@ -31,8 +54,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Install Node.js
         uses: actions/setup-node@v4
