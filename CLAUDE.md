@@ -50,6 +50,10 @@ Database: PostgreSQL only. Never manually create or edit migration files — use
 - **UI**: reka-ui (shadcn/ui port) + Tailwind CSS 4. All components use `<script setup lang="ts">`.
 - **Validation**: Zod schemas for all form/request validation.
 
+### Settings (`backend/core/settings.py`)
+
+Do not modify `settings.py`. If a task requires a settings change (e.g. adding a new env var, changing a default, registering an app), stop and tell the user what change is needed and why — let them decide whether to apply it.
+
 ### Key Conventions
 
 - All API endpoints require `IsAuthenticated` permission — no public endpoints except `/auth/login/`, `/auth/logout/`, and `/setup/`.
