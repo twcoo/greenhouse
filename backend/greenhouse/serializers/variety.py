@@ -20,9 +20,7 @@ class VarietySerializer(serializers.ModelSerializer):
         help_text="ID of the crop this variety belongs to.",
     )
     growth_habit = serializers.ListField(
-        child=serializers.ChoiceField(
-            choices=Variety.GROWTH_HABIT_CHOICES
-        ),
+        child=serializers.ChoiceField(choices=Variety.GROWTH_HABIT_CHOICES),
         default=list,
         help_text=(
             "Growth habit of the variety. "
@@ -34,9 +32,7 @@ class VarietySerializer(serializers.ModelSerializer):
         fields = super().get_fields()
         request = self.context.get("request")
         if request and request.user.is_authenticated:
-            fields["crop"].queryset = Crop.objects.filter(
-                user=request.user
-            )
+            fields["crop"].queryset = Crop.objects.filter(user=request.user)
         return fields
 
     class Meta:

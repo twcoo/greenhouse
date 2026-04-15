@@ -3,7 +3,18 @@ from .crops import (CropCreateApiViewTests, CropDeleteApiViewTests,
                     CropGetApiViewTests, CropImageUploadApiViewTests,
                     CropListApiViewTests, CropPartialUpdateApiViewTests,
                     CropUpdateApiViewTests)
+from .planting_location import (PlantingLocationCreateApiViewTests,
+                                PlantingLocationDeleteApiViewTests,
+                                PlantingLocationGetApiViewTests,
+                                PlantingLocationImageUploadApiViewTests,
+                                PlantingLocationListApiViewTests,
+                                PlantingLocationPartialUpdateApiViewTests,
+                                PlantingLocationUpdateApiViewTests)
 from .setup import SetupAdminTests, SetupStatusTests
+from .variety import (VarietyCreateApiViewTests, VarietyDeleteApiViewTests,
+                      VarietyGetApiViewTests, VarietyListApiViewTests,
+                      VarietyPartialUpdateApiViewTests,
+                      VarietyUpdateApiViewTests)
 
 __all__ = [
     "SetupAdminTests",
@@ -17,4 +28,17 @@ __all__ = [
     "CropPartialUpdateApiViewTests",
     "CropUpdateApiViewTests",
     "CropImageUploadApiViewTests",
+    "PlantingLocationListApiViewTests",
+    "PlantingLocationCreateApiViewTests",
+    "PlantingLocationGetApiViewTests",
+    "PlantingLocationUpdateApiViewTests",
+    "PlantingLocationPartialUpdateApiViewTests",
+    "PlantingLocationDeleteApiViewTests",
+    "PlantingLocationImageUploadApiViewTests",
+    "VarietyListApiViewTests",
+    "VarietyCreateApiViewTests",
+    "VarietyGetApiViewTests",
+    "VarietyUpdateApiViewTests",
+    "VarietyPartialUpdateApiViewTests",
+    "VarietyDeleteApiViewTests",
 ]

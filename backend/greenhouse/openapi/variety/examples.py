@@ -5,9 +5,7 @@ from ..shared.examples import RESOURCE_NOT_FOUND_RESPONSE
 VARIETY_SERIALIZER_EXAMPLE = OpenApiExample(
     name="Variety",
     summary="Variety serializer example",
-    description=(
-        "Example paginated response containing a list of varieties."
-    ),
+    description=("Example paginated response containing a list of varieties."),
     value={
         "id": 1,
         "name": "Sun Gold",
@@ -43,9 +41,7 @@ UPDATE_VARIETY_REQUEST_EXAMPLE = OpenApiExample(
 PARTIAL_UPDATE_VARIETY_REQUEST_EXAMPLE = OpenApiExample(
     name="Partially update variety payload",
     summary="Partially update a variety",
-    description=(
-        "Example request payload for partially updating a variety."
-    ),
+    description=("Example request payload for partially updating a variety."),
     value={
         "growth_habit": ["DETERMINATE"],
     },
@@ -56,8 +52,7 @@ CREATE_VARIETY_RESPONSE_EXAMPLE = OpenApiExample(
     name="Variety created example",
     summary="Successfully created variety",
     description=(
-        "Example response returned after a variety is "
-        "successfully created."
+        "Example response returned after a variety is " "successfully created."
     ),
     value={
         "status": "success",
@@ -75,8 +70,7 @@ RETRIEVE_VARIETY_RESPONSE_EXAMPLE = OpenApiExample(
     name="Variety detail",
     summary="Retrieve a variety by ID",
     description=(
-        "Example response returning variety details for the "
-        "specified ID."
+        "Example response returning variety details for the " "specified ID."
     ),
     value={
         "status": "success",
@@ -94,8 +88,7 @@ UPDATE_VARIETY_RESPONSE_EXAMPLE = OpenApiExample(
     name="Variety updated",
     summary="Variety updated successfully",
     description=(
-        "Example response indicating the variety was "
-        "successfully updated."
+        "Example response indicating the variety was " "successfully updated."
     ),
     value={
         "status": "success",

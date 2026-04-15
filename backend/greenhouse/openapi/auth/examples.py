@@ -30,9 +30,7 @@ AUTH_LOGIN_REQUEST_EXAMPLE = OpenApiExample(
 
 AUTH_LOGIN_RESPONSE_EXAMPLE = OpenApiExample(
     name="Successful login",
-    description=(
-        "Example response returned after successful login."
-    ),
+    description=("Example response returned after successful login."),
     status_codes=["200"],
     response_only=True,
     value={
@@ -45,8 +43,7 @@ AUTH_LOGIN_RESPONSE_EXAMPLE = OpenApiExample(
 AUTH_LOGIN_UNAUTHORIZED_RESPONSE_EXAMPLE = OpenApiExample(
     name="Invalid provided credentials",
     description=(
-        "Example response returned when logging in with "
-        "invalid credentials."
+        "Example response returned when logging in with " "invalid credentials."
     ),
     status_codes=["401"],
     response_only=True,
@@ -59,9 +56,7 @@ AUTH_LOGIN_UNAUTHORIZED_RESPONSE_EXAMPLE = OpenApiExample(
 
 AUTH_LOGOUT_RESPONSE_EXAMPLE = OpenApiExample(
     name="Successful logout",
-    description=(
-        "Example response returned after successful logout."
-    ),
+    description=("Example response returned after successful logout."),
     status_codes=["200"],
     response_only=True,
     value={

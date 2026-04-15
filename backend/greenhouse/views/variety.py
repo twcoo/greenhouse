@@ -8,23 +8,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
 from ..models import Variety
-from ..openapi.variety.examples import (
-    CREATE_VARIETY_REQUEST_EXAMPLE,
-    PARTIAL_UPDATE_VARIETY_REQUEST_EXAMPLE,
-    UPDATE_VARIETY_REQUEST_EXAMPLE,
-)
+from ..openapi.variety.examples import (CREATE_VARIETY_REQUEST_EXAMPLE,
+                                        PARTIAL_UPDATE_VARIETY_REQUEST_EXAMPLE,
+                                        UPDATE_VARIETY_REQUEST_EXAMPLE)
 from ..openapi.variety.parameters import VARIETY_ID_PARAM
 from ..openapi.variety.responses import (
-    VARIETY_CREATE_VALIDATION_RESPONSE,
-    VARIETY_CREATED_RESPONSE,
-    VARIETY_DELETE_RESPONSE,
-    VARIETY_LIST_RESPONSE,
-    VARIETY_NOT_FOUND_RESPONSE,
-    VARIETY_PARTIAL_UPDATE_VALIDATION_RESPONSE,
-    VARIETY_RETRIEVE_RESPONSE,
-    VARIETY_UPDATE_RESPONSE,
-    VARIETY_UPDATE_VALIDATION_RESPONSE,
-)
+    VARIETY_CREATE_VALIDATION_RESPONSE, VARIETY_CREATED_RESPONSE,
+    VARIETY_DELETE_RESPONSE, VARIETY_LIST_RESPONSE, VARIETY_NOT_FOUND_RESPONSE,
+    VARIETY_PARTIAL_UPDATE_VALIDATION_RESPONSE, VARIETY_RETRIEVE_RESPONSE,
+    VARIETY_UPDATE_RESPONSE, VARIETY_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import VarietySerializer
 from ..utils.api import CustomAuthentication
 
@@ -69,9 +61,7 @@ class VarietyListApiView(
     serializer_class = VarietySerializer
 
     def get_queryset(self):
-        return Variety.objects.filter(
-            crop__user=self.request.user
-        )
+        return Variety.objects.filter(crop__user=self.request.user)
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.list(request, *args, **kwargs)
@@ -106,9 +96,7 @@ class VarietyListApiView(
     patch=extend_schema(
         tags=["Variety"],
         summary="Partially update a variety",
-        description=(
-            "Partially updates an existing variety record by ID."
-        ),
+        description=("Partially updates an existing variety record by ID."),
         parameters=VARIETY_ID_PARAM,
         examples=[PARTIAL_UPDATE_VARIETY_REQUEST_EXAMPLE],
         responses={
@@ -140,9 +128,7 @@ class VarietyDetailAPIView(
     serializer_class = VarietySerializer
 
     def get_queryset(self):
-        return Variety.objects.filter(
-            crop__user=self.request.user
-        )
+        return Variety.objects.filter(crop__user=self.request.user)
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.retrieve(request, *args, **kwargs)

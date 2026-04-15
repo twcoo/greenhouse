@@ -2,9 +2,8 @@ from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
 from ..models import PlantingLocation
-from ..openapi.planting_location.examples import (
-    PLANTING_LOCATION_SERIALIZER_EXAMPLE,
-)
+from ..openapi.planting_location.examples import \
+    PLANTING_LOCATION_SERIALIZER_EXAMPLE
 from .utils import UploadImageSerializer
 
 

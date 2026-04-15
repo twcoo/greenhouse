@@ -11,26 +11,23 @@ SETUP_ADMIN_REQUEST_EXAMPLE = OpenApiExample(
     request_only=True,
 )
 
-SETUP_ADMIN_REQUIRED_FIELDS_VALIDATION_RESPONSE_EXAMPLE = (
-    OpenApiExample(
-        name="Missing required fields",
-        description=(
-            "Example response returned when required fields are "
-            "missing in the request payload."
-        ),
-        status_codes=["400"],
-        response_only=True,
-        value={
-            "status": "error",
-            "data": None,
-            "message": {
-                "non_field_errors": [
-                    "Admin user already exists. "
-                    "Setup cannot be run again."
-                ]
-            },
+SETUP_ADMIN_REQUIRED_FIELDS_VALIDATION_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Missing required fields",
+    description=(
+        "Example response returned when required fields are "
+        "missing in the request payload."
+    ),
+    status_codes=["400"],
+    response_only=True,
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "non_field_errors": [
+                "Admin user already exists. " "Setup cannot be run again."
+            ]
         },
-    )
+    },
 )
 
 SETUP_ADMIN_ALREADY_EXISTS_RESPONSE_EXAMPLE = OpenApiExample(
@@ -46,8 +43,7 @@ SETUP_ADMIN_ALREADY_EXISTS_RESPONSE_EXAMPLE = OpenApiExample(
         "data": None,
         "message": {
             "non_field_errors": [
-                "Admin user already exists. "
-                "Setup cannot be run again."
+                "Admin user already exists. " "Setup cannot be run again."
             ]
         },
     },
@@ -88,8 +84,7 @@ SETUP_ADMIN_CREATED_RESPONSE_EXAMPLE = OpenApiExample(
 SETUP_STATUS_OK_RESPONSE_EXAMPLE = OpenApiExample(
     name="Setup status OK",
     description=(
-        "Example response returned when the application "
-        "setup status is OK."
+        "Example response returned when the application " "setup status is OK."
     ),
     status_codes=["200"],
     response_only=True,

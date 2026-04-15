@@ -7,7 +7,9 @@ from .commons.factories import CropFactory, UserFactory, VarietyFactory
 from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixin
 
 
-class VarietyListApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase):
+class VarietyListApiViewTests(
+    RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase
+):
     def setUp(self):
         super().setUp()
         self.url = reverse("variety-list-create")
@@ -112,7 +114,9 @@ class VarietyCreateApiViewTests(
         self.assertEqual(data["name"], self.payload["name"])
         self.assertEqual(data["crop"], self.crop.id)
         self.assertEqual(data["growth_habit"], self.payload["growth_habit"])
-        self.assertTrue(Variety.objects.filter(name=self.payload["name"]).exists())
+        self.assertTrue(
+            Variety.objects.filter(name=self.payload["name"]).exists()
+        )
         self.assertIsNone(message)
 
     def test_create_variety_missing_required_fields(self):
@@ -146,7 +150,8 @@ class VarietyCreateApiViewTests(
         self.assertEqual(response_status, "error")
         self.assertIsNone(data)
         self.assertEqual(
-            message, {"growth_habit": {"0": ['"INVALID_VALUE" is not a valid choice.']}}
+            message,
+            {"growth_habit": {"0": ['"INVALID_VALUE" is not a valid choice.']}},
         )
 
     def test_create_variety_with_crop_not_owned_by_user(self):
@@ -169,7 +174,9 @@ class VarietyCreateApiViewTests(
         )
 
 
-class VarietyGetApiViewTests(RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase):
+class VarietyGetApiViewTests(
+    RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase
+):
     def setUp(self):
         super().setUp()
         self.crop = CropFactory(user=self.user)
@@ -264,7 +271,9 @@ class VarietyUpdateApiViewTests(
     def test_update_variety_not_found(self):
         self.authenticate()
 
-        response = self.client.put(self.url_not_found, self.payload, format="json")
+        response = self.client.put(
+            self.url_not_found, self.payload, format="json"
+        )
 
         response_status, data, message = self.get_response_data(response)
 
@@ -305,7 +314,8 @@ class VarietyUpdateApiViewTests(
         self.assertIsNone(data)
 
         self.assertEqual(
-            message, {"growth_habit": {"0": ['"INVALID_VALUE" is not a valid choice.']}}
+            message,
+            {"growth_habit": {"0": ['"INVALID_VALUE" is not a valid choice.']}},
         )
 
 
@@ -315,7 +325,9 @@ class VarietyPartialUpdateApiViewTests(
     def setUp(self):
         super().setUp()
         self.crop = CropFactory(user=self.user)
-        self.variety = VarietyFactory(crop=self.crop, growth_habit=["INDETERMINATE"])
+        self.variety = VarietyFactory(
+            crop=self.crop, growth_habit=["INDETERMINATE"]
+        )
         self.url = reverse("variety-detail", args=[self.variety.id])
         self.url_not_found = reverse("variety-detail", args=[9999])
 

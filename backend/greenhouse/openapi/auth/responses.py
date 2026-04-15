@@ -1,13 +1,11 @@
 from drf_spectacular.utils import OpenApiResponse
 
 from ..shared.schemas import CustomOpenAPIResponseSchema
-from .examples import (
-    AUTH_LOGIN_RESPONSE_EXAMPLE,
-    AUTH_LOGIN_UNAUTHORIZED_RESPONSE_EXAMPLE,
-    AUTH_LOGOUT_RESPONSE_EXAMPLE,
-    AUTH_LOGOUT_UNAUTHORIZED_RESPONSE_EXAMPLE,
-    AUTH_VALIDATION_RESPONSE_EXAMPLE,
-)
+from .examples import (AUTH_LOGIN_RESPONSE_EXAMPLE,
+                       AUTH_LOGIN_UNAUTHORIZED_RESPONSE_EXAMPLE,
+                       AUTH_LOGOUT_RESPONSE_EXAMPLE,
+                       AUTH_LOGOUT_UNAUTHORIZED_RESPONSE_EXAMPLE,
+                       AUTH_VALIDATION_RESPONSE_EXAMPLE)
 from .schemas import AUTH_RESPONSE_DATA_SCHEMA
 
 AUTH_LOGIN_RESPONSE = OpenApiResponse(

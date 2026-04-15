@@ -16,14 +16,10 @@ class CustomOpenAPIResponseSchema:
         response_message_example: Optional[Any] = None,
         additional_required_data_fields: Optional[list[str]] = [],
     ):
-        self.response_status_example = Status(
-            response_status_example
-        ).value
+        self.response_status_example = Status(response_status_example).value
         self.data_serializer = data_serializer
         self.response_message_example = response_message_example
-        self.additional_required_data_fields = (
-            additional_required_data_fields
-        )
+        self.additional_required_data_fields = additional_required_data_fields
 
     def _map_field(self, field: serializers.Field) -> dict[str, Any]:
         schema: dict[str, Any] = {}
@@ -63,8 +59,7 @@ class CustomOpenAPIResponseSchema:
 
             if getattr(field, "required", False) or (
                 self.additional_required_data_fields
-                and field_name
-                in self.additional_required_data_fields
+                and field_name in self.additional_required_data_fields
             ):
                 required.append(field_name)
 
@@ -78,9 +73,7 @@ class CustomOpenAPIResponseSchema:
         if not self.data_serializer:
             return {}
 
-        if isinstance(
-            self.data_serializer, serializers.ListSerializer
-        ):
+        if isinstance(self.data_serializer, serializers.ListSerializer):
             return {
                 "type": "array",
                 "items": self._map_serializer_fields(
@@ -88,9 +81,7 @@ class CustomOpenAPIResponseSchema:
                 ),
             }
 
-        return self._map_serializer_fields(
-            serializer=self.data_serializer()
-        )
+        return self._map_serializer_fields(serializer=self.data_serializer())
 
     def get_schema(self) -> Mapping[str, Any]:
         data_schema = (
@@ -104,15 +95,12 @@ class CustomOpenAPIResponseSchema:
             "properties": {
                 "status": {
                     "type": "string",
-                    "description": (
-                        "The status of the API response."
-                    ),
+                    "description": ("The status of the API response."),
                     "example": self.response_status_example,
                 },
                 "data": {
                     "description": (
-                        "An object containing the data "
-                        "returned by the API."
+                        "An object containing the data " "returned by the API."
                     ),
                     **data_schema,
                 },

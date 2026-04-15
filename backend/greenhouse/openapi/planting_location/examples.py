@@ -5,8 +5,7 @@ from ..shared.examples import RESOURCE_NOT_FOUND_RESPONSE
 PLANTING_LOCATION_SERIALIZER_EXAMPLE = OpenApiExample(
     name="Planting Location",
     description=(
-        "Example paginated response containing a list of "
-        "planting locations."
+        "Example paginated response containing a list of " "planting locations."
     ),
     value={
         "id": 1,
@@ -129,9 +128,7 @@ PLANTING_LOCATION_GROUND_LENGTH_REQUIRED_VALIDATION_RESPONSE_EXAMPLE = (
         value={
             "status": "error",
             "data": None,
-            "message": {
-                "length": ["Length is required for ground locations."]
-            },
+            "message": {"length": ["Length is required for ground locations."]},
         },
     )
 )
@@ -229,8 +226,7 @@ PARTIAL_UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE = OpenApiExample(
     name="Partially update planting location payload",
     summary="Partially update a planting location",
     description=(
-        "Example request payload for partially updating a "
-        "planting location."
+        "Example request payload for partially updating a " "planting location."
     ),
     value={
         "length": "10.00",
@@ -250,9 +246,7 @@ GROUND_LOCATION_HEIGHT_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
         "status": "error",
         "data": None,
         "message": {
-            "height": [
-                "Height must not be provided for ground locations."
-            ]
+            "height": ["Height must not be provided for ground locations."]
         },
     },
 )
@@ -269,9 +263,7 @@ POT_LOCATION_LENGTH_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
         "status": "error",
         "data": None,
         "message": {
-            "length": [
-                "Length must not be provided for ground locations."
-            ]
+            "length": ["Length must not be provided for ground locations."]
         },
     },
 )

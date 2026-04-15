@@ -3,19 +3,16 @@ from drf_spectacular.utils import OpenApiResponse
 from ...serializers import VarietySerializer
 from ..shared.examples import NO_DATA_RESPONSE_EXAMPLE
 from ..shared.schemas import CustomOpenAPIResponseSchema
-from .examples import (
-    CREATE_VARIETY_RESPONSE_EXAMPLE,
-    RETRIEVE_VARIETY_RESPONSE_EXAMPLE,
-    UPDATE_VARIETY_RESPONSE_EXAMPLE,
-    VARIETY_NOT_FOUND_RESPONSE_EXAMPLE,
-    VARIETY_REQUIRED_FIELDS_EXAMPLE,
-)
+from .examples import (CREATE_VARIETY_RESPONSE_EXAMPLE,
+                       RETRIEVE_VARIETY_RESPONSE_EXAMPLE,
+                       UPDATE_VARIETY_RESPONSE_EXAMPLE,
+                       VARIETY_NOT_FOUND_RESPONSE_EXAMPLE,
+                       VARIETY_REQUIRED_FIELDS_EXAMPLE)
 from .schemas import VARIETY_RESPONSE_DATA_SCHEMA
 
 VARIETY_LIST_RESPONSE = OpenApiResponse(
     description=(
-        "Paginated list of varieties belonging to the "
-        "authenticated user."
+        "Paginated list of varieties belonging to the " "authenticated user."
     ),
     response=VarietySerializer,
 )

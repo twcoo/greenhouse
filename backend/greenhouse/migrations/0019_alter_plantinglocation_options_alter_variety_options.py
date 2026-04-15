@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('greenhouse', '0018_alter_crop_image_alter_crop_user'),
+        ("greenhouse", "0018_alter_crop_image_alter_crop_user"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='plantinglocation',
-            options={'ordering': ['-created_at']},
+            name="plantinglocation",
+            options={"ordering": ["-created_at"]},
         ),
         migrations.AlterModelOptions(
-            name='variety',
-            options={'ordering': ['-created_at']},
+            name="variety",
+            options={"ordering": ["-created_at"]},
         ),
     ]

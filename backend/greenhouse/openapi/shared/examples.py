@@ -56,9 +56,7 @@ UPLOAD_IMAGE_TOO_LARGE_ERROR_EXAMPLE = OpenApiExample(
     value={
         "status": "error",
         "data": None,
-        "message": {
-            "image": ["File too large. Size should not exceed 2.0MB."]
-        },
+        "message": {"image": ["File too large. Size should not exceed 2.0MB."]},
     },
 )
 
