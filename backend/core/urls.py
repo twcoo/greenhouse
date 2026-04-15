@@ -27,6 +27,10 @@ urlpatterns = [
         f"api/{settings.API_VERSION}/planting-locations/",
         include("greenhouse.urls.planting_location"),
     ),
+    path(
+        f"api/{settings.API_VERSION}/varieties/",
+        include("greenhouse.urls.variety"),
+    ),
 ]
 
 if settings.DEBUG:
