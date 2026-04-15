@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from ..models import Crop
-from ..openapi.examples import CROP_SERIALIZER_EXAMPLE
+from ..openapi.crop.examples import CROP_SERIALIZER_EXAMPLE
 from .utils import UploadImageSerializer
 
 

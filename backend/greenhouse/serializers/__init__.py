@@ -3,6 +3,7 @@ from .auth import (KnoxLoginRequestSerializer, KnoxLoginResponseSerializer,
 from .crops import CropImageSerializer, CropSerializer
 from .planting_location import (PlantingLocationImageSerializer,
                                 PlantingLocationSerializer)
+from .variety import VarietySerializer
 
 __all__ = [
     "KnoxLoginRequestSerializer",
@@ -12,4 +13,5 @@ __all__ = [
     "CropImageSerializer",
     "PlantingLocationSerializer",
     "PlantingLocationImageSerializer",
+    "VarietySerializer",
 ]
