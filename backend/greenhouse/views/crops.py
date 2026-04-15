@@ -9,19 +9,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
 from ..models import Crop
-from ..openapi.examples import (CREATE_CROP_REQUEST_EXAMPLE,
-                                CROP_UPLOAD_IMAGE_REQUEST_EXAMPLE,
-                                PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE,
-                                UPDATE_CROP_REQUEST_EXAMPLE)
-from ..openapi.parameters import CROP_ID_PARAM
-from ..openapi.responses import (CROP_CREATE_VALIDATION_RESPONSE,
-                                 CROP_CREATED_RESPONSE, CROP_DELETE_RESPONSE,
-                                 CROP_IMAGE_UPLOAD_VALIDATION_RESPONSE,
-                                 CROP_IMAGE_UPLOADED_RESPONSE,
-                                 CROP_LIST_RESPONSE, CROP_NOT_FOUND_RESPONSE,
-                                 CROP_PARTIAL_UPDATE_VALIDATION_RESPONSE,
-                                 CROP_RETRIEVE_RESPONSE, CROP_UPDATE_RESPONSE,
-                                 CROP_UPDATE_VALIDATION_RESPONSE)
+from ..openapi.crop.examples import (CREATE_CROP_REQUEST_EXAMPLE,
+                                     CROP_UPLOAD_IMAGE_REQUEST_EXAMPLE,
+                                     PARTIAL_UPDATE_CROP_REQUEST_EXAMPLE,
+                                     UPDATE_CROP_REQUEST_EXAMPLE)
+from ..openapi.crop.parameters import CROP_ID_PARAM
+from ..openapi.crop.responses import (CROP_CREATE_VALIDATION_RESPONSE,
+                                      CROP_CREATED_RESPONSE,
+                                      CROP_DELETE_RESPONSE,
+                                      CROP_IMAGE_UPLOAD_VALIDATION_RESPONSE,
+                                      CROP_IMAGE_UPLOADED_RESPONSE,
+                                      CROP_LIST_RESPONSE,
+                                      CROP_NOT_FOUND_RESPONSE,
+                                      CROP_PARTIAL_UPDATE_VALIDATION_RESPONSE,
+                                      CROP_RETRIEVE_RESPONSE,
+                                      CROP_UPDATE_RESPONSE,
+                                      CROP_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import CropImageSerializer, CropSerializer
 from ..utils.api import CustomAuthentication
 
@@ -30,7 +33,11 @@ from ..utils.api import CustomAuthentication
     get=extend_schema(
         tags=["Crop"],
         summary="List crops",
-        description="Retrieve all crop records.",
+        description=(
+            "Returns a paginated list of crop records associated "
+            "with the currently authenticated user. Results are "
+            "scoped per user."
+        ),
         responses={
             200: CROP_LIST_RESPONSE,
         },
@@ -38,7 +45,10 @@ from ..utils.api import CustomAuthentication
     post=extend_schema(
         tags=["Crop"],
         summary="Create crop",
-        description="Create a new crop record.",
+        description=(
+            "Create a new crop record. The crop will automatically "
+            "be associated with the authenticated user."
+        ),
         examples=[
             CREATE_CROP_REQUEST_EXAMPLE,
         ],

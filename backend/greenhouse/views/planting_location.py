@@ -9,21 +9,25 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
 from ..models import PlantingLocation
-from ..openapi.examples import (
+from ..openapi.planting_location.examples import (
     CREATE_PLANTING_LOCATION_REQUEST_GROUND_EXAMPLE,
     CREATE_PLANTING_LOCATION_REQUEST_POT_EXAMPLE,
     PARTIAL_UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE,
     PLANTING_LOCATION_UPLOAD_IMAGE_REQUEST_EXAMPLE,
     UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE)
-from ..openapi.parameters import PLANTING_LOCATION_ID_PARAM
-from ..openapi.responses import (
+from ..openapi.planting_location.parameters import (
+    PLANTING_LOCATION_ID_PARAM)
+from ..openapi.planting_location.responses import (
     PLANTING_LOCATION_CREATE_VALIDATION_RESPONSE,
-    PLANTING_LOCATION_CREATED_RESPONSE, PLANTING_LOCATION_DELETE_RESPONSE,
+    PLANTING_LOCATION_CREATED_RESPONSE,
+    PLANTING_LOCATION_DELETE_RESPONSE,
     PLANTING_LOCATION_IMAGE_UPLOAD_VALIDATION_RESPONSE,
-    PLANTING_LOCATION_IMAGE_UPLOADED_RESPONSE, PLANTING_LOCATION_LIST_RESPONSE,
+    PLANTING_LOCATION_IMAGE_UPLOADED_RESPONSE,
+    PLANTING_LOCATION_LIST_RESPONSE,
     PLANTING_LOCATION_NOT_FOUND_RESPONSE,
     PLANTING_LOCATION_PARTIAL_UPDATE_VALIDATION_RESPONSE,
-    PLANTING_LOCATION_RETRIEVE_RESPONSE, PLANTING_LOCATION_UPDATE_RESPONSE,
+    PLANTING_LOCATION_RETRIEVE_RESPONSE,
+    PLANTING_LOCATION_UPDATE_RESPONSE,
     PLANTING_LOCATION_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import (PlantingLocationImageSerializer,
                            PlantingLocationSerializer)
@@ -46,8 +50,9 @@ from ..utils.api import CustomAuthentication
         tags=["Planting Location"],
         summary="Create planting location",
         description=(
-            "Create a new planting location record. The location will automatically "
-            "be associated with the authenticated user."
+            "Create a new planting location record. The planting "
+            "location will automatically be associated with the "
+            "authenticated user."
         ),
         examples=[
             CREATE_PLANTING_LOCATION_REQUEST_GROUND_EXAMPLE,

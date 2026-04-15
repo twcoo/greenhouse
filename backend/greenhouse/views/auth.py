@@ -12,13 +12,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from ..openapi.examples import AUTH_LOGIN_REQUEST_EXAMPLE
-from ..openapi.parameters import CSRFTOKEN_PARAM
-from ..openapi.responses import (AUTH_LOGIN_RESPONSE,
-                                 AUTH_LOGIN_UNAUTHORIZED_RESPONSE,
-                                 AUTH_LOGIN_VALIDATION_RESPONSE,
-                                 AUTH_LOGOUT_RESPONSE,
-                                 AUTH_LOGOUT_UNAUTHORIZED_RESPONSE)
+from ..openapi.auth.examples import AUTH_LOGIN_REQUEST_EXAMPLE
+from ..openapi.auth.responses import (AUTH_LOGIN_RESPONSE,
+                                      AUTH_LOGIN_UNAUTHORIZED_RESPONSE,
+                                      AUTH_LOGIN_VALIDATION_RESPONSE,
+                                      AUTH_LOGOUT_RESPONSE,
+                                      AUTH_LOGOUT_UNAUTHORIZED_RESPONSE)
+from ..openapi.shared.parameters import CSRFTOKEN_PARAM
 from ..serializers import KnoxLoginRequestSerializer
 from ..utils.api import CustomAuthentication
 from ..utils.cookie import get_token_max_age

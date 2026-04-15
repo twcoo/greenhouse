@@ -4,6 +4,7 @@ from .planting_location import (PlantingLocationDetailAPIView,
                                 PlantingLocationListApiView,
                                 PlantingLocationUploadImageView)
 from .setup import SetupAdminView, SetupStatusView
+from .variety import VarietyDetailAPIView, VarietyListApiView
 
 __all__ = [
     "SetupAdminView",
@@ -16,4 +17,6 @@ __all__ = [
     "PlantingLocationListApiView",
     "PlantingLocationDetailAPIView",
     "PlantingLocationUploadImageView",
+    "VarietyListApiView",
+    "VarietyDetailAPIView",
 ]

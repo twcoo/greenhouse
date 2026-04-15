@@ -9,11 +9,11 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..openapi.examples import SETUP_ADMIN_REQUEST_EXAMPLE
-from ..openapi.responses import (SETUP_ADMIN_CREATED_RESPONSE,
-                                 SETUP_ADMIN_VALIDATION_RESPONSE,
-                                 SETUP_STATUS_OK_RESPONSE,
-                                 SETUP_STATUS_VALIDATION_RESPONSE)
+from ..openapi.setup.examples import SETUP_ADMIN_REQUEST_EXAMPLE
+from ..openapi.setup.responses import (SETUP_ADMIN_CREATED_RESPONSE,
+                                       SETUP_ADMIN_VALIDATION_RESPONSE,
+                                       SETUP_STATUS_OK_RESPONSE,
+                                       SETUP_STATUS_VALIDATION_RESPONSE)
 from ..serializers import RegisterSerializer
 from ..utils.cookie import get_token_max_age
 
