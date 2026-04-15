@@ -191,18 +191,4 @@ describe("BaseDataTable.vue", () => {
 
     expect(wrapper.text()).toContain("No results found.")
   })
-
-  it("disables previous button if not data is available", async () => {
-    const wrapper = mountComponent({
-      tableData: sampleData,
-      columns: sampleColumns,
-      rowCount: 0,
-      pagination: samplePagination,
-    })
-
-    const input = wrapper.find("input")
-    await input.setValue("unknown")
-
-    expect(wrapper.text()).toContain("No results found.")
-  })
 })
