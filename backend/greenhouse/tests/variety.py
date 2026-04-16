@@ -134,6 +134,7 @@ class VarietyCreateApiViewTests(
             {
                 "name": ["This field is required."],
                 "crop": ["This field is required."],
+                "growth_habit": ["This field is required."],
             },
         )
 

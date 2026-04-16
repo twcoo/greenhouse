@@ -21,7 +21,6 @@ class VarietySerializer(serializers.ModelSerializer):
     )
     growth_habit = serializers.ListField(
         child=serializers.ChoiceField(choices=Variety.GROWTH_HABIT_CHOICES),
-        default=list,
         help_text=(
             "Growth habit of the variety. "
             "Accepted values: DETERMINATE, INDETERMINATE."

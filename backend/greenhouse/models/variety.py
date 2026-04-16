@@ -14,7 +14,6 @@ class Variety(models.Model):
     crop = models.ForeignKey(Crop, on_delete=models.CASCADE)
     growth_habit = ArrayField(
         models.CharField(max_length=15, choices=GROWTH_HABIT_CHOICES),
-        default=list,
     )
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -126,6 +126,7 @@ VARIETY_REQUIRED_FIELDS_EXAMPLE = OpenApiExample(
         "message": {
             "name": ["This field is required."],
             "crop": ["This field is required."],
+            "growth_habit": ["This field is required."],
         },
     },
 )
