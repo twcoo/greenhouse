@@ -19,6 +19,9 @@ class VarietySerializer(serializers.ModelSerializer):
         queryset=Crop.objects.none(),
         help_text="ID of the crop this variety belongs to.",
     )
+    crop_name = serializers.SerializerMethodField(
+        help_text="Name of the crop this variety belongs to.",
+    )
     growth_habit = serializers.ListField(
         child=serializers.ChoiceField(choices=Variety.GROWTH_HABIT_CHOICES),
         help_text=(
@@ -26,6 +29,9 @@ class VarietySerializer(serializers.ModelSerializer):
             "Accepted values: DETERMINATE, INDETERMINATE."
         ),
     )
+
+    def get_crop_name(self, obj: Variety) -> str:
+        return str(obj.crop.name)
 
     def get_fields(self):
         fields = super().get_fields()
@@ -36,4 +42,4 @@ class VarietySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Variety
-        fields = ("id", "name", "crop", "growth_habit")
+        fields = ("id", "name", "crop", "crop_name", "growth_habit")

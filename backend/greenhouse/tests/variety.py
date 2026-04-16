@@ -113,6 +113,7 @@ class VarietyCreateApiViewTests(
         self.assertIsNotNone(data["id"])
         self.assertEqual(data["name"], self.payload["name"])
         self.assertEqual(data["crop"], self.crop.id)
+        self.assertEqual(data["crop_name"], self.crop.name)
         self.assertEqual(data["growth_habit"], self.payload["growth_habit"])
         self.assertTrue(
             Variety.objects.filter(name=self.payload["name"]).exists()
@@ -200,6 +201,7 @@ class VarietyGetApiViewTests(
                 "id": self.variety.id,
                 "name": self.variety.name,
                 "crop": self.crop.id,
+                "crop_name": self.crop.name,
                 "growth_habit": self.variety.growth_habit,
             },
         )
@@ -264,7 +266,10 @@ class VarietyUpdateApiViewTests(
             data,
             {
                 "id": self.variety.id,
-                **self.payload,
+                "name": self.payload["name"],
+                "crop": self.crop.id,
+                "crop_name": self.crop.name,
+                "growth_habit": self.payload["growth_habit"],
             },
         )
         self.assertIsNone(message)
@@ -349,6 +354,7 @@ class VarietyPartialUpdateApiViewTests(
                 "id": self.variety.id,
                 "name": self.variety.name,
                 "crop": self.crop.id,
+                "crop_name": self.crop.name,
                 "growth_habit": ["DETERMINATE"],
             },
         )
