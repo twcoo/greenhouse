@@ -21,16 +21,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import type { Crop } from "@/types/crop"
-import type { Table } from "@tanstack/vue-table"
+import type { TableRowProps } from "@/types/table"
 
-interface RowProps {
-  row: {
-    original: Crop
-  }
-  table: Table<Crop>
-}
-
-const { row, table } = defineProps<RowProps>()
+const { row, table } = defineProps<TableRowProps<Crop>>()
 
 const isDeleteDialogOpen = ref<boolean>(false)
 
