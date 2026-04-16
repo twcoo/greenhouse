@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IconDashboard, IconPlant, IconMap2, IconHomeEco } from "@tabler/icons-vue"
+import { IconDashboard, IconPlant, IconMap2, IconHomeEco, IconSeeding } from "@tabler/icons-vue"
 
 import NavMain from "@/components/NavMain.vue"
 import NavUser from "@/components/NavUser.vue"
@@ -34,6 +34,11 @@ const data = {
       title: "Planting Locations",
       to: { name: "planting-locations" },
       icon: IconMap2,
+    },
+    {
+      title: "Varieties",
+      to: { name: "varieties" },
+      icon: IconSeeding,
     },
   ],
 }
