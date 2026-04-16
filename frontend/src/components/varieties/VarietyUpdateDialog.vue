@@ -146,17 +146,27 @@ watch(
             <FieldLabel>Growth Habit</FieldLabel>
             <div class="flex flex-col gap-2 mt-1">
               <div class="flex items-center gap-2 text-sm">
-                <input type="checkbox" id="update-determinate" :checked="form.growthHabit.includes('DETERMINATE')"
+                <input
+                  type="checkbox"
+                  id="update-determinate"
+                  :checked="form.growthHabit.includes('DETERMINATE')"
                   @change="
                     toggleGrowthHabit('DETERMINATE', ($event.target as HTMLInputElement).checked)
-                    " class="h-4 w-4 rounded border border-input cursor-pointer accent-primary" />
+                  "
+                  class="h-4 w-4 rounded border border-input cursor-pointer accent-primary"
+                />
                 <label for="update-determinate" class="cursor-pointer">Determinate</label>
               </div>
               <div class="flex items-center gap-2 text-sm">
-                <input type="checkbox" id="update-indeterminate" :checked="form.growthHabit.includes('INDETERMINATE')"
+                <input
+                  type="checkbox"
+                  id="update-indeterminate"
+                  :checked="form.growthHabit.includes('INDETERMINATE')"
                   @change="
                     toggleGrowthHabit('INDETERMINATE', ($event.target as HTMLInputElement).checked)
-                    " class="h-4 w-4 rounded border border-input cursor-pointer accent-primary" />
+                  "
+                  class="h-4 w-4 rounded border border-input cursor-pointer accent-primary"
+                />
                 <label for="update-indeterminate" class="cursor-pointer">Indeterminate</label>
               </div>
             </div>
@@ -174,7 +184,11 @@ watch(
             {{ isLoading ? "Saving..." : "Save" }}
           </Button>
         </DialogFooter>
-        <p data-test="general-error" v-if="errors.general" class="text-sm text-red-500 m-2 text-center">
+        <p
+          data-test="general-error"
+          v-if="errors.general"
+          class="text-sm text-red-500 m-2 text-center"
+        >
           {{ errors.general }}
         </p>
       </DialogContent>

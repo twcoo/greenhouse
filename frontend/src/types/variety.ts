@@ -2,6 +2,7 @@ export interface Variety {
   id: number
   name: string
   crop: number
+  cropName: string
   growthHabit: string[]
 }
 

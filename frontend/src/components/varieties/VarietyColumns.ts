@@ -13,10 +13,10 @@ export const columns: ColumnDef<Variety>[] = [
     enableSorting: true,
   },
   {
-    id: "crop",
-    accessorKey: "crop",
+    id: "cropName",
+    accessorKey: "cropName",
     header: "Crop",
-    cell: ({ row }) => h("div", String(row.getValue("crop"))),
+    cell: ({ row }) => h("div", row.getValue("cropName")),
     enableSorting: true,
   },
   {

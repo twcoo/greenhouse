@@ -92,24 +92,43 @@ watchDebounced(
         <IconPlus />
         <span class="hidden lg:inline">Add Variety</span>
       </Button>
-      <VarietyCreateDialog v-model:open="openCreateDialog" :isLoading="isLoading" :isCreateSuccess="isCreateSuccess"
-        @submit="handleCreateVariety" />
+      <VarietyCreateDialog
+        v-model:open="openCreateDialog"
+        :isLoading="isLoading"
+        :isCreateSuccess="isCreateSuccess"
+        @submit="handleCreateVariety"
+      />
     </div>
 
     <!-- Update Variety Dialog -->
-    <VarietyUpdateDialog v-if="varietyUpdateFormState" v-model:open="openUpdateDialog" :id="varietyIdToUpdate"
-      :varietyFormInitialState="varietyUpdateFormState" :isLoading="isLoading" :isUpdateSuccess="isUpdateSuccess"
-      @submit="handleUpdateVariety" />
+    <VarietyUpdateDialog
+      v-if="varietyUpdateFormState"
+      v-model:open="openUpdateDialog"
+      :id="varietyIdToUpdate"
+      :varietyFormInitialState="varietyUpdateFormState"
+      :isLoading="isLoading"
+      :isUpdateSuccess="isUpdateSuccess"
+      @submit="handleUpdateVariety"
+    />
 
     <!-- Varieties Table -->
-    <div v-if="isLoading && !varieties?.results?.length"
-      class="fixed inset-0 flex flex-col items-center justify-center bg-white/50">
+    <div
+      v-if="isLoading && !varieties?.results?.length"
+      class="fixed inset-0 flex flex-col items-center justify-center bg-white/50"
+    >
       <IconLoader2 class="animate-spin h-10 w-10 mb-2" />
       <span>Fetching varieties...</span>
     </div>
 
-    <VarietiesTable v-else-if="varieties" :data="varieties.results" :rowCount="varieties.count"
-      v-model:searchTerm="searchTerm" :pagination="pagination" @pagination-change="handlePaginationChange"
-      @delete="handleDeleteVariety" @update="setUpdateDialog" />
+    <VarietiesTable
+      v-else-if="varieties"
+      :data="varieties.results"
+      :rowCount="varieties.count"
+      v-model:searchTerm="searchTerm"
+      :pagination="pagination"
+      @pagination-change="handlePaginationChange"
+      @delete="handleDeleteVariety"
+      @update="setUpdateDialog"
+    />
   </AppLayout>
 </template>

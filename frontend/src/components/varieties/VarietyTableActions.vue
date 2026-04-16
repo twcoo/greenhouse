@@ -63,12 +63,16 @@ const confirmDelete = async (id: number): Promise<void> => {
         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
         <AlertDialogDescription>
           This action cannot be undone. This will permanently delete the record for
-          <span class="font-semibold text-foreground">{{ row.original.name || "this item" }}</span>.
+          <span class="font-semibold text-foreground">{{ row.original.name || "this item" }}</span
+          >.
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction @click="confirmDelete(row.original.id)" class="bg-red-600 hover:bg-red-700">
+        <AlertDialogAction
+          @click="confirmDelete(row.original.id)"
+          class="bg-red-600 hover:bg-red-700"
+        >
           Delete
         </AlertDialogAction>
       </AlertDialogFooter>
