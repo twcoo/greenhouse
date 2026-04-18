@@ -3,8 +3,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import LoginForm from "@/components/LoginForm.vue"
 import { useAuthStore } from "@/stores/authStore"
 import { createTestingPinia } from "@pinia/testing"
-import { createAuthStoreMock } from "../utils/test-utils"
-import { mockPush } from "../setup"
+import { createAuthStoreMock } from "../../utils/test-utils"
+import { mockPush } from "../../setup"
 
 vi.mock("@/stores/authStore", () => ({
   useAuthStore: vi.fn(),

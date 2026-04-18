@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import SetupAdminForm from "@/components/SetupAdminForm.vue"
 import { createTestingPinia } from "@pinia/testing"
-import { mockPush } from "../setup"
+import { mockPush } from "../../setup"
 
 const setupAdminMock = vi.fn()
 const loadingMock = vi.fn(() => false)
