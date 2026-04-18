@@ -101,14 +101,14 @@ watch(
           <Field>
             <FieldLabel for="name">Name</FieldLabel>
             <Input v-model="form.name" id="name" name="name" />
-            <FieldError data-test="name" v-if="errors.name">
+            <FieldError data-test="nameError" v-if="errors.name">
               {{ errors.name }}
             </FieldError>
           </Field>
           <Field>
             <FieldLabel for="name">Scientific Name</FieldLabel>
             <Input v-model="form.scientificName" id="scientificName" name="scientificName" />
-            <FieldError data-test="scientificName" v-if="errors.scientificName">
+            <FieldError data-test="scientificNameError" v-if="errors.scientificName">
               {{ errors.scientificName }}
             </FieldError>
           </Field>
@@ -123,7 +123,7 @@ watch(
                 <SelectItem value="FRUIT"> Fruit </SelectItem>
               </SelectContent>
             </Select>
-            <FieldError data-test="category" v-if="errors.category">
+            <FieldError data-test="categoryError" v-if="errors.category">
               {{ errors.category }}
             </FieldError>
           </Field>
@@ -139,7 +139,7 @@ watch(
                 <SelectItem value="FULL SHADE"> Full Shade </SelectItem>
               </SelectContent>
             </Select>
-            <FieldError data-test="sunlightRequirement" v-if="errors.sunlightRequirement">
+            <FieldError data-test="sunlightRequirementError" v-if="errors.sunlightRequirement">
               {{ errors.sunlightRequirement }}
             </FieldError>
           </Field>
@@ -151,7 +151,7 @@ watch(
               id="minDaysToHarvest"
               name="minDaysToHarvest"
             />
-            <FieldError data-test="minDaysToHarvest" v-if="errors.minDaysToHarvest">
+            <FieldError data-test="minDaysToHarvestError" v-if="errors.minDaysToHarvest">
               {{ errors.minDaysToHarvest }}
             </FieldError>
           </Field>
@@ -163,7 +163,7 @@ watch(
               id="maxDaysToHarvest"
               name="maxDaysToHarvest"
             />
-            <FieldError data-test="maxDaysToHarvest" v-if="errors.maxDaysToHarvest">
+            <FieldError data-test="maxDaysToHarvestError" v-if="errors.maxDaysToHarvest">
               {{ errors.maxDaysToHarvest }}
             </FieldError>
           </Field>

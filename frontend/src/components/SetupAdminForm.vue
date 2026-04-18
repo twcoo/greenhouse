@@ -75,7 +75,7 @@ async function submit() {
             <FieldDescription>
               Choose a unique username. It may contain letters, numbers, underscores, or dots.
             </FieldDescription>
-            <FieldError data-test="username-error" v-if="errors.username">
+            <FieldError data-test="usernameError" v-if="errors.username">
               {{ errors.username }}
             </FieldError>
           </Field>
@@ -83,7 +83,7 @@ async function submit() {
             <FieldLabel for="password"> Password </FieldLabel>
             <Input v-model="form.password" id="password" type="password" required />
             <FieldDescription>Must be at least 8 characters long.</FieldDescription>
-            <FieldError data-test="password-error" v-if="errors.password">
+            <FieldError data-test="passwordError" v-if="errors.password">
               {{ errors.password }}
             </FieldError>
           </Field>
@@ -92,7 +92,7 @@ async function submit() {
             <Input v-model="form.password2" id="password2" type="password" required />
 
             <FieldDescription>Please confirm your password.</FieldDescription>
-            <FieldError data-test="password2-error" v-if="errors.password2">
+            <FieldError data-test="password2Error" v-if="errors.password2">
               {{ errors.password2 }}
             </FieldError>
           </Field>

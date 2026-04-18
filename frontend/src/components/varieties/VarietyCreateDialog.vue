@@ -109,7 +109,7 @@ watch(
           <Field>
             <FieldLabel for="name">Name</FieldLabel>
             <Input v-model="form.name" id="name" name="name" />
-            <FieldError data-test="name" v-if="errors.name">
+            <FieldError data-test="nameError" v-if="errors.name">
               {{ errors.name }}
             </FieldError>
           </Field>
@@ -125,7 +125,7 @@ watch(
                 </SelectItem>
               </SelectContent>
             </Select>
-            <FieldError data-test="crop" v-if="errors.crop">
+            <FieldError data-test="cropError" v-if="errors.crop">
               {{ errors.crop }}
             </FieldError>
           </Field>
@@ -157,7 +157,7 @@ watch(
                 <label for="create-indeterminate" class="cursor-pointer">Indeterminate</label>
               </div>
             </div>
-            <FieldError data-test="growthHabit" v-if="errors.growthHabit">
+            <FieldError data-test="growthHabitError" v-if="errors.growthHabit">
               {{ errors.growthHabit }}
             </FieldError>
           </Field>

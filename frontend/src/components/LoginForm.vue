@@ -59,7 +59,7 @@ const handleSubmit = async (): Promise<void> => {
                 placeholder="jmiller"
                 required
               />
-              <FieldError data-test="username-error" v-if="errors.username">
+              <FieldError data-test="usernameError" v-if="errors.username">
                 {{ errors.username }}
               </FieldError>
             </Field>
@@ -68,7 +68,7 @@ const handleSubmit = async (): Promise<void> => {
                 <FieldLabel for="password"> Password </FieldLabel>
               </div>
               <Input v-model="form.password" id="password" type="password" required />
-              <FieldError data-test="password-error" v-if="errors.password">
+              <FieldError data-test="passwordError" v-if="errors.password">
                 {{ errors.password }}
               </FieldError>
             </Field>

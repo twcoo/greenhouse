@@ -114,7 +114,7 @@ watch(
           <Field>
             <FieldLabel for="name">Name</FieldLabel>
             <Input v-model="form.name" id="name" name="name" />
-            <FieldError data-test="name" v-if="errors.name">
+            <FieldError data-test="nameError" v-if="errors.name">
               {{ errors.name }}
             </FieldError>
           </Field>
@@ -130,28 +130,28 @@ watch(
                 <SelectItem value="GROUND"> Ground </SelectItem>
               </SelectContent>
             </Select>
-            <FieldError data-test="locationType" v-if="errors.locationType">
+            <FieldError data-test="locationTypeError" v-if="errors.locationType">
               {{ errors.locationType }}
             </FieldError>
           </Field>
           <Field>
             <FieldLabel for="width">Width (cm)</FieldLabel>
             <Input v-model="form.width" type="number" step="0.01" id="width" name="width" />
-            <FieldError data-test="width" v-if="errors.width">
+            <FieldError data-test="widthError" v-if="errors.width">
               {{ errors.width }}
             </FieldError>
           </Field>
           <Field v-if="form.locationType !== 'GROUND'">
             <FieldLabel for="height">Height (cm)</FieldLabel>
             <Input v-model="form.height" type="number" step="0.01" id="height" name="height" />
-            <FieldError data-test="height" v-if="errors.height">
+            <FieldError data-test="heightError" v-if="errors.height">
               {{ errors.height }}
             </FieldError>
           </Field>
           <Field v-if="form.locationType === 'GROUND'">
             <FieldLabel for="length">Length (m)</FieldLabel>
             <Input v-model="form.length" type="number" step="0.01" id="length" name="length" />
-            <FieldError data-test="length" v-if="errors.length">
+            <FieldError data-test="lengthError" v-if="errors.length">
               {{ errors.length }}
             </FieldError>
           </Field>
