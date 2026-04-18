@@ -1,8 +1,14 @@
 import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import PlantingLocationUpdateDialog from "@/components/planting-locations/PlantingLocationUpdateDialog.vue"
+import VarietyUpdateDialog from "@/components/varieties/VarietyUpdateDialog.vue"
 import { createTestingPinia } from "@pinia/testing"
-import type { PlantingLocationForm } from "@/schemas/plantingLocation.schemas"
+import type { varietyForm } from "@/schemas/variety.schemas"
+
+vi.mock("@/composables/useCrops", () => ({
+  useCrop: vi.fn(() => ({
+    crops: { value: { results: [{ id: 1, name: "Tomato" }], count: 1 } },
+  })),
+}))
 
 const stubs = {
   Dialog: { template: "<div><slot /></div>" },
@@ -24,20 +30,18 @@ const stubs = {
   SelectValue: { template: "<span />" },
 }
 
-const defaultInitialState: PlantingLocationForm = {
-  name: "Garden Pot",
-  locationType: "POT",
-  width: 25,
-  height: 35,
-  length: undefined,
+const defaultInitialState: varietyForm = {
+  name: "Sun Gold",
+  crop: 1,
+  growthHabit: ["INDETERMINATE"],
 }
 
 const mountComponent = (props = {}) =>
-  mount(PlantingLocationUpdateDialog, {
+  mount(VarietyUpdateDialog, {
     props: {
       open: true,
       id: 1,
-      locationFormInitialState: defaultInitialState,
+      varietyFormInitialState: defaultInitialState,
       isLoading: false,
       isUpdateSuccess: false,
       ...props,
@@ -52,35 +56,39 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-describe("PlantingLocationUpdateDialog.vue", () => {
+describe("VarietyUpdateDialog.vue", () => {
   it("pre-populates the form with initial state", () => {
     const wrapper = mountComponent()
 
     const nameInput = wrapper.find("#name").element as HTMLInputElement
-    expect(nameInput.value).toBe("Garden Pot")
-
-    const widthInput = wrapper.find("#width").element as HTMLInputElement
-    expect(Number(widthInput.value)).toBe(25)
+    expect(nameInput.value).toBe("Sun Gold")
   })
 
   it("emits submit with id and validated payload on valid form", async () => {
     const wrapper = mountComponent()
 
-    await wrapper.find("#name").setValue("Updated Pot")
+    await wrapper.find("#name").setValue("Cherokee Purple")
     await wrapper.find("form").trigger("submit.prevent")
 
     const emitted = wrapper.emitted("submit")
     expect(emitted).toBeDefined()
     expect(emitted?.[0][0]).toBe(1)
     expect(emitted?.[0][1]).toMatchObject({
-      name: "Updated Pot",
-      locationType: "POT",
-      width: 25,
-      height: 35,
+      name: "Cherokee Purple",
+      crop: 1,
     })
   })
 
-  it("disables the submit button when isLoading is true", () => {
+  it("shows validation error when name is cleared before submit", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.find("#name").setValue("")
+    await wrapper.find("form").trigger("submit.prevent")
+
+    expect(wrapper.find('[data-test="nameError"]').exists()).toBe(true)
+  })
+
+  it("disables submit button and shows loading text when isLoading is true", () => {
     const wrapper = mountComponent({ isLoading: true })
 
     const buttons = wrapper.findAll("button")
@@ -102,36 +110,31 @@ describe("PlantingLocationUpdateDialog.vue", () => {
   it("clears errors when dialog is closed and reopened", async () => {
     const wrapper = mountComponent()
 
-    // Trigger a validation error
     await wrapper.find("#name").setValue("")
     await wrapper.find("form").trigger("submit.prevent")
     expect(wrapper.find('[data-test="nameError"]').exists()).toBe(true)
 
-    // Close the dialog
     await wrapper.setProps({ open: false })
     await wrapper.vm.$nextTick()
 
-    // Reopen
     await wrapper.setProps({ open: true })
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-test="nameError"]').exists()).toBe(false)
   })
 
-  it("updates form when locationFormInitialState prop changes", async () => {
+  it("syncs form when varietyFormInitialState prop changes", async () => {
     const wrapper = mountComponent()
 
-    const newState: PlantingLocationForm = {
-      name: "New Ground Bed",
-      locationType: "GROUND",
-      width: 100,
-      height: undefined,
-      length: 200,
+    const newState: varietyForm = {
+      name: "Black Krim",
+      crop: 2,
+      growthHabit: ["DETERMINATE"],
     }
-    await wrapper.setProps({ locationFormInitialState: newState })
+    await wrapper.setProps({ varietyFormInitialState: newState })
     await wrapper.vm.$nextTick()
 
     const nameInput = wrapper.find("#name").element as HTMLInputElement
-    expect(nameInput.value).toBe("New Ground Bed")
+    expect(nameInput.value).toBe("Black Krim")
   })
 })

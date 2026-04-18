@@ -46,8 +46,8 @@ describe("SetupAdminForm.vue", (): void => {
 
     await wrapper.get("form").trigger("submit.prevent")
 
-    const usernameError = wrapper.get('[data-test="username-error"]')
-    const passwordError = wrapper.get('[data-test="password-error"]')
+    const usernameError = wrapper.get('[data-test="usernameError"]')
+    const passwordError = wrapper.get('[data-test="passwordError"]')
 
     expect(usernameError.text().trim()).toBe("Username must be at least 3 characters")
     expect(passwordError.text().trim()).toBe("Password must be at least 8 characters")
@@ -62,7 +62,7 @@ describe("SetupAdminForm.vue", (): void => {
 
     await wrapper.get("form").trigger("submit.prevent")
 
-    const confirmPasswordError = wrapper.get('[data-test="password2-error"]')
+    const confirmPasswordError = wrapper.get('[data-test="password2Error"]')
 
     expect(confirmPasswordError.text().trim()).toBe("Password do not match")
   })

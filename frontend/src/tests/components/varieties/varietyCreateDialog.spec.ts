@@ -1,7 +1,13 @@
 import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import PlantingLocationCreateDialog from "@/components/planting-locations/PlantingLocationCreateDialog.vue"
+import VarietyCreateDialog from "@/components/varieties/VarietyCreateDialog.vue"
 import { createTestingPinia } from "@pinia/testing"
+
+vi.mock("@/composables/useCrops", () => ({
+  useCrop: vi.fn(() => ({
+    crops: { value: { results: [{ id: 1, name: "Tomato" }], count: 1 } },
+  })),
+}))
 
 const stubs = {
   Dialog: { template: "<div><slot /></div>" },
@@ -24,7 +30,7 @@ const stubs = {
 }
 
 const mountComponent = (props = {}) =>
-  mount(PlantingLocationCreateDialog, {
+  mount(VarietyCreateDialog, {
     props: {
       open: true,
       isLoading: false,
@@ -41,24 +47,14 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-describe("PlantingLocationCreateDialog.vue", () => {
-  it("renders core form fields for POT type (default)", () => {
+describe("VarietyCreateDialog.vue", () => {
+  it("renders name input, crop select, and growth habit checkboxes", () => {
     const wrapper = mountComponent()
 
     expect(wrapper.find("#name").exists()).toBe(true)
-    expect(wrapper.find("#width").exists()).toBe(true)
-    expect(wrapper.find("#height").exists()).toBe(true)
-    expect(wrapper.find("#length").exists()).toBe(false)
-  })
-
-  it("shows length field and hides height field when GROUND type is selected", async () => {
-    const wrapper = mountComponent()
-
-    await wrapper.find('[data-stub="select"]').setValue("GROUND")
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.find("#length").exists()).toBe(true)
-    expect(wrapper.find("#height").exists()).toBe(false)
+    expect(wrapper.find('[data-stub="select"]').exists()).toBe(true)
+    expect(wrapper.find("#create-determinate").exists()).toBe(true)
+    expect(wrapper.find("#create-indeterminate").exists()).toBe(true)
   })
 
   it("shows validation error when name is empty on submit", async () => {
@@ -70,37 +66,62 @@ describe("PlantingLocationCreateDialog.vue", () => {
     expect(wrapper.find('[data-test="nameError"]').exists()).toBe(true)
   })
 
-  it("emits submit event with validated payload on valid form", async () => {
+  it("shows validation error when no crop is selected on submit", async () => {
     const wrapper = mountComponent()
 
-    await wrapper.find("#name").setValue("My Pot")
-    await wrapper.find("#width").setValue("20")
-    await wrapper.find("#height").setValue("30")
+    await wrapper.find("#name").setValue("Sun Gold")
+    await wrapper.find("form").trigger("submit.prevent")
+
+    expect(wrapper.find('[data-test="cropError"]').exists()).toBe(true)
+  })
+
+  it("shows validation error when no growth habit is checked on submit", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.find("#name").setValue("Sun Gold")
+    await wrapper.find('[data-stub="select"]').setValue("1")
+    // uncheck the default DETERMINATE selection by setting the DOM state then firing change
+    const determinateCheckbox = wrapper.find("#create-determinate")
+    ;(determinateCheckbox.element as HTMLInputElement).checked = false
+    await determinateCheckbox.trigger("change")
+
+    await wrapper.find("form").trigger("submit.prevent")
+
+    expect(wrapper.find('[data-test="growthHabitError"]').exists()).toBe(true)
+  })
+
+  it("emits submit with correct payload on valid form", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.find("#name").setValue("Sun Gold")
+    await wrapper.find('[data-stub="select"]').setValue("1")
+    const determinateCheckbox = wrapper.find(
+      "#create-determinate",
+    ).element as HTMLInputElement
+    if (!determinateCheckbox.checked) {
+      await wrapper
+        .find("#create-determinate")
+        .trigger("change", { target: { checked: true } })
+    }
 
     await wrapper.find("form").trigger("submit.prevent")
 
     const emitted = wrapper.emitted("submit")
     expect(emitted).toBeDefined()
     expect(emitted?.[0][0]).toMatchObject({
-      name: "My Pot",
-      locationType: "POT",
-      width: 20,
-      height: 30,
+      name: "Sun Gold",
+      crop: 1,
     })
   })
 
-  it("shows general error when API error callback is triggered without response data", async () => {
+  it("shows general error when onError callback is called without response data", async () => {
     const wrapper = mountComponent()
 
-    await wrapper.find("#name").setValue("My Pot")
-    await wrapper.find("#width").setValue("20")
-    await wrapper.find("#height").setValue("30")
-
+    await wrapper.find("#name").setValue("Sun Gold")
+    await wrapper.find('[data-stub="select"]').setValue("1")
     await wrapper.find("form").trigger("submit.prevent")
 
     const emitted = wrapper.emitted("submit")
-    expect(emitted).toBeDefined()
-
     const onError = emitted?.[0][1] as (err: unknown) => void
     onError(new Error("Network error"))
     await wrapper.vm.$nextTick()
@@ -116,7 +137,7 @@ describe("PlantingLocationCreateDialog.vue", () => {
     expect(saveButton).toBeDefined()
   })
 
-  it("closes dialog and emits update:open false when isCreateSuccess becomes true", async () => {
+  it("closes dialog when isCreateSuccess becomes true", async () => {
     const wrapper = mountComponent({ isCreateSuccess: false })
 
     await wrapper.setProps({ isCreateSuccess: true })

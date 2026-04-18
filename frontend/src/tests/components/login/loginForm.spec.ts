@@ -40,8 +40,8 @@ describe("LoginForm.vue", (): void => {
 
     await wrapper.find("form").trigger("submit.prevent")
 
-    expect(wrapper.find('[data-test="username-error"]').exists()).toBe(true)
-    expect(wrapper.find('[data-test="password-error"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="usernameError"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="passwordError"]').exists()).toBe(true)
   })
 
   it("calls login and redirects on success", async (): Promise<void> => {
