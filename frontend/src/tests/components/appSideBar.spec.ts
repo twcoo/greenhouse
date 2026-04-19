@@ -86,7 +86,6 @@ describe("AppSidebar.vue", () => {
         to: { name: "varieties" },
         icon: IconSeeding,
       }),
-
     ])
   })
 })
