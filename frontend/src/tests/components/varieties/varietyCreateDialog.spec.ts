@@ -95,13 +95,9 @@ describe("VarietyCreateDialog.vue", () => {
 
     await wrapper.find("#name").setValue("Sun Gold")
     await wrapper.find('[data-stub="select"]').setValue("1")
-    const determinateCheckbox = wrapper.find(
-      "#create-determinate",
-    ).element as HTMLInputElement
+    const determinateCheckbox = wrapper.find("#create-determinate").element as HTMLInputElement
     if (!determinateCheckbox.checked) {
-      await wrapper
-        .find("#create-determinate")
-        .trigger("change", { target: { checked: true } })
+      await wrapper.find("#create-determinate").trigger("change", { target: { checked: true } })
     }
 
     await wrapper.find("form").trigger("submit.prevent")
