@@ -30,7 +30,7 @@ function getVnode(colId: string, location: PlantingLocation = mockLocation) {
     getValue: (key: string) => location[key as keyof PlantingLocation],
     original: location,
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   return (col as any).cell({ row: mockRow, table: mockTable })
 }
 

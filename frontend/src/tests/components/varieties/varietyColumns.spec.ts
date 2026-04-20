@@ -24,7 +24,7 @@ const mockTable = {
 
 function getVnode(colId: string) {
   const col = columns.find((c) => c.id === colId)!
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   return (col as any).cell({ row: mockRow, table: mockTable })
 }
 

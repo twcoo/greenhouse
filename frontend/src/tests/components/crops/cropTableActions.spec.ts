@@ -17,7 +17,9 @@ const stubs = {
   AlertDialogTitle: { template: "<div><slot /></div>" },
   AlertDialogDescription: { template: "<div><slot /></div>" },
   AlertDialogFooter: { template: "<div><slot /></div>" },
-  AlertDialogAction: { template: "<button v-bind='$attrs' data-testid='confirm-delete'><slot /></button>" },
+  AlertDialogAction: {
+    template: "<button v-bind='$attrs' data-testid='confirm-delete'><slot /></button>",
+  },
   AlertDialogCancel: { template: "<button><slot /></button>" },
   Button: { template: "<button><slot /></button>" },
   MoreHorizontal: { template: "<svg />" },
