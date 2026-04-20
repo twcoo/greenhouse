@@ -11,7 +11,8 @@
     "lint:eslint": "eslint frontend --fix --cache",
     "lint": "run-s lint:*",
     "format": "prettier --write frontend",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@dnd-kit/modifiers": "^9.0.0",
@@ -48,6 +49,7 @@
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
     "@vitejs/plugin-vue": "^6.0.2",
+    "@vitest/coverage-v8": "^4.1.4",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "eslint": "^10.0.3",

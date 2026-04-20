@@ -18,7 +18,19 @@ const tstConfig = testConfig({
   test: {
     environment: "jsdom",
     globals: true,
-    setupFiles: ["./frontend/src/tests/setup.ts"]
+    setupFiles: ["./frontend/src/tests/setup.ts"],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      include: ['frontend/src/**/*.{ts,vue}'],
+      exclude: ['frontend/src/tests/**', 'frontend/src/main.ts', 'frontend/src/components/ui/**'],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
+    },
   },
 })
 
