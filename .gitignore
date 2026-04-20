@@ -42,3 +42,8 @@ backend/media/crops
 
 
 .eslintcache
+
+# Coverage reports
+coverage/
+.coverage
+htmlcov/
