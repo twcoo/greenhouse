@@ -1,4 +1,4 @@
-.PHONY: lint-backend dev-backend test-backend clear-dev-backend-db
+.PHONY: lint-backend dev-backend test-backend test-frontend clear-dev-backend-db
 
 lint-backend:
 	@uv run black --line-length 80 backend
@@ -13,18 +13,19 @@ lint-frontend:
 	@pnpm format
 	@pnpm lint
 	@pnpm build
-	
+
 dev-backend:
-	@docker compose up --build --force-recreate 
+	@docker compose up --build --force-recreate
 
 dev-frontend:
 	@pnpm dev
 
 test-backend:
-	@uv run python backend/manage.py test greenhouse
+	@uv run coverage run --source=backend/greenhouse backend/manage.py test greenhouse
+	@uv run coverage report
 
 test-frontend:
-	@pnpm test
+	@pnpm test:coverage
 
 clear-dev-backend-db:
 	@docker rm -f backend-db
