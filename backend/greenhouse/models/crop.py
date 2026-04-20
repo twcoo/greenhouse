@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 
 
@@ -32,3 +33,19 @@ class Crop(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(
+                fields=["user", "-created_at"],
+                name="crop_user_created_idx",
+            ),
+            GinIndex(
+                fields=["name"],
+                name="crop_name_trgm_idx",
+                opclasses=["gin_trgm_ops"],
+            ),
+            GinIndex(
+                fields=["scientific_name"],
+                name="crop_scientific_name_trgm_idx",
+                opclasses=["gin_trgm_ops"],
+            ),
+        ]

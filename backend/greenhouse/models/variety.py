@@ -1,4 +1,5 @@
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 
 from .crop import Crop
@@ -20,3 +21,14 @@ class Variety(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(
+                fields=["crop", "-created_at"],
+                name="variety_crop_created_idx",
+            ),
+            GinIndex(
+                fields=["name"],
+                name="variety_name_trgm_idx",
+                opclasses=["gin_trgm_ops"],
+            ),
+        ]

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 
 
@@ -36,3 +37,14 @@ class PlantingLocation(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(
+                fields=["user", "-created_at"],
+                name="pl_user_created_idx",
+            ),
+            GinIndex(
+                fields=["name"],
+                name="pl_name_trgm_idx",
+                opclasses=["gin_trgm_ops"],
+            ),
+        ]
