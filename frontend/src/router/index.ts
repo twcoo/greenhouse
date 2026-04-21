@@ -54,35 +54,44 @@ const router = createRouter({
   routes,
 })
 
+type RouteName = "service-unavailable" | "setup" | "login" | "dashboard"
+type Redirect = { name: RouteName }
+type RouteContext = {
+  to: { name: string | symbol | null | undefined; meta: { requiresAuth?: boolean } }
+  setupStore: ReturnType<typeof useSetupStore>
+  authStore: ReturnType<typeof useAuthStore>
+}
+
+function backendGuard({ to, setupStore, authStore }: RouteContext): Redirect | null {
+  if (setupStore.backendUnavailable && to.name !== "service-unavailable") {
+    return { name: "service-unavailable" }
+  }
+  if (!setupStore.backendUnavailable && to.name === "service-unavailable") {
+    return authStore.isAuthenticated ? { name: "dashboard" } : { name: "login" }
+  }
+  return null
+}
+
+function setupGuard({ to, setupStore }: RouteContext): Redirect | null {
+  if (setupStore.setupRequired && to.name !== "setup") return { name: "setup" }
+  if (!setupStore.setupRequired && to.name === "setup") return { name: "login" }
+  return null
+}
+
+function authGuard({ to, authStore }: RouteContext): Redirect | null {
+  if (authStore.isAuthenticated && to.name === "login") return { name: "dashboard" }
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) return { name: "login" }
+  return null
+}
+
 router.beforeEach(async (to) => {
   const setupStore = useSetupStore()
   const authStore = useAuthStore()
 
   await setupStore.checkSetup()
 
-  // Redirect to service-unavailable if backend is not reachable
-  if (setupStore.backendUnavailable && to.name !== "service-unavailable") {
-    return { name: "service-unavailable" }
-  }
-
-  // Prevent accessing service-unavailable when backend is reachable
-  if (!setupStore.backendUnavailable && to.name === "service-unavailable") {
-    return authStore.isAuthenticated ? { name: "dashboard" } : { name: "login" }
-  }
-
-  // Redirect to setup if setup is required
-  if (setupStore.setupRequired && to.name !== "setup") return { name: "setup" }
-
-  // Prevent going back to setup if already completed
-  if (!setupStore.setupRequired && to.name === "setup") return { name: "login" }
-
-  // Prevent accessing login if already authenticated
-  if (authStore.isAuthenticated && to.name === "login") return { name: "dashboard" }
-
-  // Redirect to login when accessing routes while unauthenticated
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) return { name: "login" }
-
-  return true
+  const ctx: RouteContext = { to, setupStore, authStore }
+  return backendGuard(ctx) ?? setupGuard(ctx) ?? authGuard(ctx) ?? true
 })
 
 export default router

@@ -17,9 +17,9 @@ export const useSetupStore = defineStore("setup", () => {
     } catch (error) {
       if (axios.isAxiosError(error) && !error.response) {
         backendUnavailable.value = true
-      } else {
-        setupRequired.value = true
+        return
       }
+      setupRequired.value = true
     } finally {
       setupChecked.value = true
     }

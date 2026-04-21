@@ -30,8 +30,9 @@ function getVnode(colId: string, location: PlantingLocation = mockLocation) {
     getValue: (key: string) => location[key as keyof PlantingLocation],
     original: location,
   }
-   
-  return (col as any).cell({ row: mockRow, table: mockTable })
+
+  type CellFn = (ctx: { row: typeof mockRow; table: typeof mockTable }) => unknown
+  return (col as unknown as { cell: CellFn }).cell({ row: mockRow, table: mockTable })
 }
 
 function renderCell(colId: string, location: PlantingLocation = mockLocation) {

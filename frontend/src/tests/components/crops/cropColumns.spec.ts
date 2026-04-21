@@ -26,8 +26,9 @@ const mockTable = {
 
 function getVnode(colId: string) {
   const col = columns.find((c) => c.id === colId)!
-   
-  return (col as any).cell({ row: mockRow, table: mockTable })
+
+  type CellFn = (ctx: { row: typeof mockRow; table: typeof mockTable }) => unknown
+  return (col as unknown as { cell: CellFn }).cell({ row: mockRow, table: mockTable })
 }
 
 function renderCell(colId: string) {
