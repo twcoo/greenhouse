@@ -39,6 +39,11 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    path: "/service-unavailable",
+    name: "service-unavailable",
+    component: () => import("@/views/service-unavailable/index.vue"),
+  },
+  {
     path: "/",
     redirect: "/login",
   },
@@ -54,6 +59,16 @@ router.beforeEach(async (to) => {
   const authStore = useAuthStore()
 
   await setupStore.checkSetup()
+
+  // Redirect to service-unavailable if backend is not reachable
+  if (setupStore.backendUnavailable && to.name !== "service-unavailable") {
+    return { name: "service-unavailable" }
+  }
+
+  // Prevent accessing service-unavailable when backend is reachable
+  if (!setupStore.backendUnavailable && to.name === "service-unavailable") {
+    return authStore.isAuthenticated ? { name: "dashboard" } : { name: "login" }
+  }
 
   // Redirect to setup if setup is required
   if (setupStore.setupRequired && to.name !== "setup") return { name: "setup" }

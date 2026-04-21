@@ -22,10 +22,12 @@ vi.mock("@vueuse/integrations/useCookies", () => ({
 function seedStores({
   setupRequired = false,
   isAuthenticated = false,
-}: { setupRequired?: boolean; isAuthenticated?: boolean } = {}) {
+  backendUnavailable = false,
+}: { setupRequired?: boolean; isAuthenticated?: boolean; backendUnavailable?: boolean } = {}) {
   const setupStore = useSetupStore()
   setupStore.setupChecked = true
   setupStore.setupRequired = setupRequired
+  setupStore.backendUnavailable = backendUnavailable
 
   const authStore = useAuthStore()
   authStore.isAuthenticated = isAuthenticated
@@ -55,7 +57,6 @@ describe("router beforeEach guard", () => {
   })
 
   it("redirects away from /setup to /login when setup is already complete", async () => {
-    // First go somewhere other than /setup so the push below triggers navigation
     await router.push("/login")
     seedStores({ setupRequired: false })
 
@@ -67,9 +68,7 @@ describe("router beforeEach guard", () => {
   it("redirects authenticated user from /login to /dashboard", async () => {
     seedStores({ isAuthenticated: true })
 
-    // Navigate away from /login first so the next push is not a no-op
     await router.push("/crops")
-
     await router.push("/login")
 
     expect(router.currentRoute.value.name).toBe("dashboard")
@@ -94,10 +93,56 @@ describe("router beforeEach guard", () => {
   it("allows unauthenticated user to access /login", async () => {
     seedStores({ isAuthenticated: false })
 
-    // Navigate away so /login push is not a no-op
     await router.push("/")
     await router.push("/login")
 
     expect(router.currentRoute.value.name).toBe("login")
+  })
+
+  describe("service-unavailable route", () => {
+    it("redirects to /service-unavailable when backend is unreachable", async () => {
+      seedStores({ backendUnavailable: true })
+
+      await router.push("/dashboard")
+
+      expect(router.currentRoute.value.name).toBe("service-unavailable")
+    })
+
+    it("redirects to /service-unavailable even when navigating to /login", async () => {
+      // Navigate to a non-login route first so the /login push is not a no-op
+      seedStores({ isAuthenticated: true })
+      await router.push("/dashboard")
+
+      seedStores({ backendUnavailable: true })
+      await router.push("/login")
+
+      expect(router.currentRoute.value.name).toBe("service-unavailable")
+    })
+
+    it("redirects away from /service-unavailable to /login when backend becomes reachable and user is unauthenticated", async () => {
+      seedStores({ backendUnavailable: false, isAuthenticated: false })
+
+      await router.push("/")
+      await router.push("/service-unavailable")
+
+      expect(router.currentRoute.value.name).toBe("login")
+    })
+
+    it("redirects away from /service-unavailable to /dashboard when backend becomes reachable and user is authenticated", async () => {
+      seedStores({ backendUnavailable: false, isAuthenticated: true })
+
+      await router.push("/crops")
+      await router.push("/service-unavailable")
+
+      expect(router.currentRoute.value.name).toBe("dashboard")
+    })
+
+    it("allows access to /service-unavailable when backend is unavailable", async () => {
+      seedStores({ backendUnavailable: true })
+
+      await router.push("/service-unavailable")
+
+      expect(router.currentRoute.value.name).toBe("service-unavailable")
+    })
   })
 })
