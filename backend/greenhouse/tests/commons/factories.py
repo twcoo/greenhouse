@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from factory import Faker
 from factory.django import DjangoModelFactory
 
-from ...models import Crop, PlantingLocation, Variety
+from ...models import Crop, Planting, PlantingLocation, Variety
 
 User = get_user_model()
 
@@ -62,3 +62,17 @@ class VarietyFactory(DjangoModelFactory):
         ),
     )
     growth_habit = ["INDETERMINATE"]
+
+
+class PlantingFactory(DjangoModelFactory):
+    class Meta:
+        model = Planting
+
+    user = factory.SubFactory(
+        UserFactory,
+        username=factory.Sequence(lambda n: f"planting_user_{n}"),
+    )
+    crop = factory.SubFactory(CropFactory, user=factory.SelfAttribute("..user"))
+    variety = factory.SubFactory(
+        VarietyFactory, crop=factory.SelfAttribute("..crop")
+    )

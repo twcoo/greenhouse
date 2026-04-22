@@ -3,6 +3,10 @@ from .crops import (CropCreateApiViewTests, CropDeleteApiViewTests,
                     CropGetApiViewTests, CropImageUploadApiViewTests,
                     CropListApiViewTests, CropPartialUpdateApiViewTests,
                     CropUpdateApiViewTests)
+from .planting import (PlantingCreateApiViewTests, PlantingDeleteApiViewTests,
+                       PlantingGetApiViewTests, PlantingListApiViewTests,
+                       PlantingPartialUpdateApiViewTests,
+                       PlantingUpdateApiViewTests)
 from .planting_location import (PlantingLocationCreateApiViewTests,
                                 PlantingLocationDeleteApiViewTests,
                                 PlantingLocationGetApiViewTests,
@@ -18,6 +22,12 @@ from .variety import (VarietyCreateApiViewTests, VarietyDeleteApiViewTests,
 
 __all__ = [
     "SetupAdminTests",
+    "PlantingListApiViewTests",
+    "PlantingCreateApiViewTests",
+    "PlantingGetApiViewTests",
+    "PlantingUpdateApiViewTests",
+    "PlantingPartialUpdateApiViewTests",
+    "PlantingDeleteApiViewTests",
     "SetupStatusTests",
     "AuthLoginTests",
     "AuthLogoutTests",
