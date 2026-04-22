@@ -47,6 +47,8 @@ class PlantingSerializer(serializers.ModelSerializer):
     def validate(self, data: dict[str, Any]) -> dict[str, Any]:
         variety = data.get("variety")
         crop = data.get("crop")
+        if variety and crop is None and self.instance:
+            crop = self.instance.crop
         if variety and crop and variety.crop != crop:
             raise serializers.ValidationError(
                 {"variety": ("Variety does not belong to the selected crop.")}
