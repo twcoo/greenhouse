@@ -172,7 +172,12 @@ class VarietyCreateApiViewTests(
         self.assertEqual(response_status, "error")
         self.assertIsNone(data)
         self.assertEqual(
-            message, {"crop": ['Invalid pk "118" - object does not exist.']}
+            message,
+            {
+                "crop": [
+                    f'Invalid pk "{another_crop.id}" - object does not exist.'
+                ]
+            },
         )
 
 
