@@ -12,14 +12,11 @@ from ..openapi.variety.examples import (CREATE_VARIETY_REQUEST_EXAMPLE,
                                         PARTIAL_UPDATE_VARIETY_REQUEST_EXAMPLE,
                                         UPDATE_VARIETY_REQUEST_EXAMPLE)
 from ..openapi.variety.parameters import VARIETY_ID_PARAM
-from ..openapi.variety.responses import (VARIETY_CREATE_VALIDATION_RESPONSE,
-                                         VARIETY_CREATED_RESPONSE,
-                                         VARIETY_DELETE_RESPONSE,
-                                         VARIETY_LIST_RESPONSE,
-                                         VARIETY_NOT_FOUND_RESPONSE,
-                                         VARIETY_RETRIEVE_RESPONSE,
-                                         VARIETY_UPDATE_RESPONSE,
-                                         VARIETY_UPDATE_VALIDATION_RESPONSE)
+from ..openapi.variety.responses import (
+    VARIETY_CREATE_VALIDATION_RESPONSE, VARIETY_CREATED_RESPONSE,
+    VARIETY_DELETE_RESPONSE, VARIETY_LIST_RESPONSE, VARIETY_NOT_FOUND_RESPONSE,
+    VARIETY_PARTIAL_UPDATE_VALIDATION_RESPONSE, VARIETY_RETRIEVE_RESPONSE,
+    VARIETY_UPDATE_RESPONSE, VARIETY_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import VarietySerializer
 from ..utils.api import CustomAuthentication
 
@@ -104,6 +101,7 @@ class VarietyListApiView(
         examples=[PARTIAL_UPDATE_VARIETY_REQUEST_EXAMPLE],
         responses={
             200: VARIETY_UPDATE_RESPONSE,
+            400: VARIETY_PARTIAL_UPDATE_VALIDATION_RESPONSE,
             404: VARIETY_NOT_FOUND_RESPONSE,
         },
     ),

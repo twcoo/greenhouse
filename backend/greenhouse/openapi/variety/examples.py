@@ -134,3 +134,20 @@ VARIETY_REQUIRED_FIELDS_EXAMPLE = OpenApiExample(
         },
     },
 )
+
+VARIETY_INVALID_GROWTH_HABIT_EXAMPLE = OpenApiExample(
+    name="Invalid growth habit value",
+    summary="Invalid growth habit choice",
+    description=(
+        "Example response returned when an unrecognised value "
+        "is provided for growth_habit."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "growth_habit": ['"UNKNOWN" is not a valid choice.'],
+        },
+    },
+)

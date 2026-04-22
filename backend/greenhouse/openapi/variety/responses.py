@@ -6,6 +6,7 @@ from ..shared.schemas import CustomOpenAPIResponseSchema
 from .examples import (CREATE_VARIETY_RESPONSE_EXAMPLE,
                        RETRIEVE_VARIETY_RESPONSE_EXAMPLE,
                        UPDATE_VARIETY_RESPONSE_EXAMPLE,
+                       VARIETY_INVALID_GROWTH_HABIT_EXAMPLE,
                        VARIETY_NOT_FOUND_RESPONSE_EXAMPLE,
                        VARIETY_REQUIRED_FIELDS_EXAMPLE)
 from .schemas import VARIETY_RESPONSE_DATA_SCHEMA
@@ -50,7 +51,7 @@ VARIETY_UPDATE_VALIDATION_RESPONSE = OpenApiResponse(
 VARIETY_PARTIAL_UPDATE_VALIDATION_RESPONSE = OpenApiResponse(
     description="Invalid request due to validation errors.",
     response=CustomOpenAPIResponseSchema().get_schema(),
-    examples=[],
+    examples=[VARIETY_INVALID_GROWTH_HABIT_EXAMPLE],
 )
 
 VARIETY_DELETE_RESPONSE = OpenApiResponse(
