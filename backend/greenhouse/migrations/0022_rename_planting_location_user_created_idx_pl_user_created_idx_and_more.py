@@ -6,18 +6,21 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('greenhouse', '0021_crop_crop_user_created_idx_crop_crop_name_trgm_idx_and_more'),
+        (
+            "greenhouse",
+            "0021_crop_crop_user_created_idx_crop_crop_name_trgm_idx_and_more",
+        ),
     ]
 
     operations = [
         migrations.RenameIndex(
-            model_name='plantinglocation',
-            new_name='pl_user_created_idx',
-            old_name='planting_location_user_created_idx',
+            model_name="plantinglocation",
+            new_name="pl_user_created_idx",
+            old_name="planting_location_user_created_idx",
         ),
         migrations.RenameIndex(
-            model_name='plantinglocation',
-            new_name='pl_name_trgm_idx',
-            old_name='planting_location_name_trgm_idx',
+            model_name="plantinglocation",
+            new_name="pl_name_trgm_idx",
+            old_name="planting_location_name_trgm_idx",
         ),
     ]
