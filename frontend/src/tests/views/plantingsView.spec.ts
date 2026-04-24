@@ -1,0 +1,127 @@
+import { mount } from "@vue/test-utils"
+import { describe, it, expect, vi, beforeEach } from "vitest"
+import { ref } from "vue"
+import PlantingsView from "@/views/plantings/index.vue"
+import PlantingsTable from "@/components/plantings/PlantingsTable.vue"
+import PlantingCreateDialog from "@/components/plantings/PlantingCreateDialog.vue"
+import PlantingUpdateDialog from "@/components/plantings/PlantingUpdateDialog.vue"
+import { createTestingPinia } from "@pinia/testing"
+import type { Planting } from "@/types/planting"
+
+const mockPlantings: Planting[] = [
+  {
+    id: 1,
+    crop: 1,
+    cropName: "Tomato",
+    variety: 1,
+    varietyName: "Sun Gold",
+    createdAt: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: 2,
+    crop: 1,
+    cropName: "Tomato",
+    variety: 2,
+    varietyName: "Cherokee Purple",
+    createdAt: "2024-02-01T00:00:00Z",
+  },
+]
+
+const mockCreatePlanting = vi.fn()
+const mockUpdatePlanting = vi.fn()
+const mockDeletePlanting = vi.fn()
+const mockFetchPlantings = vi.fn()
+
+vi.mock("@/composables/usePlantings", () => ({
+  usePlantings: vi.fn(() => ({
+    plantings: ref({ results: mockPlantings, count: 2 }),
+    isLoading: ref(false),
+    isCreateSuccess: ref(false),
+    isUpdateSuccess: ref(false),
+    createPlanting: mockCreatePlanting,
+    updatePlanting: mockUpdatePlanting,
+    deletePlanting: mockDeletePlanting,
+    fetchPlantings: mockFetchPlantings,
+  })),
+}))
+
+const stubs = {
+  AppLayout: { template: "<div><slot /></div>" },
+  [PlantingsTable.__name ?? "PlantingsTable"]: {
+    template: "<div data-stub='plantings-table' />",
+    props: ["data", "rowCount", "pagination", "searchTerm"],
+    emits: ["delete", "update", "pagination-change", "update:searchTerm"],
+  },
+  [PlantingCreateDialog.__name ?? "PlantingCreateDialog"]: {
+    template: "<div data-stub='create-dialog' />",
+    props: ["open", "isLoading", "isCreateSuccess"],
+    emits: ["update:open", "submit"],
+  },
+  [PlantingUpdateDialog.__name ?? "PlantingUpdateDialog"]: {
+    template: "<div data-stub='update-dialog' />",
+    props: ["open", "id", "plantingFormInitialState", "isLoading", "isUpdateSuccess"],
+    emits: ["update:open", "submit"],
+  },
+  IconLoader2: { template: "<svg />" },
+  IconPlus: { template: "<svg />" },
+}
+
+const mountComponent = () =>
+  mount(PlantingsView, {
+    global: {
+      plugins: [createTestingPinia({ createSpy: vi.fn })],
+      stubs,
+    },
+  })
+
+beforeEach(() => {
+  vi.clearAllMocks()
+})
+
+describe("PlantingsView", () => {
+  it("renders PlantingsTable when plantings data is available", () => {
+    const wrapper = mountComponent()
+    expect(wrapper.find('[data-stub="plantings-table"]').exists()).toBe(true)
+  })
+
+  it("renders PlantingCreateDialog", () => {
+    const wrapper = mountComponent()
+    expect(wrapper.find('[data-stub="create-dialog"]').exists()).toBe(true)
+  })
+
+  it("opens create dialog when Add Planting button is clicked", async () => {
+    const wrapper = mountComponent()
+
+    const createDialog = wrapper.findComponent(PlantingCreateDialog)
+    expect(createDialog.props("open")).toBe(false)
+
+    await wrapper.find("button").trigger("click")
+    await wrapper.vm.$nextTick()
+
+    expect(createDialog.props("open")).toBe(true)
+  })
+
+  it("calls deletePlanting with the correct id on delete event from table", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent(PlantingsTable).vm.$emit("delete", 1)
+
+    expect(mockDeletePlanting).toHaveBeenCalledWith(1)
+  })
+
+  it("opens update dialog with correct id and form state on update event from table", async () => {
+    const wrapper = mountComponent()
+
+    const planting = mockPlantings[0]
+    await wrapper.findComponent(PlantingsTable).vm.$emit("update", planting.id, {
+      crop: planting.crop,
+      variety: planting.variety,
+    })
+
+    await wrapper.vm.$nextTick()
+
+    const updateDialog = wrapper.findComponent(PlantingUpdateDialog)
+    expect(updateDialog.props("open")).toBe(true)
+    expect(updateDialog.props("id")).toBe(planting.id)
+  })
+})

@@ -69,7 +69,10 @@ const confirmDelete = async (id: number): Promise<void> => {
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction @click="confirmDelete(row.original.id)" class="bg-red-600 hover:bg-red-700">
+        <AlertDialogAction
+          @click="confirmDelete(row.original.id)"
+          class="bg-red-600 hover:bg-red-700"
+        >
           Delete
         </AlertDialogAction>
       </AlertDialogFooter>
