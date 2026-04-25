@@ -14,6 +14,13 @@ from .planting_location import (PlantingLocationCreateApiViewTests,
                                 PlantingLocationListApiViewTests,
                                 PlantingLocationPartialUpdateApiViewTests,
                                 PlantingLocationUpdateApiViewTests)
+from .planting_location_assignment import (
+    PlantingLocationAssignmentCreateApiViewTests,
+    PlantingLocationAssignmentDeleteApiViewTests,
+    PlantingLocationAssignmentGetApiViewTests,
+    PlantingLocationAssignmentListApiViewTests,
+    PlantingLocationAssignmentPartialUpdateApiViewTests,
+    PlantingLocationAssignmentUpdateApiViewTests)
 from .setup import SetupAdminTests, SetupStatusTests
 from .variety import (VarietyCreateApiViewTests, VarietyDeleteApiViewTests,
                       VarietyGetApiViewTests, VarietyListApiViewTests,
@@ -51,4 +58,10 @@ __all__ = [
     "VarietyUpdateApiViewTests",
     "VarietyPartialUpdateApiViewTests",
     "VarietyDeleteApiViewTests",
+    "PlantingLocationAssignmentListApiViewTests",
+    "PlantingLocationAssignmentCreateApiViewTests",
+    "PlantingLocationAssignmentGetApiViewTests",
+    "PlantingLocationAssignmentUpdateApiViewTests",
+    "PlantingLocationAssignmentPartialUpdateApiViewTests",
+    "PlantingLocationAssignmentDeleteApiViewTests",
 ]

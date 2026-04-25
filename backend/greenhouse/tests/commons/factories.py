@@ -3,7 +3,8 @@ from django.contrib.auth import get_user_model
 from factory import Faker
 from factory.django import DjangoModelFactory
 
-from ...models import Crop, Planting, PlantingLocation, Variety
+from ...models import (Crop, Planting, PlantingLocation,
+                       PlantingLocationAssignment, Variety)
 
 User = get_user_model()
 
@@ -76,3 +77,16 @@ class PlantingFactory(DjangoModelFactory):
     variety = factory.SubFactory(
         VarietyFactory, crop=factory.SelfAttribute("..crop")
     )
+
+
+class PlantingLocationAssignmentFactory(DjangoModelFactory):
+    class Meta:
+        model = PlantingLocationAssignment
+
+    planting = factory.SubFactory(PlantingFactory)
+    planting_location = factory.SubFactory(
+        PlantingLocationFactory,
+        user=factory.SelfAttribute("..planting.user"),
+    )
+    start_date = factory.Faker("date_this_decade")
+    end_date = None
