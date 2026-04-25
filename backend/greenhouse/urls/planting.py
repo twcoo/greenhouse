@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from ..views import PlantingDetailApiView, PlantingListApiView
 
@@ -14,5 +14,10 @@ urlpatterns = [
         "<int:pk>",
         PlantingDetailApiView.as_view(),
         name="planting-detail",
+    ),
+    # Planting location assignments (nested)
+    path(
+        "<int:planting_pk>/locations/",
+        include("greenhouse.urls.planting_location_assignment"),
     ),
 ]
