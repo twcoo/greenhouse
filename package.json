@@ -17,6 +17,7 @@
   "dependencies": {
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/vue": "^0.3.2",
+    "@internationalized/date": "^3.12.1",
     "@tabler/icons-vue": "^3.40.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/vue-query": "^5.96.1",
