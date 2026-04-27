@@ -5,6 +5,7 @@ import AppLayout from "@/layouts/AppLayout.vue"
 import PlantingsTable from "@/components/plantings/PlantingsTable.vue"
 import PlantingCreateDialog from "@/components/plantings/PlantingCreateDialog.vue"
 import PlantingUpdateDialog from "@/components/plantings/PlantingUpdateDialog.vue"
+import PlantingLocationAssignmentSheet from "@/components/planting-location-assignments/PlantingLocationAssignmentSheet.vue"
 import { usePlantings } from "@/composables/usePlantings"
 import { IconLoader2, IconPlus } from "@tabler/icons-vue"
 import type { PlantingPayload } from "@/types/planting"
@@ -24,6 +25,10 @@ const openCreateDialog = ref<boolean>(false)
 const openUpdateDialog = ref<boolean>(false)
 const plantingIdToUpdate = ref<number>(0)
 const plantingUpdateFormState = ref<plantingForm | null>(null)
+
+// Location Assignment Sheet Refs
+const openLocationSheet = ref<boolean>(false)
+const plantingIdForSheet = ref<number>(0)
 
 // Planting Composable
 const {
@@ -73,6 +78,11 @@ const handleUpdatePlanting = async (
 const handleDeletePlanting = async (id: number): Promise<void> => {
   await deletePlanting(id)
   pagination.value = { ...pagination.value, pageIndex: 0 }
+}
+
+const handleManageLocations = (id: number): void => {
+  plantingIdForSheet.value = id
+  openLocationSheet.value = true
 }
 
 watchDebounced(
@@ -129,6 +139,18 @@ watchDebounced(
       @pagination-change="handlePaginationChange"
       @delete="handleDeletePlanting"
       @update="setUpdateDialog"
+      @action="
+        (name: string, id: number) => {
+          if (name === 'manage-locations') handleManageLocations(id)
+        }
+      "
+    />
+
+    <!-- Location Assignment Sheet -->
+    <PlantingLocationAssignmentSheet
+      v-if="plantingIdForSheet"
+      v-model:open="openLocationSheet"
+      :plantingId="plantingIdForSheet"
     />
   </AppLayout>
 </template>

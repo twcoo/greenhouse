@@ -31,6 +31,10 @@ const handleUpdate = async (id: number, planting: Planting): Promise<void> => {
   await table.options.meta?.update(id, planting)
 }
 
+const handleManageLocations = (): void => {
+  table.options.meta?.action?.("manage-locations", row.original.id)
+}
+
 const handleDelete = (): void => {
   isDeleteDialogOpen.value = true
 }
@@ -52,6 +56,7 @@ const confirmDelete = async (id: number): Promise<void> => {
       <DropdownMenuItem @click="handleUpdate(row.original.id, row.original)">
         Update
       </DropdownMenuItem>
+      <DropdownMenuItem @click="handleManageLocations"> Manage Locations </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem @click="handleDelete">Delete</DropdownMenuItem>
     </DropdownMenuContent>
