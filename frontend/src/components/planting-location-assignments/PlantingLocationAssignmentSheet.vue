@@ -133,6 +133,7 @@ const hasAssignments = computed(() => (assignments.value?.results?.length ?? 0) 
 
       <div
         v-if="isLoading && !hasAssignments"
+        data-test="loading-container"
         class="flex flex-col items-center justify-center py-8"
       >
         <IconLoader2 class="animate-spin h-8 w-8 mb-2" />

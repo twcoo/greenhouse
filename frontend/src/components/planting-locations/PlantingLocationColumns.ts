@@ -52,15 +52,12 @@ export const columns: ColumnDef<PlantingLocation>[] = [
     header: "Status",
     cell: ({ row }) => {
       const location = row.original
-      const isPot =
-        location.locationType === "NURSERYPOT" || location.locationType === "POT"
+      const isPot = location.locationType === "NURSERYPOT" || location.locationType === "POT"
 
       if (!isPot) return h("div", "-")
 
-      return h(
-        Badge,
-        { variant: location.isOccupied ? "destructive" : "secondary" },
-        () => (location.isOccupied ? "Occupied" : "Available"),
+      return h(Badge, { variant: location.isOccupied ? "destructive" : "secondary" }, () =>
+        location.isOccupied ? "Occupied" : "Available",
       )
     },
     enableSorting: false,
