@@ -11,6 +11,7 @@ const mockLocation: PlantingLocation = {
   locationType: "POT",
   width: 30,
   height: 40,
+  isOccupied: false,
 }
 
 const mockLocationNoOptionals: PlantingLocation = {
@@ -18,6 +19,7 @@ const mockLocationNoOptionals: PlantingLocation = {
   name: "Garden Bed",
   locationType: "GROUND",
   width: 100,
+  isOccupied: false,
 }
 
 const mockTable = {
@@ -58,6 +60,38 @@ describe("PlantingLocationColumns", () => {
 
   it("length column renders dash when length is absent", () => {
     expect(renderCell("length", mockLocation).text()).toBe("-")
+  })
+
+  it("isOccupied column renders Available badge for an unoccupied pot", () => {
+    const availablePot: PlantingLocation = { ...mockLocation, isOccupied: false }
+    expect(renderCell("isOccupied", availablePot).text()).toBe("Available")
+  })
+
+  it("isOccupied column renders Occupied badge for an occupied pot", () => {
+    const occupiedPot: PlantingLocation = { ...mockLocation, isOccupied: true }
+    expect(renderCell("isOccupied", occupiedPot).text()).toBe("Occupied")
+  })
+
+  it("isOccupied column renders Available badge for an unoccupied nursery pot", () => {
+    const availableNurseryPot: PlantingLocation = {
+      ...mockLocation,
+      locationType: "NURSERYPOT",
+      isOccupied: false,
+    }
+    expect(renderCell("isOccupied", availableNurseryPot).text()).toBe("Available")
+  })
+
+  it("isOccupied column renders Occupied badge for an occupied nursery pot", () => {
+    const occupiedNurseryPot: PlantingLocation = {
+      ...mockLocation,
+      locationType: "NURSERYPOT",
+      isOccupied: true,
+    }
+    expect(renderCell("isOccupied", occupiedNurseryPot).text()).toBe("Occupied")
+  })
+
+  it("isOccupied column renders dash for ground locations", () => {
+    expect(renderCell("isOccupied", mockLocationNoOptionals).text()).toBe("-")
   })
 
   it("actions column cell type is PlantingLocationTableActions", () => {
