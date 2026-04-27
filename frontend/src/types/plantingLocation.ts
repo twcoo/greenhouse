@@ -6,6 +6,7 @@ export interface PlantingLocation {
   width: number
   length?: number
   image?: string
+  isOccupied: boolean
 }
 
 export interface PlantingLocationPayload {

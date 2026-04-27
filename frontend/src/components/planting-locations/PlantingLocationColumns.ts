@@ -1,6 +1,7 @@
 import type { ColumnDef } from "@tanstack/vue-table"
 import { h } from "vue"
 import type { PlantingLocation } from "@/types/plantingLocation"
+import { Badge } from "@/components/ui/badge"
 import PlantingLocationTableActions from "./PlantingLocationTableActions.vue"
 
 export const columns: ColumnDef<PlantingLocation>[] = [
@@ -44,6 +45,25 @@ export const columns: ColumnDef<PlantingLocation>[] = [
       return h("div", length ? String(length) : "-")
     },
     enableSorting: true,
+  },
+  {
+    id: "isOccupied",
+    accessorKey: "isOccupied",
+    header: "Status",
+    cell: ({ row }) => {
+      const location = row.original
+      const isPot =
+        location.locationType === "NURSERYPOT" || location.locationType === "POT"
+
+      if (!isPot) return h("div", "-")
+
+      return h(
+        Badge,
+        { variant: location.isOccupied ? "destructive" : "secondary" },
+        () => (location.isOccupied ? "Occupied" : "Available"),
+      )
+    },
+    enableSorting: false,
   },
   {
     id: "actions",

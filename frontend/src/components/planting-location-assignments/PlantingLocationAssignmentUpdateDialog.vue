@@ -29,6 +29,7 @@ import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
 import { AxiosError } from "axios"
 import { IconLoader2 } from "@tabler/icons-vue"
 import { usePlantingLocations } from "@/composables/usePlantingLocations"
+import type { PlantingLocation } from "@/types/plantingLocation"
 
 const open = defineModel<boolean>("open")
 const { id, assignmentFormInitialState, isLoading, isUpdateSuccess } = defineProps<{
@@ -49,6 +50,9 @@ const emit = defineEmits<{
 
 const locationPagination = ref({ pageIndex: 0, pageSize: 100 })
 const { locations } = usePlantingLocations(locationPagination)
+
+const isPotType = (location: PlantingLocation): boolean =>
+  location.locationType === "NURSERYPOT" || location.locationType === "POT"
 
 const form = reactive<PlantingLocationAssignmentForm>({
   ...assignmentFormInitialState,
@@ -129,8 +133,22 @@ watch(
                   v-for="location in locations?.results"
                   :key="location.id"
                   :value="String(location.id)"
+                  :disabled="
+                    isPotType(location) &&
+                    location.isOccupied &&
+                    location.id !== assignmentFormInitialState.plantingLocation
+                  "
                 >
                   {{ location.name }}
+                  <span
+                    v-if="
+                      isPotType(location) &&
+                      location.isOccupied &&
+                      location.id !== assignmentFormInitialState.plantingLocation
+                    "
+                  >
+                    (occupied)</span
+                  >
                 </SelectItem>
               </SelectContent>
             </Select>
