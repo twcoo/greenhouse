@@ -6,7 +6,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from ..models import PlantingLocation
-from .commons.factories import PlantingLocationFactory, UserFactory
+from .commons.factories import (PlantingFactory,
+                                PlantingLocationAssignmentFactory,
+                                PlantingLocationFactory, UserFactory)
 from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixin
 from .commons.utils import ImageUploadAPITestCase
 
@@ -88,6 +90,70 @@ class PlantingLocationListApiViewTests(
             user_data=locations,
             another_user_data=self.another_user_locations,
         )
+
+    def test_list_location_is_occupied_false_when_no_active_assignment(self):
+        self.authenticate()
+
+        pot = PlantingLocationFactory(
+            user=self.user,
+            location_type="POT",
+            height="30.00",
+            length=None,
+        )
+        planting = PlantingFactory(user=self.user)
+        PlantingLocationAssignmentFactory(
+            planting=planting,
+            planting_location=pot,
+            start_date="2024-01-01",
+            end_date="2024-06-01",
+        )
+
+        response = self.client.get(self.url)
+
+        _, _, locations, _ = self.get_response_data_many(response)
+        pot_data = next(loc for loc in locations if loc["id"] == pot.id)
+
+        self.assertFalse(pot_data["is_occupied"])
+
+    def test_list_location_is_occupied_true_when_has_active_assignment(self):
+        self.authenticate()
+
+        pot = PlantingLocationFactory(
+            user=self.user,
+            location_type="POT",
+            height="30.00",
+            length=None,
+        )
+        planting = PlantingFactory(user=self.user)
+        PlantingLocationAssignmentFactory(
+            planting=planting,
+            planting_location=pot,
+            start_date="2024-01-01",
+            end_date=None,
+        )
+
+        response = self.client.get(self.url)
+
+        _, _, locations, _ = self.get_response_data_many(response)
+        pot_data = next(loc for loc in locations if loc["id"] == pot.id)
+
+        self.assertTrue(pot_data["is_occupied"])
+
+    def test_list_location_is_occupied_false_when_no_assignments(self):
+        self.authenticate()
+
+        PlantingLocationFactory(
+            user=self.user,
+            location_type="POT",
+            height="30.00",
+            length=None,
+        )
+
+        response = self.client.get(self.url)
+
+        _, _, locations, _ = self.get_response_data_many(response)
+
+        self.assertTrue(all(not loc["is_occupied"] for loc in locations))
 
 
 class PlantingLocationCreateApiViewTests(
@@ -307,6 +373,7 @@ class PlantingLocationGetApiViewTests(
                 "height": self.location.height,
                 "width": str(self.location.width),
                 "length": str(self.location.length),
+                "is_occupied": False,
             },
         )
         self.assertIsNone(message)
@@ -371,6 +438,7 @@ class PlantingLocationUpdateApiViewTests(
                 "id": self.location.id,
                 **self.payload,
                 "height": None,
+                "is_occupied": False,
             },
         )
         self.assertIsNone(message)
@@ -465,6 +533,7 @@ class PlantingLocationPartialUpdateApiViewTests(
                 "height": None,
                 "width": str(self.location.width),
                 "length": "10.00",
+                "is_occupied": False,
             },
         )
         self.assertIsNone(message)

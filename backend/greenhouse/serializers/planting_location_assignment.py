@@ -1,6 +1,7 @@
 from datetime import date
 from typing import Any
 
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
@@ -65,8 +66,6 @@ class PlantingLocationAssignmentSerializer(serializers.ModelSerializer):
         planting = self.context.get("planting")
 
         if planting and start_date:
-            from django.db.models import Q
-
             qs = PlantingLocationAssignment.objects.filter(planting=planting)
             # On updates, exclude the current instance so it doesn't
             # conflict with itself.
@@ -87,6 +86,34 @@ class PlantingLocationAssignmentSerializer(serializers.ModelSerializer):
                             "This planting already has a location "
                             "assignment that overlaps with the given "
                             "date range."
+                        )
+                    }
+                )
+
+        planting_location = data.get("planting_location")
+        if (
+            planting
+            and planting_location
+            and start_date
+            and planting_location.location_type in ["NURSERYPOT", "POT"]
+        ):
+            location_qs = PlantingLocationAssignment.objects.filter(
+                planting_location=planting_location
+            ).exclude(planting=planting)
+
+            if self.instance:
+                location_qs = location_qs.exclude(pk=self.instance.pk)
+
+            location_overlap_qs = location_qs.filter(
+                start_date__lte=(end_date or date.max)
+            ).filter(Q(end_date__isnull=True) | Q(end_date__gte=start_date))
+
+            if location_overlap_qs.exists():
+                raise serializers.ValidationError(
+                    {
+                        "planting_location": (
+                            "This location already has an active "
+                            "planting for the given date range."
                         )
                     }
                 )

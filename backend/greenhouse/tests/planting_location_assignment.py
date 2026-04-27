@@ -342,6 +342,134 @@ class PlantingLocationAssignmentCreateApiViewTests(
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_create_assignment_pot_occupied_by_other_planting(self):
+        self.authenticate()
+
+        pot = PlantingLocationFactory(
+            user=self.user,
+            location_type="POT",
+            height="30.00",
+            length=None,
+        )
+        other_planting = PlantingFactory(user=self.user)
+        PlantingLocationAssignmentFactory(
+            planting=other_planting,
+            planting_location=pot,
+            start_date="2024-01-01",
+            end_date=None,
+        )
+
+        payload = {
+            "planting_location": pot.id,
+            "start_date": "2024-03-01",
+        }
+
+        response = self.client.post(self.url, payload, format="json")
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertEqual(
+            message,
+            {
+                "planting_location": [
+                    "This location already has an active planting "
+                    "for the given date range."
+                ]
+            },
+        )
+
+    def test_create_assignment_nursery_pot_occupied_by_other_planting(self):
+        self.authenticate()
+
+        nursery_pot = PlantingLocationFactory(
+            user=self.user,
+            location_type="NURSERYPOT",
+            height="20.00",
+            length=None,
+        )
+        other_planting = PlantingFactory(user=self.user)
+        PlantingLocationAssignmentFactory(
+            planting=other_planting,
+            planting_location=nursery_pot,
+            start_date="2024-01-01",
+            end_date=None,
+        )
+
+        payload = {
+            "planting_location": nursery_pot.id,
+            "start_date": "2024-03-01",
+        }
+
+        response = self.client.post(self.url, payload, format="json")
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertEqual(
+            message,
+            {
+                "planting_location": [
+                    "This location already has an active planting "
+                    "for the given date range."
+                ]
+            },
+        )
+
+    def test_create_assignment_pot_available_after_other_planting_closed(self):
+        self.authenticate()
+
+        pot = PlantingLocationFactory(
+            user=self.user,
+            location_type="POT",
+            height="30.00",
+            length=None,
+        )
+        other_planting = PlantingFactory(user=self.user)
+        PlantingLocationAssignmentFactory(
+            planting=other_planting,
+            planting_location=pot,
+            start_date="2024-01-01",
+            end_date="2024-06-01",
+        )
+
+        payload = {
+            "planting_location": pot.id,
+            "start_date": "2024-06-02",
+        }
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_assignment_ground_allows_multiple_active_plantings(self):
+        self.authenticate()
+
+        ground = PlantingLocationFactory(
+            user=self.user,
+            location_type="GROUND",
+        )
+        other_planting = PlantingFactory(user=self.user)
+        PlantingLocationAssignmentFactory(
+            planting=other_planting,
+            planting_location=ground,
+            start_date="2024-01-01",
+            end_date=None,
+        )
+
+        payload = {
+            "planting_location": ground.id,
+            "start_date": "2024-03-01",
+        }
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
 
 class PlantingLocationAssignmentGetApiViewTests(
     RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase
@@ -576,6 +704,79 @@ class PlantingLocationAssignmentUpdateApiViewTests(
                 ]
             },
         )
+
+    def test_update_assignment_pot_occupied_by_other_planting(self):
+        self.authenticate()
+
+        pot = PlantingLocationFactory(
+            user=self.user,
+            location_type="POT",
+            height="30.00",
+            length=None,
+        )
+        other_planting = PlantingFactory(user=self.user)
+        PlantingLocationAssignmentFactory(
+            planting=other_planting,
+            planting_location=pot,
+            start_date="2024-01-01",
+            end_date=None,
+        )
+
+        payload = {
+            "planting_location": pot.id,
+            "start_date": "2024-01-01",
+            "end_date": "2024-09-01",
+        }
+
+        response = self.client.put(self.url, payload, format="json")
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertEqual(
+            message,
+            {
+                "planting_location": [
+                    "This location already has an active planting "
+                    "for the given date range."
+                ]
+            },
+        )
+
+    def test_update_assignment_excludes_self_from_pot_occupied_check(self):
+        self.authenticate()
+
+        pot = PlantingLocationFactory(
+            user=self.user,
+            location_type="POT",
+            height="30.00",
+            length=None,
+        )
+        # Use a fresh planting with no other assignments so the same-planting
+        # overlap check does not interfere with this test.
+        planting = PlantingFactory(user=self.user)
+        assignment = PlantingLocationAssignmentFactory(
+            planting=planting,
+            planting_location=pot,
+            start_date="2024-01-01",
+            end_date="2024-06-01",
+        )
+        url = reverse(
+            "planting-location-assignment-detail",
+            args=[planting.id, assignment.id],
+        )
+
+        payload = {
+            "planting_location": pot.id,
+            "start_date": "2024-01-01",
+            "end_date": "2024-09-01",
+        }
+
+        response = self.client.put(url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class PlantingLocationAssignmentPartialUpdateApiViewTests(

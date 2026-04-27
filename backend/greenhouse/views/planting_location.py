@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.db.models import Exists, OuterRef
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
 from rest_framework.filters import SearchFilter
@@ -8,7 +9,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
-from ..models import PlantingLocation
+from ..models import PlantingLocation, PlantingLocationAssignment
 from ..openapi.planting_location.examples import (
     CREATE_PLANTING_LOCATION_REQUEST_GROUND_EXAMPLE,
     CREATE_PLANTING_LOCATION_REQUEST_POT_EXAMPLE,
@@ -73,7 +74,13 @@ class PlantingLocationListApiView(
     serializer_class = PlantingLocationSerializer
 
     def get_queryset(self):
-        return PlantingLocation.objects.filter(user=self.request.user)
+        occupied = PlantingLocationAssignment.objects.filter(
+            planting_location=OuterRef("pk"),
+            end_date__isnull=True,
+        )
+        return PlantingLocation.objects.filter(user=self.request.user).annotate(
+            is_occupied=Exists(occupied)
+        )
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -143,7 +150,13 @@ class PlantingLocationDetailAPIView(
     serializer_class = PlantingLocationSerializer
 
     def get_queryset(self):
-        return PlantingLocation.objects.filter(user=self.request.user)
+        occupied = PlantingLocationAssignment.objects.filter(
+            planting_location=OuterRef("pk"),
+            end_date__isnull=True,
+        )
+        return PlantingLocation.objects.filter(user=self.request.user).annotate(
+            is_occupied=Exists(occupied)
+        )
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.retrieve(request, *args, **kwargs)

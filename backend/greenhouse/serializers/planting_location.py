@@ -19,6 +19,14 @@ class PlantingLocationSerializer(serializers.ModelSerializer):
         choices=PlantingLocation.LOCATION_TYPE_CHOICES,
         help_text="Type of planting location.",
     )
+    is_occupied = serializers.BooleanField(
+        read_only=True,
+        default=False,
+        help_text=(
+            "True if the location has an active (open-ended) assignment. "
+            "Only meaningful for NURSERYPOT and POT types."
+        ),
+    )
     height = serializers.DecimalField(
         required=False,
         max_digits=6,
@@ -81,6 +89,7 @@ class PlantingLocationSerializer(serializers.ModelSerializer):
             "height",
             "width",
             "length",
+            "is_occupied",
         )
 
 

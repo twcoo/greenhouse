@@ -180,3 +180,24 @@ PLANTING_LOCATION_ASSIGNMENT_OVERLAP_EXAMPLE = OpenApiExample(
         },
     },
 )
+
+PLANTING_LOCATION_ASSIGNMENT_LOCATION_OCCUPIED_EXAMPLE = OpenApiExample(
+    name="Location already occupied",
+    summary="Pot or nursery pot is occupied by another planting",
+    description=(
+        "Example response returned when attempting to assign a planting "
+        "to a pot or nursery pot location that already has an active "
+        "planting for the given date range."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "planting_location": [
+                "This location already has an active planting "
+                "for the given date range."
+            ],
+        },
+    },
+)
