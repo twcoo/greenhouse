@@ -1,8 +1,14 @@
+from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
 from ..models import PlantingLocationStatus
+from ..openapi.planting_location_status.examples import \
+    PLANTING_LOCATION_STATUS_SERIALIZER_EXAMPLE
 
 
+@extend_schema_serializer(
+    examples=[PLANTING_LOCATION_STATUS_SERIALIZER_EXAMPLE]
+)
 class PlantingLocationStatusSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(
         read_only=True,
