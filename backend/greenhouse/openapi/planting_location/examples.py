@@ -14,7 +14,6 @@ PLANTING_LOCATION_SERIALIZER_EXAMPLE = OpenApiExample(
         "height": None,
         "width": "120.00",
         "length": "5.00",
-        "is_occupied": False,
     },
 )
 
@@ -68,7 +67,6 @@ CREATE_GROUND_PLANTING_LOCATION_RESPONSE_EXAMPLE = OpenApiExample(
             "height": None,
             "width": "120.00",
             "length": "5.00",
-            "is_occupied": False,
         },
         "message": None,
     },
@@ -90,7 +88,6 @@ CREATE_POT_PLANTING_LOCATION_RESPONSE_EXAMPLE = OpenApiExample(
             "height": "30.00",
             "width": "25.00",
             "length": None,
-            "is_occupied": False,
         },
         "message": None,
     },
@@ -172,7 +169,6 @@ RETRIEVE_PLANTING_LOCATION_RESPONSE_EXAMPLE = OpenApiExample(
             "height": None,
             "width": "120.00",
             "length": "5.00",
-            "is_occupied": False,
         },
         "message": None,
     },
@@ -221,7 +217,6 @@ UPDATE_PLANTING_LOCATION_RESPONSE_EXAMPLE = OpenApiExample(
             "height": None,
             "width": "120.00",
             "length": "10.00",
-            "is_occupied": False,
         },
         "message": None,
     },
@@ -270,41 +265,5 @@ POT_LOCATION_LENGTH_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
         "message": {
             "length": ["Length must not be provided for ground locations."]
         },
-    },
-)
-
-PLANTING_LOCATION_UPLOAD_IMAGE_REQUEST_EXAMPLE = OpenApiExample(
-    name="Image Upload",
-    summary="Upload or update the site photo",
-    media_type="multipart/form-data",
-    description=(
-        "Example request payload for updating the planting "
-        "location image. This request requires "
-        "**multipart/form-data** encoding. "
-        "Supported formats: **JPG, PNG**. "
-        "Maximum file size: **2MB**."
-    ),
-    value={
-        "image": "planting_location.png",
-    },
-    request_only=True,
-)
-
-PLANTING_LOCATION_UPLOAD_IMAGE_RESPONSE_EXAMPLE = OpenApiExample(
-    name="Planting location image uploaded",
-    summary="Planting location image uploaded successfully",
-    description=(
-        "Example response returned when the planting location "
-        "image is successfully uploaded and updated."
-    ),
-    value={
-        "status": "success",
-        "data": {
-            "image": (
-                "http://api.example.com/media/"
-                "planting_locations/planting_location.png"
-            )
-        },
-        "message": None,
     },
 )
