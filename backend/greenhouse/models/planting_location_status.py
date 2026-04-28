@@ -18,7 +18,7 @@ class PlantingLocationStatus(models.Model):
         on_delete=models.CASCADE,
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-    image = models.ImageField(upload_to="locations/")
+    image = models.ImageField(upload_to="locations/", blank=True, null=True)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now=True)
