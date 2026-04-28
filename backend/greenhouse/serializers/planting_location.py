@@ -5,7 +5,6 @@ from ..models import PlantingLocation
 from ..openapi.planting_location.examples import \
     PLANTING_LOCATION_SERIALIZER_EXAMPLE
 from .planting_location_status import PlantingLocationStatusSerializer
-from .utils import UploadImageSerializer
 
 
 @extend_schema_serializer(examples=[PLANTING_LOCATION_SERIALIZER_EXAMPLE])
@@ -93,9 +92,3 @@ class PlantingLocationSerializer(serializers.ModelSerializer):
             "length",
             "current_status",
         )
-
-
-class PlantingLocationImageSerializer(UploadImageSerializer):
-    class Meta:
-        model = PlantingLocation
-        fields = ["image"]
