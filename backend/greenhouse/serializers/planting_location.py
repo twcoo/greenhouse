@@ -4,6 +4,7 @@ from rest_framework import serializers
 from ..models import PlantingLocation
 from ..openapi.planting_location.examples import \
     PLANTING_LOCATION_SERIALIZER_EXAMPLE
+from .planting_location_status import PlantingLocationStatusSerializer
 from .utils import UploadImageSerializer
 
 
@@ -19,13 +20,8 @@ class PlantingLocationSerializer(serializers.ModelSerializer):
         choices=PlantingLocation.LOCATION_TYPE_CHOICES,
         help_text="Type of planting location.",
     )
-    is_occupied = serializers.BooleanField(
-        read_only=True,
-        default=False,
-        help_text=(
-            "True if the location has an active (open-ended) assignment. "
-            "Only meaningful for NURSERYPOT and POT types."
-        ),
+    current_status = serializers.SerializerMethodField(
+        help_text="The most recent status entry for this location, or null.",
     )
     height = serializers.DecimalField(
         required=False,
@@ -44,6 +40,12 @@ class PlantingLocationSerializer(serializers.ModelSerializer):
         decimal_places=2,
         help_text="Length of the planting location, in meters. Required for ground locations.",
     )
+
+    def get_current_status(self, instance):
+        latest = instance.status_history.order_by("-pk").first()
+        if latest is None:
+            return None
+        return PlantingLocationStatusSerializer(latest).data
 
     def validate(self, attrs):
         location_type = attrs.get(
@@ -89,7 +91,7 @@ class PlantingLocationSerializer(serializers.ModelSerializer):
             "height",
             "width",
             "length",
-            "is_occupied",
+            "current_status",
         )
 
 
