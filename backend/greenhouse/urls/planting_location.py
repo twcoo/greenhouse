@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from ..views import (PlantingLocationDetailAPIView,
                      PlantingLocationListApiView,
@@ -22,5 +22,10 @@ urlpatterns = [
         "<int:pk>/image/",
         PlantingLocationUploadImageView.as_view(),
         name="planting-location-image-upload",
+    ),
+    # Status history (nested)
+    path(
+        "<int:pk>/statuses/",
+        include("greenhouse.urls.planting_location_status"),
     ),
 ]
