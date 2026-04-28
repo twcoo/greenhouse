@@ -29,9 +29,6 @@ class PlantingLocation(models.Model):
         null=True,
         blank=True,
     )
-    image = models.ImageField(
-        upload_to="planting_locations/", blank=True, null=True
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
