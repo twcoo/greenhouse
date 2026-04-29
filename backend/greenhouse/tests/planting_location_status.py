@@ -250,6 +250,80 @@ class PlantingLocationStatusCreateApiViewTests(
             {"image": ["File too large. Size should not exceed 2.0MB."]},
         )
 
+    def test_create_status_blocked_when_pot_is_in_use(self):
+        self.authenticate()
+
+        pot_location = PlantingLocationFactory(
+            user=self.user, location_type="POT"
+        )
+        PlantingLocationStatusFactory(
+            planting_location=pot_location, status="IN_USE"
+        )
+        url = reverse(
+            "planting-location-status-list-create",
+            args=[pot_location.id],
+        )
+
+        response = self.client.post(
+            url, {"status": "AVAILABLE"}, format="multipart"
+        )
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            ["Cannot set status while the location is in use."],
+        )
+
+    def test_create_status_allowed_when_pot_is_not_in_use(self):
+        self.authenticate()
+
+        pot_location = PlantingLocationFactory(
+            user=self.user, location_type="POT"
+        )
+        PlantingLocationStatusFactory(
+            planting_location=pot_location, status="AVAILABLE"
+        )
+        url = reverse(
+            "planting-location-status-list-create",
+            args=[pot_location.id],
+        )
+
+        response = self.client.post(
+            url, {"status": "DAMAGED"}, format="multipart"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_status_blocked_when_ground_is_in_use(self):
+        self.authenticate()
+
+        ground_location = PlantingLocationFactory(
+            user=self.user, location_type="GROUND"
+        )
+        PlantingLocationStatusFactory(
+            planting_location=ground_location, status="IN_USE"
+        )
+        url = reverse(
+            "planting-location-status-list-create",
+            args=[ground_location.id],
+        )
+
+        response = self.client.post(
+            url, {"status": "DAMAGED"}, format="multipart"
+        )
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            ["Cannot set status while the location is in use."],
+        )
+
     def test_create_status_other_user_location_returns_404(self):
         self.authenticate()
 

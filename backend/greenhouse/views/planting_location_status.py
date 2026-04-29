@@ -2,6 +2,7 @@ from typing import Any, cast
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
@@ -77,7 +78,15 @@ class PlantingLocationStatusListApiView(
         ).order_by("-pk")
 
     def perform_create(self, serializer):
-        serializer.save(planting_location=self._get_planting_location())
+        location = self._get_planting_location()
+
+        latest = location.status_history.order_by("-pk").first()
+        if latest and latest.status == "IN_USE":
+            raise ValidationError(
+                "Cannot set status while the location is in use."
+            )
+
+        serializer.save(planting_location=location)
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.list(request, *args, **kwargs)

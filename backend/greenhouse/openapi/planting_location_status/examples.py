@@ -81,6 +81,21 @@ PLANTING_LOCATION_STATUS_INVALID_CHOICE_EXAMPLE = OpenApiExample(
     },
 )
 
+PLANTING_LOCATION_STATUS_LOCATION_IN_USE_EXAMPLE = OpenApiExample(
+    name="Location is in use",
+    summary="Status change blocked while location is in use",
+    description=(
+        "Example response returned when attempting to manually set "
+        "a status on a location whose current status is IN_USE."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": ["Cannot set status while the location is in use."],
+    },
+)
+
 PLANTING_LOCATION_STATUS_NOT_FOUND_RESPONSE_EXAMPLE = OpenApiExample(
     name="Planting location not found",
     summary="No planting location exists with the provided ID.",
