@@ -10,25 +10,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 
-class ImageUploadAPITestCase(APITestCase):
-    upload_to: str
-
-    def setUp(self):
-        if not self.upload_to:
-            raise ValueError("upload_to must be defined.")
-
-        super().setUp()
-
-    def tearDown(self):
-        folder = os.path.join(
-            settings.MEDIA_ROOT, getattr(self, "upload_to", "")
-        )
-
-        if os.path.isdir(folder):
-            shutil.rmtree(folder)
-
-        super().tearDown()
-
+class CreateTestImageMixin:
     def create_test_image(
         self,
         name: str = "test",
@@ -58,6 +40,26 @@ class ImageUploadAPITestCase(APITestCase):
             content=img_byte_arr.read(),
             content_type=f"image/{ext}",
         )
+
+
+class ImageUploadAPITestCase(CreateTestImageMixin, APITestCase):
+    upload_to: str
+
+    def setUp(self):
+        if not self.upload_to:
+            raise ValueError("upload_to must be defined.")
+
+        super().setUp()
+
+    def tearDown(self):
+        folder = os.path.join(
+            settings.MEDIA_ROOT, getattr(self, "upload_to", "")
+        )
+
+        if os.path.isdir(folder):
+            shutil.rmtree(folder)
+
+        super().tearDown()
 
     def upload_image(
         self,

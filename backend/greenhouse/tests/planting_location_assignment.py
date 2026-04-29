@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ..models import PlantingLocationAssignment
+from ..models import PlantingLocationAssignment, PlantingLocationStatus
 from .commons.factories import (PlantingFactory,
                                 PlantingLocationAssignmentFactory,
                                 PlantingLocationFactory, UserFactory)
@@ -932,3 +932,132 @@ class PlantingLocationAssignmentDeleteApiViewTests(
         self.assertEqual(response_status, "error")
         self.assertIsNone(data)
         self.assertEqual(message, "Resource not found.")
+
+
+class PlantingLocationStatusAutoSyncTests(
+    RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase
+):
+    def setUp(self):
+        super().setUp()
+        self.planting = PlantingFactory(user=self.user)
+        self.pot_location = PlantingLocationFactory(
+            user=self.user,
+            location_type="POT",
+            height="30.00",
+            length=None,
+        )
+        self.ground_location = PlantingLocationFactory(
+            user=self.user,
+            location_type="GROUND",
+        )
+        self.url = reverse(
+            "planting-location-assignment-list-create",
+            args=[self.planting.id],
+        )
+
+    def test_create_assignment_creates_in_use_status(self):
+        self.authenticate()
+
+        self.client.post(
+            self.url,
+            {
+                "planting_location": self.pot_location.id,
+                "start_date": "2024-01-01",
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            PlantingLocationStatus.objects.filter(
+                planting_location=self.pot_location, status="IN_USE"
+            ).count(),
+            1,
+        )
+
+    def test_create_assignment_ground_does_not_create_status(self):
+        self.authenticate()
+
+        self.client.post(
+            self.url,
+            {
+                "planting_location": self.ground_location.id,
+                "start_date": "2024-01-01",
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            PlantingLocationStatus.objects.filter(
+                planting_location=self.ground_location
+            ).count(),
+            0,
+        )
+
+    def test_close_assignment_creates_available_status(self):
+        self.authenticate()
+
+        assignment = PlantingLocationAssignmentFactory(
+            planting=self.planting,
+            planting_location=self.pot_location,
+            start_date="2024-01-01",
+            end_date=None,
+        )
+        url = reverse(
+            "planting-location-assignment-detail",
+            args=[self.planting.id, assignment.id],
+        )
+
+        self.client.patch(url, {"end_date": "2024-06-01"}, format="json")
+
+        self.assertEqual(
+            PlantingLocationStatus.objects.filter(
+                planting_location=self.pot_location, status="AVAILABLE"
+            ).count(),
+            1,
+        )
+
+    def test_update_without_closing_does_not_create_status(self):
+        self.authenticate()
+
+        assignment = PlantingLocationAssignmentFactory(
+            planting=self.planting,
+            planting_location=self.pot_location,
+            start_date="2024-01-01",
+            end_date=None,
+        )
+        url = reverse(
+            "planting-location-assignment-detail",
+            args=[self.planting.id, assignment.id],
+        )
+
+        self.client.patch(url, {"start_date": "2024-02-01"}, format="json")
+
+        self.assertEqual(
+            PlantingLocationStatus.objects.filter(
+                planting_location=self.pot_location
+            ).count(),
+            0,
+        )
+
+    def test_delete_assignment_creates_available_status(self):
+        self.authenticate()
+
+        assignment = PlantingLocationAssignmentFactory(
+            planting=self.planting,
+            planting_location=self.pot_location,
+            start_date="2024-01-01",
+            end_date=None,
+        )
+        url = reverse(
+            "planting-location-assignment-detail",
+            args=[self.planting.id, assignment.id],
+        )
+
+        self.client.delete(url)
+
+        self.assertEqual(
+            PlantingLocationStatus.objects.filter(
+                planting_location=self.pot_location, status="AVAILABLE"
+            ).count(),
+            1,
+        )

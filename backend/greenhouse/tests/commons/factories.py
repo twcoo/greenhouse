@@ -4,7 +4,8 @@ from factory import Faker
 from factory.django import DjangoModelFactory
 
 from ...models import (Crop, Planting, PlantingLocation,
-                       PlantingLocationAssignment, Variety)
+                       PlantingLocationAssignment, PlantingLocationStatus,
+                       Variety)
 
 User = get_user_model()
 
@@ -77,6 +78,18 @@ class PlantingFactory(DjangoModelFactory):
     variety = factory.SubFactory(
         VarietyFactory, crop=factory.SelfAttribute("..crop")
     )
+
+
+class PlantingLocationStatusFactory(DjangoModelFactory):
+    class Meta:
+        model = PlantingLocationStatus
+
+    planting_location = factory.SubFactory(PlantingLocationFactory)
+    status = factory.Iterator(
+        [choice[0] for choice in PlantingLocationStatus.STATUS_CHOICES]
+    )
+    notes = factory.Faker("sentence")
+    image = None
 
 
 class PlantingLocationAssignmentFactory(DjangoModelFactory):
