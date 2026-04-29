@@ -33,14 +33,4 @@ export const plantingLocationService = {
   async delete(id: number): Promise<void> {
     await apiClient.delete<APIResponse<PlantingLocation>>(`/planting-locations/${id}`)
   },
-
-  async uploadImage(id: number, file: File): Promise<void> {
-    const formData = new FormData()
-    formData.append("image", file)
-    await apiClient.post(`/planting-locations/${id}/image/`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
-  },
 }
