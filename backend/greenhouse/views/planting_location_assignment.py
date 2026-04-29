@@ -6,7 +6,8 @@ from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
-from ..models import Planting, PlantingLocationAssignment
+from ..models import (Planting, PlantingLocationAssignment,
+                      PlantingLocationStatus)
 from ..openapi.planting_location_assignment.examples import (
     CREATE_PLANTING_LOCATION_ASSIGNMENT_REQUEST_EXAMPLE,
     PARTIAL_UPDATE_PLANTING_LOCATION_ASSIGNMENT_REQUEST_EXAMPLE,
@@ -89,7 +90,12 @@ class PlantingLocationAssignmentListApiView(
         return context
 
     def perform_create(self, serializer):
-        serializer.save(planting=self._get_planting())
+        assignment = serializer.save(planting=self._get_planting())
+        location = assignment.planting_location
+        if location.location_type in ["NURSERYPOT", "POT"]:
+            PlantingLocationStatus.objects.create(
+                planting_location=location, status="IN_USE"
+            )
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.list(request, *args, **kwargs)
@@ -178,6 +184,27 @@ class PlantingLocationAssignmentDetailApiView(
         context = super().get_serializer_context()
         context["planting"] = self._get_planting()
         return context
+
+    def perform_update(self, serializer):
+        end_date_before = serializer.instance.end_date
+        assignment = serializer.save()
+        location = assignment.planting_location
+        if (
+            location.location_type in ["NURSERYPOT", "POT"]
+            and end_date_before is None
+            and assignment.end_date is not None
+        ):
+            PlantingLocationStatus.objects.create(
+                planting_location=location, status="AVAILABLE"
+            )
+
+    def perform_destroy(self, instance):
+        location = instance.planting_location
+        super().perform_destroy(instance)
+        if location.location_type in ["NURSERYPOT", "POT"]:
+            PlantingLocationStatus.objects.create(
+                planting_location=location, status="AVAILABLE"
+            )
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.retrieve(request, *args, **kwargs)
