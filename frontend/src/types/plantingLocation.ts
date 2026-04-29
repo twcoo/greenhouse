@@ -1,3 +1,5 @@
+import type { PlantingLocationStatus } from "./plantingLocationStatus"
+
 export interface PlantingLocation {
   id: number
   name: string
@@ -5,8 +7,7 @@ export interface PlantingLocation {
   height?: number
   width: number
   length?: number
-  image?: string
-  isOccupied: boolean
+  currentStatus?: PlantingLocationStatus | null
 }
 
 export interface PlantingLocationPayload {

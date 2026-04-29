@@ -2,9 +2,7 @@ import type { ColumnDef } from "@tanstack/vue-table"
 import { h } from "vue"
 import type { Planting } from "@/types/planting"
 import PlantingTableActions from "./PlantingTableActions.vue"
-
-const formatDate = (value: string): string =>
-  new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date(value))
+import { formatDate } from "@/utils/formatting"
 
 export const columns: ColumnDef<Planting>[] = [
   {

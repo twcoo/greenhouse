@@ -1,8 +1,28 @@
 import type { ColumnDef } from "@tanstack/vue-table"
 import { h } from "vue"
 import type { PlantingLocation } from "@/types/plantingLocation"
+import type { PlantingLocationStatusChoice } from "@/types/plantingLocationStatus"
 import { Badge } from "@/components/ui/badge"
 import PlantingLocationTableActions from "./PlantingLocationTableActions.vue"
+
+const STATUS_BADGE_VARIANT: Record<
+  PlantingLocationStatusChoice,
+  "secondary" | "default" | "destructive" | "outline"
+> = {
+  AVAILABLE: "secondary",
+  IN_USE: "default",
+  DAMAGED: "outline",
+  DESTROYED: "destructive",
+  RETIRED: "destructive",
+}
+
+const STATUS_LABEL: Record<PlantingLocationStatusChoice, string> = {
+  AVAILABLE: "Available",
+  IN_USE: "In Use",
+  DAMAGED: "Damaged",
+  DESTROYED: "Destroyed",
+  RETIRED: "Retired",
+}
 
 export const columns: ColumnDef<PlantingLocation>[] = [
   {
@@ -47,18 +67,15 @@ export const columns: ColumnDef<PlantingLocation>[] = [
     enableSorting: true,
   },
   {
-    id: "isOccupied",
-    accessorKey: "isOccupied",
-    header: "Status",
+    id: "currentStatus",
+    accessorKey: "currentStatus",
+    header: "Condition",
     cell: ({ row }) => {
-      const location = row.original
-      const isPot = location.locationType === "NURSERYPOT" || location.locationType === "POT"
+      const current = row.original.currentStatus
+      if (!current) return h("div", "-")
 
-      if (!isPot) return h("div", "-")
-
-      return h(Badge, { variant: location.isOccupied ? "destructive" : "secondary" }, () =>
-        location.isOccupied ? "Occupied" : "Available",
-      )
+      const choice = current.status as PlantingLocationStatusChoice
+      return h(Badge, { variant: STATUS_BADGE_VARIANT[choice] }, () => STATUS_LABEL[choice])
     },
     enableSorting: false,
   },

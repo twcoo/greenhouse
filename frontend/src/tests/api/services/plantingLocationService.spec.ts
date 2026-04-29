@@ -95,23 +95,4 @@ describe("plantingLocationService", () => {
       expect(apiClient.delete).toHaveBeenCalledWith("/planting-locations/1")
     })
   })
-
-  describe("uploadImage", () => {
-    it("calls POST /planting-locations/:id/image/ with FormData containing the file", async () => {
-      vi.mocked(apiClient.post).mockResolvedValue({ data: {} })
-
-      const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
-
-      await plantingLocationService.uploadImage(1, file)
-
-      expect(apiClient.post).toHaveBeenCalledWith(
-        "/planting-locations/1/image/",
-        expect.any(FormData),
-        { headers: { "Content-Type": "multipart/form-data" } },
-      )
-
-      const formData = vi.mocked(apiClient.post).mock.calls[0][1] as FormData
-      expect(formData.get("image")).toBe(file)
-    })
-  })
 })

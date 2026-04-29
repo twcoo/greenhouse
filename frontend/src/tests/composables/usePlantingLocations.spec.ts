@@ -10,7 +10,6 @@ vi.mock("@/api/services/plantingLocationService", () => ({
     create: vi.fn().mockResolvedValue(undefined),
     update: vi.fn().mockResolvedValue(undefined),
     delete: vi.fn().mockResolvedValue(undefined),
-    uploadImage: vi.fn().mockResolvedValue(undefined),
   },
 }))
 
@@ -54,7 +53,6 @@ describe("usePlantingLocations", () => {
     expect(typeof result.createLocation).toBe("function")
     expect(typeof result.updateLocation).toBe("function")
     expect(typeof result.deleteLocation).toBe("function")
-    expect(typeof result.uploadImage).toBe("function")
     expect(typeof result.fetchLocations).toBe("function")
   })
 
@@ -86,14 +84,5 @@ describe("usePlantingLocations", () => {
     await result.deleteLocation(1)
 
     expect(plantingLocationService.delete).toHaveBeenCalledWith(1)
-  })
-
-  it("uploadImage calls plantingLocationService.uploadImage with id and file", async () => {
-    const result = mountComposable()
-    const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
-
-    await result.uploadImage({ id: 1, file })
-
-    expect(plantingLocationService.uploadImage).toHaveBeenCalledWith(1, file)
   })
 })

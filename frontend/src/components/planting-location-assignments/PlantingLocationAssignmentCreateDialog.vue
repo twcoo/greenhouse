@@ -127,10 +127,12 @@ watch(open, (isOpen) => {
                   v-for="location in locations?.results"
                   :key="location.id"
                   :value="String(location.id)"
-                  :disabled="isPotType(location) && location.isOccupied"
+                  :disabled="isPotType(location) && location.currentStatus?.status === 'IN_USE'"
                 >
                   {{ location.name }}
-                  <span v-if="isPotType(location) && location.isOccupied"> (occupied)</span>
+                  <span v-if="isPotType(location) && location.currentStatus?.status === 'IN_USE'">
+                    (occupied)</span
+                  >
                 </SelectItem>
               </SelectContent>
             </Select>

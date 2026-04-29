@@ -1,5 +1,21 @@
 import { describe, it, expect } from "vitest"
-import { toTitleCase } from "@/utils/formatting"
+import { formatDate, toTitleCase } from "@/utils/formatting"
+
+describe("formatDate", () => {
+  it("formats an ISO date string into a readable date", () => {
+    const result = formatDate("2024-03-01T00:00:00Z")
+    expect(result).toBeTruthy()
+    expect(result).not.toBe("—")
+  })
+
+  it("returns the default fallback '—' when value is null", () => {
+    expect(formatDate(null)).toBe("—")
+  })
+
+  it("returns a custom fallback when value is null", () => {
+    expect(formatDate(null, "Present")).toBe("Present")
+  })
+})
 
 describe("toTitleCase", () => {
   it("returns empty string for empty input", () => {

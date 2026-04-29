@@ -5,6 +5,8 @@ import PlantingLocationsView from "@/views/planting-locations/index.vue"
 import PlantingLocationTable from "@/components/planting-locations/PlantingLocationTable.vue"
 import PlantingLocationCreateDialog from "@/components/planting-locations/PlantingLocationCreateDialog.vue"
 import PlantingLocationUpdateDialog from "@/components/planting-locations/PlantingLocationUpdateDialog.vue"
+import PlantingLocationSetStatusDialog from "@/components/planting-locations/PlantingLocationSetStatusDialog.vue"
+import PlantingLocationStatusHistoryDialog from "@/components/planting-locations/PlantingLocationStatusHistoryDialog.vue"
 import { createTestingPinia } from "@pinia/testing"
 import type { PlantingLocation } from "@/types/plantingLocation"
 
@@ -47,6 +49,16 @@ const stubs = {
     template: "<div data-stub='update-dialog' />",
     props: ["open", "id", "locationFormInitialState", "isLoading", "isUpdateSuccess"],
     emits: ["update:open", "submit"],
+  },
+  [PlantingLocationSetStatusDialog.__name ?? "PlantingLocationSetStatusDialog"]: {
+    template: "<div data-stub='set-status-dialog' />",
+    props: ["open", "locationId", "currentStatus"],
+    emits: ["update:open"],
+  },
+  [PlantingLocationStatusHistoryDialog.__name ?? "PlantingLocationStatusHistoryDialog"]: {
+    template: "<div data-stub='status-history-dialog' />",
+    props: ["open", "locationId"],
+    emits: ["update:open"],
   },
   IconLoader2: { template: "<svg />" },
   IconPlus: { template: "<svg />" },

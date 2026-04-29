@@ -135,7 +135,7 @@ watch(
                   :value="String(location.id)"
                   :disabled="
                     isPotType(location) &&
-                    location.isOccupied &&
+                    location.currentStatus?.status === 'IN_USE' &&
                     location.id !== assignmentFormInitialState.plantingLocation
                   "
                 >
@@ -143,7 +143,7 @@ watch(
                   <span
                     v-if="
                       isPotType(location) &&
-                      location.isOccupied &&
+                      location.currentStatus?.status === 'IN_USE' &&
                       location.id !== assignmentFormInitialState.plantingLocation
                     "
                   >

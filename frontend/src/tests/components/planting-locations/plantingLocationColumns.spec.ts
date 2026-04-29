@@ -11,7 +11,7 @@ const mockLocation: PlantingLocation = {
   locationType: "POT",
   width: 30,
   height: 40,
-  isOccupied: false,
+  currentStatus: null,
 }
 
 const mockLocationNoOptionals: PlantingLocation = {
@@ -19,7 +19,7 @@ const mockLocationNoOptionals: PlantingLocation = {
   name: "Garden Bed",
   locationType: "GROUND",
   width: 100,
-  isOccupied: false,
+  currentStatus: null,
 }
 
 const mockTable = {
@@ -62,36 +62,40 @@ describe("PlantingLocationColumns", () => {
     expect(renderCell("length", mockLocation).text()).toBe("-")
   })
 
-  it("isOccupied column renders Available badge for an unoccupied pot", () => {
-    const availablePot: PlantingLocation = { ...mockLocation, isOccupied: false }
-    expect(renderCell("isOccupied", availablePot).text()).toBe("Available")
+  it("currentStatus column renders dash when currentStatus is null", () => {
+    expect(renderCell("currentStatus", mockLocation).text()).toBe("-")
   })
 
-  it("isOccupied column renders Occupied badge for an occupied pot", () => {
-    const occupiedPot: PlantingLocation = { ...mockLocation, isOccupied: true }
-    expect(renderCell("isOccupied", occupiedPot).text()).toBe("Occupied")
-  })
-
-  it("isOccupied column renders Available badge for an unoccupied nursery pot", () => {
-    const availableNurseryPot: PlantingLocation = {
+  it("currentStatus column renders Available label for AVAILABLE status", () => {
+    const location: PlantingLocation = {
       ...mockLocation,
-      locationType: "NURSERYPOT",
-      isOccupied: false,
+      currentStatus: { id: 1, status: "AVAILABLE", notes: "", createdAt: "2024-01-01T00:00:00Z" },
     }
-    expect(renderCell("isOccupied", availableNurseryPot).text()).toBe("Available")
+    expect(renderCell("currentStatus", location).text()).toBe("Available")
   })
 
-  it("isOccupied column renders Occupied badge for an occupied nursery pot", () => {
-    const occupiedNurseryPot: PlantingLocation = {
+  it("currentStatus column renders In Use label for IN_USE status", () => {
+    const location: PlantingLocation = {
       ...mockLocation,
-      locationType: "NURSERYPOT",
-      isOccupied: true,
+      currentStatus: { id: 2, status: "IN_USE", notes: "", createdAt: "2024-01-01T00:00:00Z" },
     }
-    expect(renderCell("isOccupied", occupiedNurseryPot).text()).toBe("Occupied")
+    expect(renderCell("currentStatus", location).text()).toBe("In Use")
   })
 
-  it("isOccupied column renders dash for ground locations", () => {
-    expect(renderCell("isOccupied", mockLocationNoOptionals).text()).toBe("-")
+  it("currentStatus column renders Damaged label for DAMAGED status", () => {
+    const location: PlantingLocation = {
+      ...mockLocation,
+      currentStatus: { id: 3, status: "DAMAGED", notes: "", createdAt: "2024-01-01T00:00:00Z" },
+    }
+    expect(renderCell("currentStatus", location).text()).toBe("Damaged")
+  })
+
+  it("currentStatus column renders Destroyed label for DESTROYED status", () => {
+    const location: PlantingLocation = {
+      ...mockLocation,
+      currentStatus: { id: 4, status: "DESTROYED", notes: "", createdAt: "2024-01-01T00:00:00Z" },
+    }
+    expect(renderCell("currentStatus", location).text()).toBe("Destroyed")
   })
 
   it("actions column cell type is PlantingLocationTableActions", () => {

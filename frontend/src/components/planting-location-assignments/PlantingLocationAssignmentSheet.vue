@@ -33,6 +33,7 @@ import PlantingLocationAssignmentUpdateDialog from "./PlantingLocationAssignment
 import { usePlantingLocationAssignments } from "@/composables/usePlantingLocationAssignments"
 import type { PlantingLocationAssignmentPayload } from "@/types/plantingLocationAssignment"
 import type { PlantingLocationAssignmentForm } from "@/schemas/plantingLocationAssignment.schemas"
+import { formatDate } from "@/utils/formatting"
 
 const open = defineModel<boolean>("open")
 const { plantingId } = defineProps<{ plantingId: number }>()
@@ -98,11 +99,6 @@ const handleDelete = async (): Promise<void> => {
   isDeleteDialogOpen.value = false
 }
 
-const formatDate = (date: string | null): string => {
-  if (!date) return "Present"
-  return new Date(date).toLocaleDateString()
-}
-
 const toAssignmentForm = (assignment: {
   plantingLocation: number
   startDate: string
@@ -156,7 +152,7 @@ const hasAssignments = computed(() => (assignments.value?.results?.length ?? 0) 
           <TableRow v-for="assignment in assignments?.results" :key="assignment.id">
             <TableCell>{{ assignment.plantingLocationName }}</TableCell>
             <TableCell>{{ formatDate(assignment.startDate) }}</TableCell>
-            <TableCell>{{ formatDate(assignment.endDate) }}</TableCell>
+            <TableCell>{{ formatDate(assignment.endDate, "Present") }}</TableCell>
             <TableCell>
               <div class="flex items-center gap-1">
                 <Button
