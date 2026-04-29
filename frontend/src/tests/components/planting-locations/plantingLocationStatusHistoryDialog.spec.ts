@@ -116,8 +116,8 @@ describe("PlantingLocationStatusHistoryDialog.vue", () => {
       }
       const wrapper = mountComponent()
 
-      expect(wrapper.find("img").exists()).toBe(true)
-      expect(wrapper.find("img").attributes("src")).toBe("http://example.com/photo.jpg")
+      expect(wrapper.find("button img").exists()).toBe(true)
+      expect(wrapper.find("button img").attributes("src")).toBe("http://example.com/photo.jpg")
     })
 
     it("omits img element when entry has no image", () => {
@@ -127,7 +127,7 @@ describe("PlantingLocationStatusHistoryDialog.vue", () => {
       }
       const wrapper = mountComponent()
 
-      expect(wrapper.find("img").exists()).toBe(false)
+      expect(wrapper.find("button img").exists()).toBe(false)
     })
 
     it("displays a formatted date string", () => {
@@ -140,6 +140,48 @@ describe("PlantingLocationStatusHistoryDialog.vue", () => {
       // The date should be formatted and present (exact string depends on locale)
       expect(wrapper.find(".text-xs").exists()).toBe(true)
       expect(wrapper.find(".text-xs").text()).not.toBe("")
+    })
+  })
+
+  describe("image preview", () => {
+    it("wraps thumbnail in a button when entry has an image", () => {
+      mockStatuses.value = {
+        results: [makeEntry({ image: "http://example.com/photo.jpg" })],
+        count: 1,
+      }
+      const wrapper = mountComponent()
+
+      expect(wrapper.find("button img").exists()).toBe(true)
+    })
+
+    it("does not render a thumbnail button when entry has no image", () => {
+      mockStatuses.value = { results: [makeEntry({ image: null })], count: 1 }
+      const wrapper = mountComponent()
+
+      expect(wrapper.find("button img").exists()).toBe(false)
+    })
+
+    it("preview image has no src before any thumbnail is clicked", () => {
+      mockStatuses.value = {
+        results: [makeEntry({ image: "http://example.com/photo.jpg" })],
+        count: 1,
+      }
+      const wrapper = mountComponent()
+
+      // findAll("img")[0] = thumbnail, [1] = preview
+      expect(wrapper.findAll("img")[1]?.attributes("src")).toBeUndefined()
+    })
+
+    it("sets preview image src to the clicked thumbnail url", async () => {
+      mockStatuses.value = {
+        results: [makeEntry({ image: "http://example.com/photo.jpg" })],
+        count: 1,
+      }
+      const wrapper = mountComponent()
+
+      await wrapper.find("button").trigger("click")
+
+      expect(wrapper.findAll("img")[1]?.attributes("src")).toBe("http://example.com/photo.jpg")
     })
   })
 })

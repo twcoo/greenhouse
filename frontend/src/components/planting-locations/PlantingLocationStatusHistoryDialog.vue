@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import {
   Dialog,
   DialogContent,
@@ -37,6 +37,21 @@ const { locationId } = defineProps<{ locationId: number | null }>()
 
 const locationIdRef = computed(() => locationId)
 const { statuses, isLoading } = usePlantingLocationStatuses(locationIdRef)
+
+const previewOpen = ref(false)
+const previewImage = ref<string | null>(null)
+
+const openPreview = (url: string) => {
+  previewImage.value = url
+  previewOpen.value = true
+}
+
+const closePreview = (): void => {
+  previewOpen.value = false
+  setTimeout(() => {
+    previewImage.value = null
+  }, 200)
+}
 </script>
 
 <template>
@@ -64,12 +79,14 @@ const { statuses, isLoading } = usePlantingLocationStatuses(locationIdRef)
           :key="entry.id"
           class="flex gap-3 border rounded-md p-3"
         >
-          <img
+          <button
             v-if="entry.image"
-            :src="entry.image"
-            alt="Status image"
-            class="h-14 w-14 rounded object-cover flex-shrink-0"
-          />
+            type="button"
+            class="flex-shrink-0 rounded overflow-hidden focus:outline-none focus:ring-2 focus:ring-ring cursor-zoom-in"
+            @click="openPreview(entry.image!)"
+          >
+            <img :src="entry.image" alt="Status image" class="h-14 w-14 rounded object-cover" />
+          </button>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
               <Badge :variant="STATUS_BADGE_VARIANT[entry.status as PlantingLocationStatusChoice]">
@@ -81,6 +98,23 @@ const { statuses, isLoading } = usePlantingLocationStatuses(locationIdRef)
           </div>
         </li>
       </ul>
+    </DialogContent>
+  </Dialog>
+
+  <Dialog
+    :open="previewOpen"
+    @update:open="
+      (v) => {
+        if (!v) closePreview()
+      }
+    "
+  >
+    <DialogContent class="sm:max-w-lg p-4">
+      <img
+        :src="previewImage ?? undefined"
+        alt="Status image full size"
+        class="w-full rounded-lg object-contain max-h-[60vh]"
+      />
     </DialogContent>
   </Dialog>
 </template>
