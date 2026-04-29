@@ -1,33 +1,27 @@
 from typing import Any
 
-from django.db.models import Exists, OuterRef
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import GenericAPIView
-from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
-from ..models import PlantingLocation, PlantingLocationAssignment
+from ..models import PlantingLocation
 from ..openapi.planting_location.examples import (
     CREATE_PLANTING_LOCATION_REQUEST_GROUND_EXAMPLE,
     CREATE_PLANTING_LOCATION_REQUEST_POT_EXAMPLE,
     PARTIAL_UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE,
-    PLANTING_LOCATION_UPLOAD_IMAGE_REQUEST_EXAMPLE,
     UPDATE_PLANTING_LOCATION_REQUEST_EXAMPLE)
 from ..openapi.planting_location.parameters import PLANTING_LOCATION_ID_PARAM
 from ..openapi.planting_location.responses import (
     PLANTING_LOCATION_CREATE_VALIDATION_RESPONSE,
     PLANTING_LOCATION_CREATED_RESPONSE, PLANTING_LOCATION_DELETE_RESPONSE,
-    PLANTING_LOCATION_IMAGE_UPLOAD_VALIDATION_RESPONSE,
-    PLANTING_LOCATION_IMAGE_UPLOADED_RESPONSE, PLANTING_LOCATION_LIST_RESPONSE,
-    PLANTING_LOCATION_NOT_FOUND_RESPONSE,
+    PLANTING_LOCATION_LIST_RESPONSE, PLANTING_LOCATION_NOT_FOUND_RESPONSE,
     PLANTING_LOCATION_PARTIAL_UPDATE_VALIDATION_RESPONSE,
     PLANTING_LOCATION_RETRIEVE_RESPONSE, PLANTING_LOCATION_UPDATE_RESPONSE,
     PLANTING_LOCATION_UPDATE_VALIDATION_RESPONSE)
-from ..serializers import (PlantingLocationImageSerializer,
-                           PlantingLocationSerializer)
+from ..serializers import PlantingLocationSerializer
 from ..utils.api import CustomAuthentication
 
 
@@ -74,13 +68,7 @@ class PlantingLocationListApiView(
     serializer_class = PlantingLocationSerializer
 
     def get_queryset(self):
-        occupied = PlantingLocationAssignment.objects.filter(
-            planting_location=OuterRef("pk"),
-            end_date__isnull=True,
-        )
-        return PlantingLocation.objects.filter(user=self.request.user).annotate(
-            is_occupied=Exists(occupied)
-        )
+        return PlantingLocation.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -150,13 +138,7 @@ class PlantingLocationDetailAPIView(
     serializer_class = PlantingLocationSerializer
 
     def get_queryset(self):
-        occupied = PlantingLocationAssignment.objects.filter(
-            planting_location=OuterRef("pk"),
-            end_date__isnull=True,
-        )
-        return PlantingLocation.objects.filter(user=self.request.user).annotate(
-            is_occupied=Exists(occupied)
-        )
+        return PlantingLocation.objects.filter(user=self.request.user)
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.retrieve(request, *args, **kwargs)
@@ -169,32 +151,3 @@ class PlantingLocationDetailAPIView(
 
     def delete(self, request: Request, *args: Any, **kwargs: Any):
         return self.destroy(request, *args, **kwargs)
-
-
-@extend_schema_view(
-    put=extend_schema(
-        tags=["Planting Location"],
-        summary="Upload planting location image",
-        description="Upload planting location image by ID.",
-        parameters=PLANTING_LOCATION_ID_PARAM,
-        examples=[PLANTING_LOCATION_UPLOAD_IMAGE_REQUEST_EXAMPLE],
-        responses={
-            200: PLANTING_LOCATION_IMAGE_UPLOADED_RESPONSE,
-            400: PLANTING_LOCATION_IMAGE_UPLOAD_VALIDATION_RESPONSE,
-            404: PLANTING_LOCATION_NOT_FOUND_RESPONSE,
-        },
-    ),
-)
-class PlantingLocationUploadImageView(mixins.UpdateModelMixin, GenericAPIView):
-    authentication_classes = [CustomAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    serializer_class = PlantingLocationImageSerializer
-
-    parser_classes = [MultiPartParser]
-
-    def get_queryset(self):
-        return PlantingLocation.objects.filter(user=self.request.user)
-
-    def put(self, request: Request, *args: Any, **kwargs: Any):
-        return self.update(request, *args, **kwargs)
