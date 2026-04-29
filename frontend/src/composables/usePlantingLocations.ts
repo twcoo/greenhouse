@@ -65,25 +65,13 @@ export function usePlantingLocations(
     },
   })
 
-  const uploadImageMutation = useMutation({
-    mutationFn: ({ id, file }: { id: number; file: File }): Promise<void> =>
-      plantingLocationService.uploadImage(id, file),
-    onSuccess: (): void => {
-      queryClient.invalidateQueries({ queryKey: ["planting-locations"] })
-    },
-    onError: (err: AxiosError<APIErrorResponse>) => {
-      throw err
-    },
-  })
-
   const loading = computed(
     (): boolean =>
       isQueryLoading.value ||
       isFetching.value ||
       createMutation.isPending.value ||
       updateMutation.isPending.value ||
-      deleteMutation.isPending.value ||
-      uploadImageMutation.isPending.value,
+      deleteMutation.isPending.value,
   )
 
   return {
@@ -106,7 +94,6 @@ export function usePlantingLocations(
     createLocation: createMutation.mutateAsync,
     updateLocation: updateMutation.mutateAsync,
     deleteLocation: deleteMutation.mutateAsync,
-    uploadImage: uploadImageMutation.mutateAsync,
     fetchLocations: refetch,
   }
 }
