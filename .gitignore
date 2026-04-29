@@ -47,3 +47,4 @@ backend/media/crops
 coverage/
 .coverage
 htmlcov/
+backend/media/locations
