@@ -14,7 +14,7 @@ export const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use((config) => {
-  if (config.data) {
+  if (config.data && !(config.data instanceof FormData)) {
     config.data = decamelizeKeys(config.data)
   }
 
