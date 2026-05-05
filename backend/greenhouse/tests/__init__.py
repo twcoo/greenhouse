@@ -7,6 +7,10 @@ from .planting import (PlantingCreateApiViewTests, PlantingDeleteApiViewTests,
                        PlantingGetApiViewTests, PlantingListApiViewTests,
                        PlantingPartialUpdateApiViewTests,
                        PlantingUpdateApiViewTests)
+from .planting_daily_observation import (
+    PlantingDailyObservationCreateApiViewTests,
+    PlantingDailyObservationDetailApiViewTests,
+    PlantingDailyObservationListApiViewTests)
 from .planting_location import (PlantingLocationCreateApiViewTests,
                                 PlantingLocationDeleteApiViewTests,
                                 PlantingLocationGetApiViewTests,
@@ -71,4 +75,7 @@ __all__ = [
     "PlantingLocationStatusListApiViewTests",
     "PlantingLocationStatusCreateApiViewTests",
     "PlantingLocationCurrentStatusTests",
+    "PlantingDailyObservationListApiViewTests",
+    "PlantingDailyObservationCreateApiViewTests",
+    "PlantingDailyObservationDetailApiViewTests",
 ]

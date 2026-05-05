@@ -3,9 +3,9 @@ from django.contrib.auth import get_user_model
 from factory import Faker
 from factory.django import DjangoModelFactory
 
-from ...models import (Crop, Planting, PlantingLocation,
-                       PlantingLocationAssignment, PlantingLocationStatus,
-                       Variety)
+from ...models import (Crop, Planting, PlantingDailyObservation,
+                       PlantingLocation, PlantingLocationAssignment,
+                       PlantingLocationStatus, Variety)
 
 User = get_user_model()
 
@@ -89,6 +89,18 @@ class PlantingLocationStatusFactory(DjangoModelFactory):
         [choice[0] for choice in PlantingLocationStatus.STATUS_CHOICES]
     )
     notes = factory.Faker("sentence")
+    image = None
+
+
+class PlantingDailyObservationFactory(DjangoModelFactory):
+    class Meta:
+        model = PlantingDailyObservation
+
+    planting = factory.SubFactory(PlantingFactory)
+    health_status = "GOOD"
+    pest_pressure = "NONE"
+    disease_symptoms = False
+    notes = ""
     image = None
 
 
