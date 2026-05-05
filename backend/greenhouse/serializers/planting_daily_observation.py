@@ -4,7 +4,7 @@ from rest_framework import serializers
 from ..models import PlantingDailyObservation
 from ..openapi.planting_daily_observation.examples import \
     PLANTING_DAILY_OBSERVATION_SERIALIZER_EXAMPLE
-from .utils import validate_image_file
+from .utils import UploadableImageField, validate_image_file
 
 
 @extend_schema_serializer(
@@ -105,7 +105,7 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
         allow_blank=True,
         help_text="Optional notes about this observation.",
     )
-    image = serializers.ImageField(
+    image = UploadableImageField(
         required=False,
         allow_null=True,
         help_text="Optional image documenting this observation.",

@@ -4,7 +4,7 @@ from rest_framework import serializers
 from ..models import PlantingLocationStatus
 from ..openapi.planting_location_status.examples import \
     PLANTING_LOCATION_STATUS_SERIALIZER_EXAMPLE
-from .utils import validate_image_file
+from .utils import UploadableImageField, validate_image_file
 
 
 @extend_schema_serializer(
@@ -24,7 +24,7 @@ class PlantingLocationStatusSerializer(serializers.ModelSerializer):
         allow_blank=True,
         help_text="Optional notes about this status entry.",
     )
-    image = serializers.ImageField(
+    image = UploadableImageField(
         required=False,
         allow_null=True,
         help_text="Optional image documenting this status.",
