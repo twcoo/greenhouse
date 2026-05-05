@@ -20,4 +20,9 @@ urlpatterns = [
         "<int:planting_pk>/locations/",
         include("greenhouse.urls.planting_location_assignment"),
     ),
+    # Daily observations (nested)
+    path(
+        "<int:planting_pk>/observations/",
+        include("greenhouse.urls.planting_daily_observation"),
+    ),
 ]
