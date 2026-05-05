@@ -118,11 +118,13 @@ UPDATE_PLANTING_LOCATION_ASSIGNMENT_RESPONSE_EXAMPLE = OpenApiExample(
 )
 
 PLANTING_LOCATION_ASSIGNMENT_NOT_FOUND_RESPONSE_EXAMPLE = OpenApiExample(
-    name="Planting location assignment not found",
-    summary="No assignment exists with the provided ID.",
+    name="Resource not found",
+    summary=(
+        "No planting or assignment exists with the provided ID."
+    ),
     description=(
-        "Example response returned when no planting location assignment "
-        "exists for the specified ID."
+        "Example response returned when no planting or planting "
+        "location assignment exists for the specified ID."
     ),
     value=RESOURCE_NOT_FOUND_RESPONSE,
 )
