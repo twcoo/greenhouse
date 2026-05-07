@@ -48,3 +48,4 @@ coverage/
 .coverage
 htmlcov/
 backend/media/locations
+backend/media/observations
