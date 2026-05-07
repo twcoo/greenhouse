@@ -82,6 +82,26 @@ describe("apiClient request interceptor", () => {
 
     expect(result.headers["X-CSRFToken"]).toBeUndefined()
   })
+
+  it("does not modify FormData", () => {
+    const interceptor = getRequestInterceptor()
+    const fd = new FormData()
+    fd.append("health_status", "GOOD")
+
+    const result = interceptor({ data: fd, headers: {} })
+
+    expect(result.data).toBe(fd)
+  })
+
+  it("injects X-CSRFToken for FormData requests", () => {
+    vi.mocked(Cookies.get).mockReturnValue("csrf-abc")
+    const interceptor = getRequestInterceptor()
+    const fd = new FormData()
+
+    const result = interceptor({ data: fd, headers: {} })
+
+    expect(result.headers["X-CSRFToken"]).toBe("csrf-abc")
+  })
 })
 
 describe("apiClient response interceptor", () => {
