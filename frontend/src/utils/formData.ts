@@ -12,3 +12,7 @@ export function toFormData<T extends object>(obj: T): FormData {
   }
   return fd
 }
+
+export function getFileFromEvent(event: Event): File | undefined {
+  return (event.target as HTMLInputElement).files?.[0]
+}

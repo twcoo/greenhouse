@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { toFormData } from "@/utils/formData"
+import { toFormData, getFileFromEvent } from "@/utils/formData"
 
 describe("toFormData", () => {
   it("appends string values as-is", () => {
@@ -65,5 +65,26 @@ describe("toFormData", () => {
     expect(result.get("height_cm")).toBeNull()
     expect(result.get("notes")).toBeNull()
     expect(result.get("image")).toBe(file)
+  })
+})
+
+describe("getFileFromEvent", () => {
+  it("returns the first file from a file input event", () => {
+    const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
+    const input = document.createElement("input")
+    Object.defineProperty(input, "files", { value: [file] })
+    const event = new Event("change")
+    Object.defineProperty(event, "target", { value: input })
+
+    expect(getFileFromEvent(event)).toBe(file)
+  })
+
+  it("returns undefined when no file is selected", () => {
+    const input = document.createElement("input")
+    Object.defineProperty(input, "files", { value: [] })
+    const event = new Event("change")
+    Object.defineProperty(event, "target", { value: input })
+
+    expect(getFileFromEvent(event)).toBeUndefined()
   })
 })
