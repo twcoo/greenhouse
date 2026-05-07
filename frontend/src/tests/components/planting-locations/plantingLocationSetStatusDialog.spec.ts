@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { ref } from "vue"
-import PlantingLocationSetStatusDialog from "@/components/planting-locations/PlantingLocationSetStatusDialog.vue"
+import PlantingLocationSetStatusDialog from "@/components/planting-locations/status/PlantingLocationSetStatusDialog.vue"
 import type { PlantingLocationStatus } from "@/types/plantingLocationStatus"
 import { AxiosError } from "axios"
 

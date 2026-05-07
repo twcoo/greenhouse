@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { ref } from "vue"
-import PlantingLocationStatusHistoryDialog from "@/components/planting-locations/PlantingLocationStatusHistoryDialog.vue"
+import PlantingLocationStatusHistoryDialog from "@/components/planting-locations/status/PlantingLocationStatusHistoryDialog.vue"
 import type { PlantingLocationStatus } from "@/types/plantingLocationStatus"
 
 const mockStatuses = ref<{ results: PlantingLocationStatus[]; count: number } | null>(null)
