@@ -1,4 +1,5 @@
 import { apiClient } from "@/api/client"
+import { toFormData } from "@/utils/formData"
 import type { APIResponse, PaginatedAPIResponse, PaginatedResponse } from "@/types/api"
 import type {
   PlantingLocationStatus,
@@ -15,14 +16,9 @@ export const plantingLocationStatusService = {
   },
 
   async create(locationId: number, payload: PlantingLocationStatusPayload): Promise<void> {
-    const formData = new FormData()
-    formData.append("status", payload.status)
-    if (payload.notes) formData.append("notes", payload.notes)
-    if (payload.image) formData.append("image", payload.image)
-
     await apiClient.post<APIResponse<PlantingLocationStatus>>(
       `/planting-locations/${locationId}/statuses/`,
-      formData,
+      toFormData(payload),
       { headers: { "Content-Type": "multipart/form-data" } },
     )
   },
