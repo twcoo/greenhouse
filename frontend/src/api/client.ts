@@ -14,14 +14,14 @@ export const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use((config) => {
-  if (config.data && !(config.data instanceof FormData)) {
-    config.data = decamelizeKeys(config.data)
-  }
-
   const csrfToken = Cookies.get("csrftoken")
 
   if (csrfToken) {
     config.headers["X-CSRFToken"] = csrfToken
+  }
+
+  if (config.data && !(config.data instanceof FormData)) {
+    config.data = decamelizeKeys(config.data)
   }
 
   return config
