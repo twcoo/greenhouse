@@ -1,6 +1,6 @@
 # Greenhouse
 
-A self-hosted garden management app for tracking crops, varieties, planting locations, and plantings.
+A self-hosted garden management app for tracking crops, varieties, plantings, planting locations, location assignments, and daily observations.
 
 > **Note:** This is a development setup only. Not intended for production use.
 
@@ -87,6 +87,9 @@ Base URL: `http://localhost:8000/api/v1/`
 | Varieties | `GET/POST /varieties/`, `GET/PUT/PATCH/DELETE /varieties/<id>/` |
 | Planting Locations | `GET/POST /planting-locations/`, `GET/PUT/PATCH/DELETE /planting-locations/<id>/`, `PUT /planting-locations/<id>/image/` |
 | Plantings | `GET/POST /plantings/`, `GET/PUT/PATCH/DELETE /plantings/<id>/` |
+| Planting Location Assignments | `GET/POST /plantings/<id>/locations/`, `GET/PUT/DELETE /plantings/<id>/locations/<id>/` |
+| Planting Daily Observations | `GET/POST /plantings/<id>/observations/`, `GET/PUT/DELETE /plantings/<id>/observations/<id>/` |
+| Planting Location Statuses | `GET/POST /planting-locations/<id>/statuses/` |
 
 Interactive API docs (ReDoc): `http://localhost:8000/api/v1/docs`
 
@@ -99,6 +102,9 @@ Interactive API docs (ReDoc): `http://localhost:8000/api/v1/docs`
 - **Variety management** — varieties scoped per crop with growth habit tracking
 - **Planting locations** — manage ground beds, pots, and nursery pots with dimensions and an optional image
 - **Plantings** — link a crop and variety together; track which planting location they're assigned to over time
+- **Location assignments** — assign a planting to a physical location with a start date and optional end date; full history of where each planting has lived
+- **Location status tracking** — record status changes for each location (Available, In Use, Damaged, Destroyed, Retired) with optional notes and image; prevents status updates while a location is in use
+- **Daily observations** — log comprehensive daily observations per planting: health status, pest pressure, disease symptoms, growth metrics (height, leaf count), environmental readings (temperature, humidity, light hours), soil metrics (moisture, pH, EC), free-text notes, and an optional photo
 - **Search** — all list endpoints support full-text search
 - **Pagination** — all list endpoints are paginated
 - **User isolation** — all data is scoped per authenticated user with no cross-user data leakage
