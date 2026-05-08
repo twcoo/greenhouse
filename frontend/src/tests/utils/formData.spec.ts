@@ -29,6 +29,12 @@ describe("toFormData", () => {
     expect(falseResult.get("disease_symptoms")).toBe("false")
   })
 
+  it("skips empty string values", () => {
+    const result = toFormData({ heightCm: "" })
+
+    expect(result.get("height_cm")).toBeNull()
+  })
+
   it("skips null values", () => {
     const result = toFormData({ heightCm: null })
 

@@ -3,7 +3,7 @@ import { decamelize } from "humps"
 export function toFormData<T extends object>(obj: T): FormData {
   const fd = new FormData()
   for (const [key, value] of Object.entries(obj)) {
-    if (value === null || value === undefined) continue
+    if (value === null || value === undefined || value === "") continue
     if (value instanceof File) {
       fd.append(decamelize(key), value)
       continue
