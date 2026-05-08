@@ -35,6 +35,10 @@ const handleManageLocations = (): void => {
   table.options.meta?.action?.("manage-locations", row.original.id)
 }
 
+const handleDailyObservations = (): void => {
+  table.options.meta?.action?.("daily-observations", row.original.id)
+}
+
 const handleDelete = (): void => {
   isDeleteDialogOpen.value = true
 }
@@ -57,6 +61,7 @@ const confirmDelete = async (id: number): Promise<void> => {
         Update
       </DropdownMenuItem>
       <DropdownMenuItem @click="handleManageLocations"> Manage Locations </DropdownMenuItem>
+      <DropdownMenuItem @click="handleDailyObservations"> Daily Observations </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem @click="handleDelete">Delete</DropdownMenuItem>
     </DropdownMenuContent>
