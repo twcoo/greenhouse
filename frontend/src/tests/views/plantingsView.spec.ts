@@ -5,6 +5,8 @@ import PlantingsView from "@/views/plantings/index.vue"
 import PlantingsTable from "@/components/plantings/PlantingsTable.vue"
 import PlantingCreateDialog from "@/components/plantings/PlantingCreateDialog.vue"
 import PlantingUpdateDialog from "@/components/plantings/PlantingUpdateDialog.vue"
+import PlantingLocationAssignmentSheet from "@/components/planting-location-assignments/PlantingLocationAssignmentSheet.vue"
+import PlantingDailyObservationSheet from "@/components/plantings/daily-observation/PlantingDailyObservationSheet.vue"
 import { createTestingPinia } from "@pinia/testing"
 import type { Planting } from "@/types/planting"
 
@@ -61,6 +63,17 @@ const stubs = {
     template: "<div data-stub='update-dialog' />",
     props: ["open", "id", "plantingFormInitialState", "isLoading", "isUpdateSuccess"],
     emits: ["update:open", "submit"],
+  },
+  [PlantingLocationAssignmentSheet.__name ?? "PlantingLocationAssignmentSheet"]: {
+    template: "<div data-stub='location-sheet' :data-open='open' :data-planting-id='plantingId' />",
+    props: ["open", "plantingId"],
+    emits: ["update:open"],
+  },
+  [PlantingDailyObservationSheet.__name ?? "PlantingDailyObservationSheet"]: {
+    template:
+      "<div data-stub='observation-sheet' :data-open='open' :data-planting-id='plantingId' />",
+    props: ["open", "plantingId"],
+    emits: ["update:open"],
   },
   IconLoader2: { template: "<svg />" },
   IconPlus: { template: "<svg />" },
@@ -123,5 +136,29 @@ describe("PlantingsView", () => {
     const updateDialog = wrapper.findComponent(PlantingUpdateDialog)
     expect(updateDialog.props("open")).toBe(true)
     expect(updateDialog.props("id")).toBe(planting.id)
+  })
+
+  it("opens daily observation sheet with correct plantingId on daily-observations action", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent(PlantingsTable).vm.$emit("action", "daily-observations", 2)
+    await wrapper.vm.$nextTick()
+
+    const sheet = wrapper.find('[data-stub="observation-sheet"]')
+    expect(sheet.exists()).toBe(true)
+    expect(sheet.attributes("data-open")).toBe("true")
+    expect(sheet.attributes("data-planting-id")).toBe("2")
+  })
+
+  it("opens location assignment sheet with correct plantingId on manage-locations action", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent(PlantingsTable).vm.$emit("action", "manage-locations", 1)
+    await wrapper.vm.$nextTick()
+
+    const sheet = wrapper.find('[data-stub="location-sheet"]')
+    expect(sheet.exists()).toBe(true)
+    expect(sheet.attributes("data-open")).toBe("true")
+    expect(sheet.attributes("data-planting-id")).toBe("1")
   })
 })

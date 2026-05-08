@@ -6,6 +6,7 @@ import PlantingsTable from "@/components/plantings/PlantingsTable.vue"
 import PlantingCreateDialog from "@/components/plantings/PlantingCreateDialog.vue"
 import PlantingUpdateDialog from "@/components/plantings/PlantingUpdateDialog.vue"
 import PlantingLocationAssignmentSheet from "@/components/planting-location-assignments/PlantingLocationAssignmentSheet.vue"
+import PlantingDailyObservationSheet from "@/components/plantings/daily-observation/PlantingDailyObservationSheet.vue"
 import { usePlantings } from "@/composables/usePlantings"
 import { IconLoader2, IconPlus } from "@tabler/icons-vue"
 import type { PlantingPayload } from "@/types/planting"
@@ -29,6 +30,10 @@ const plantingUpdateFormState = ref<plantingForm | null>(null)
 // Location Assignment Sheet Refs
 const openLocationSheet = ref<boolean>(false)
 const plantingIdForSheet = ref<number>(0)
+
+// Daily Observation Sheet Refs
+const openObservationSheet = ref<boolean>(false)
+const plantingIdForObservations = ref<number>(0)
 
 // Planting Composable
 const {
@@ -83,6 +88,11 @@ const handleDeletePlanting = async (id: number): Promise<void> => {
 const handleManageLocations = (id: number): void => {
   plantingIdForSheet.value = id
   openLocationSheet.value = true
+}
+
+const handleDailyObservations = (id: number): void => {
+  plantingIdForObservations.value = id
+  openObservationSheet.value = true
 }
 
 watchDebounced(
@@ -142,6 +152,7 @@ watchDebounced(
       @action="
         (name: string, id: number) => {
           if (name === 'manage-locations') handleManageLocations(id)
+          if (name === 'daily-observations') handleDailyObservations(id)
         }
       "
     />
@@ -151,6 +162,13 @@ watchDebounced(
       v-if="plantingIdForSheet"
       v-model:open="openLocationSheet"
       :plantingId="plantingIdForSheet"
+    />
+
+    <!-- Daily Observation Sheet -->
+    <PlantingDailyObservationSheet
+      v-if="plantingIdForObservations"
+      v-model:open="openObservationSheet"
+      :plantingId="plantingIdForObservations"
     />
   </AppLayout>
 </template>
