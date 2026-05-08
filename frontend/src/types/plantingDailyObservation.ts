@@ -23,14 +23,14 @@ export interface PlantingDailyObservation {
 }
 
 export interface PlantingDailyObservationPayload {
-  heightCm?: string
+  heightCm?: number
   leafCount?: number
-  temperatureC?: string
-  humidityPercent?: string
-  lightHours?: string
-  soilMoisturePercent?: string
-  soilPh?: string
-  ecMsCm?: string
+  temperatureC?: number
+  humidityPercent?: number
+  lightHours?: number
+  soilMoisturePercent?: number
+  soilPh?: number
+  ecMsCm?: number
   healthStatus: HealthStatus
   pestPressure: PestPressure
   diseaseSymptoms: boolean
