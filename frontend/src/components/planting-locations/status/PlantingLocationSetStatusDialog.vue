@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue"
+import { getFileFromEvent } from "@/utils/formData"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -58,9 +59,8 @@ const formInitialState: PlantingLocationStatusForm = {
 const form = reactive<PlantingLocationStatusForm>({ ...formInitialState })
 const errors = ref<Record<string, string>>({})
 
-const handleImageChange = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0]
-  form.image = file
+const handleImageChange = (event: Event): void => {
+  form.image = getFileFromEvent(event)
 }
 
 const handleSubmit = async (): Promise<void> => {
