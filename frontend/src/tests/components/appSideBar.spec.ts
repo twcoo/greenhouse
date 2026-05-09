@@ -77,14 +77,14 @@ describe("AppSidebar.vue", () => {
         icon: IconPlant,
       }),
       expect.objectContaining({
-        title: "Planting Locations",
-        to: { name: "planting-locations" },
-        icon: IconMap2,
-      }),
-      expect.objectContaining({
         title: "Varieties",
         to: { name: "varieties" },
         icon: IconSeeding,
+      }),
+      expect.objectContaining({
+        title: "Planting Locations",
+        to: { name: "planting-locations" },
+        icon: IconMap2,
       }),
       expect.objectContaining({
         title: "Plantings",

@@ -38,14 +38,14 @@ const data = {
       icon: IconPlant,
     },
     {
-      title: "Planting Locations",
-      to: { name: "planting-locations" },
-      icon: IconMap2,
-    },
-    {
       title: "Varieties",
       to: { name: "varieties" },
       icon: IconSeeding,
+    },
+    {
+      title: "Planting Locations",
+      to: { name: "planting-locations" },
+      icon: IconMap2,
     },
     {
       title: "Plantings",
