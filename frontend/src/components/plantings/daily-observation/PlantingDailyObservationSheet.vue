@@ -41,6 +41,8 @@ import { HEALTH_BADGE_VARIANT, HEALTH_LABEL } from "./constants"
 const open = defineModel<boolean>("open")
 const { plantingId } = defineProps<{ plantingId: number }>()
 
+const pagination = ref({ pageIndex: 0, pageSize: 10 })
+
 const {
   observations,
   isLoading,
@@ -49,7 +51,14 @@ const {
   createObservation,
   updateObservation,
   deleteObservation,
-} = usePlantingDailyObservations(toRef(() => plantingId))
+} = usePlantingDailyObservations(
+  toRef(() => plantingId),
+  pagination,
+)
+
+const totalPages = computed(() =>
+  Math.ceil((observations.value?.count ?? 0) / pagination.value.pageSize),
+)
 
 // Create dialog
 const openCreateDialog = ref<boolean>(false)
@@ -89,6 +98,7 @@ const handleCreate = async (
 ): Promise<void> => {
   try {
     await createObservation(payload)
+    pagination.value.pageIndex = 0
   } catch (err) {
     onError(err)
   }
@@ -109,6 +119,7 @@ const handleUpdate = async (
 const handleDelete = async (): Promise<void> => {
   await deleteObservation(observationIdToDelete.value)
   isDeleteDialogOpen.value = false
+  pagination.value.pageIndex = 0
 }
 
 const toObservationForm = (obs: {
@@ -217,6 +228,30 @@ const hasObservations = computed(() => (observations.value?.results?.length ?? 0
           </TableRow>
         </TableBody>
       </Table>
+
+      <div v-if="hasObservations" class="flex items-center justify-between gap-4 py-4">
+        <div class="text-sm font-medium">
+          Page {{ pagination.pageIndex + 1 }} of {{ totalPages }}
+        </div>
+        <div class="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant="outline"
+            :disabled="pagination.pageIndex === 0"
+            @click="pagination.pageIndex--"
+          >
+            Previous
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            :disabled="pagination.pageIndex + 1 >= totalPages"
+            @click="pagination.pageIndex++"
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </SheetContent>
   </Sheet>
 
