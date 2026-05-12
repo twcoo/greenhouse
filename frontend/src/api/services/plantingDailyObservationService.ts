@@ -7,10 +7,14 @@ import type {
 } from "@/types/plantingDailyObservation"
 
 export const plantingDailyObservationService = {
-  async getAll(plantingId: number): Promise<PaginatedResponse<PlantingDailyObservation>> {
+  async getAll(
+    plantingId: number,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<PaginatedResponse<PlantingDailyObservation>> {
     const response = await apiClient.get<PaginatedAPIResponse<PlantingDailyObservation>>(
       `/plantings/${plantingId}/observations/`,
-      { params: { page_size: 100 } },
+      { params: { page, page_size: pageSize } },
     )
     return response.data.data
   },
