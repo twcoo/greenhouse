@@ -298,7 +298,12 @@ describe("DashboardView", () => {
             results: [
               {
                 ...defaultLocations[0],
-                currentStatus: { id: 3, status: "DAMAGED", notes: "", createdAt: "2024-03-01T00:00:00Z" },
+                currentStatus: {
+                  id: 3,
+                  status: "DAMAGED",
+                  notes: "",
+                  createdAt: "2024-03-01T00:00:00Z",
+                },
               },
             ],
             count: 1,
