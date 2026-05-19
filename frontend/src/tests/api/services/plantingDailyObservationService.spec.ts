@@ -43,13 +43,13 @@ beforeEach(() => {
 
 describe("plantingDailyObservationService", () => {
   describe("getAll", () => {
-    it("calls GET /plantings/:plantingId/observations/ with page_size 100", async () => {
+    it("calls GET /plantings/:plantingId/observations/ with default page and page_size", async () => {
       vi.mocked(apiClient.get).mockResolvedValue(paginatedResponse)
 
       const result = await plantingDailyObservationService.getAll(5)
 
       expect(apiClient.get).toHaveBeenCalledWith("/plantings/5/observations/", {
-        params: { page_size: 100 },
+        params: { page: 1, page_size: 10 },
       })
       expect(result).toEqual(paginatedResponse.data.data)
     })

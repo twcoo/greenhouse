@@ -76,7 +76,7 @@ describe("usePlantingDailyObservations", () => {
     mountComposable(ref(5))
     await flushPromises()
 
-    expect(plantingDailyObservationService.getAll).toHaveBeenCalledWith(5)
+    expect(plantingDailyObservationService.getAll).toHaveBeenCalledWith(5, 1, 10)
   })
 
   it("does not fetch observations when plantingId is 0", async () => {
