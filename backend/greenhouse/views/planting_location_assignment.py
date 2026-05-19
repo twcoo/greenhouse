@@ -48,8 +48,9 @@ from ..utils.api import CustomAuthentication
         summary="Create planting location assignment",
         description=(
             "Assign the specified planting to a location with a start date. "
-            "The date range must not overlap with any existing assignment "
-            "for this planting."
+            "The planting must not have an active assignment (an assignment "
+            "with no end date). The date range must not overlap with any "
+            "existing assignment for this planting."
         ),
         parameters=PLANTING_PK_PARAM,
         examples=[CREATE_PLANTING_LOCATION_ASSIGNMENT_REQUEST_EXAMPLE],

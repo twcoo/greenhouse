@@ -65,6 +65,21 @@ class PlantingLocationAssignmentSerializer(serializers.ModelSerializer):
         # updates end_date, in which case there is nothing to check.
         planting = self.context.get("planting")
 
+        if planting and not self.instance:
+            active_qs = PlantingLocationAssignment.objects.filter(
+                planting=planting, end_date__isnull=True
+            )
+            if active_qs.exists():
+                raise serializers.ValidationError(
+                    {
+                        "non_field_errors": (
+                            "This planting is currently assigned to a "
+                            "location. End the current assignment before "
+                            "adding a new one."
+                        )
+                    }
+                )
+
         if planting and start_date:
             qs = PlantingLocationAssignment.objects.filter(planting=planting)
             # On updates, exclude the current instance so it doesn't
