@@ -119,9 +119,7 @@ UPDATE_PLANTING_LOCATION_ASSIGNMENT_RESPONSE_EXAMPLE = OpenApiExample(
 
 PLANTING_LOCATION_ASSIGNMENT_NOT_FOUND_RESPONSE_EXAMPLE = OpenApiExample(
     name="Resource not found",
-    summary=(
-        "No planting or assignment exists with the provided ID."
-    ),
+    summary=("No planting or assignment exists with the provided ID."),
     description=(
         "Example response returned when no planting or planting "
         "location assignment exists for the specified ID."
@@ -199,6 +197,27 @@ PLANTING_LOCATION_ASSIGNMENT_LOCATION_OCCUPIED_EXAMPLE = OpenApiExample(
             "planting_location": [
                 "This location already has an active planting "
                 "for the given date range."
+            ],
+        },
+    },
+)
+
+PLANTING_LOCATION_ASSIGNMENT_ALREADY_ASSIGNED_EXAMPLE = OpenApiExample(
+    name="Planting already assigned",
+    summary="Planting is currently assigned to a location",
+    description=(
+        "Example response returned when attempting to create an "
+        "assignment for a planting that is already actively assigned "
+        "to a location (has an open-ended assignment with no end date)."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "non_field_errors": [
+                "This planting is currently assigned to a location. "
+                "End the current assignment before adding a new one."
             ],
         },
     },
