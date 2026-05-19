@@ -110,6 +110,10 @@ const toAssignmentForm = (assignment: {
 })
 
 const hasAssignments = computed(() => (assignments.value?.results?.length ?? 0) > 0)
+
+const isCurrentlyAssigned = computed(
+  () => assignments.value?.results?.some((a) => a.endDate === null) ?? false,
+)
 </script>
 
 <template>
@@ -120,11 +124,22 @@ const hasAssignments = computed(() => (assignments.value?.results?.length ?? 0) 
         <SheetDescription> Manage the location history for this planting. </SheetDescription>
       </SheetHeader>
 
-      <div class="flex justify-end">
-        <Button variant="outline" size="sm" @click="openCreateDialog = true">
-          <IconPlus :size="16" />
-          <span>Add Assignment</span>
-        </Button>
+      <div class="flex flex-col gap-2">
+        <p v-if="isCurrentlyAssigned" class="text-sm text-muted-foreground text-center">
+          This planting is currently located somewhere. End the active assignment before adding a
+          new one.
+        </p>
+        <div class="flex justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            :disabled="isCurrentlyAssigned"
+            @click="openCreateDialog = true"
+          >
+            <IconPlus :size="16" />
+            <span>Add Assignment</span>
+          </Button>
+        </div>
       </div>
 
       <div
