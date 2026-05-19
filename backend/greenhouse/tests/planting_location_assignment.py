@@ -286,9 +286,36 @@ class PlantingLocationAssignmentCreateApiViewTests(
         self.assertEqual(
             message,
             {
-                "start_date": [
-                    "This planting already has a location assignment "
-                    "that overlaps with the given date range."
+                "non_field_errors": [
+                    "This planting is currently assigned to a location. "
+                    "End the current assignment before adding a new one."
+                ]
+            },
+        )
+
+    def test_create_assignment_blocked_when_active_assignment_exists(self):
+        self.authenticate()
+
+        PlantingLocationAssignmentFactory(
+            planting=self.planting,
+            planting_location=self.planting_location,
+            start_date="2024-01-01",
+            end_date=None,
+        )
+
+        response = self.client.post(self.url, self.payload, format="json")
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertEqual(
+            message,
+            {
+                "non_field_errors": [
+                    "This planting is currently assigned to a location. "
+                    "End the current assignment before adding a new one."
                 ]
             },
         )
