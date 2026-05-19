@@ -71,7 +71,9 @@ const stubs = {
   TableCell: { template: "<td><slot /></td>" },
   TableEmpty: { template: "<tr><td><slot /></td></tr>" },
   Button: {
-    template: "<button @click=\"$emit('click')\"><slot /></button>",
+    template:
+      "<button :disabled='disabled' @click=\"!disabled && $emit('click')\"><slot /></button>",
+    props: ["disabled"],
     emits: ["click"],
   },
   AlertDialog: { template: "<div><slot /></div>", props: ["open"] },
@@ -153,6 +155,12 @@ describe("PlantingLocationAssignmentSheet.vue", () => {
   })
 
   it("opens create dialog when Add Assignment button is clicked", async () => {
+    setupMock({
+      assignments: ref({
+        results: [{ ...defaultAssignments.results[0], endDate: "2024-09-01" }],
+        count: 1,
+      }),
+    })
     const wrapper = mountComponent()
 
     const createDialog = wrapper.find('[data-test="create-dialog"]')
@@ -161,6 +169,45 @@ describe("PlantingLocationAssignmentSheet.vue", () => {
     await wrapper.findAll("button")[0].trigger("click")
 
     expect(wrapper.find('[data-test="create-dialog"]').attributes("data-open")).toBe("true")
+  })
+
+  it("disables Add Assignment button when planting has an active assignment", () => {
+    // defaultAssignments has id=2 with endDate: null
+    const wrapper = mountComponent()
+    const addButton = wrapper.findAll("button")[0]
+    expect(addButton.attributes("disabled")).toBeDefined()
+  })
+
+  it("shows info message when planting has an active assignment", () => {
+    const wrapper = mountComponent()
+    expect(wrapper.text()).toContain(
+      "This planting is currently located somewhere. End the active assignment before adding a new one.",
+    )
+  })
+
+  it("enables Add Assignment button when no assignment is active", () => {
+    setupMock({
+      assignments: ref({
+        results: defaultAssignments.results.map((a) => ({ ...a, endDate: "2024-09-01" })),
+        count: 2,
+      }),
+    })
+    const wrapper = mountComponent()
+    const addButton = wrapper.findAll("button")[0]
+    expect(addButton.attributes("disabled")).toBeUndefined()
+  })
+
+  it("hides info message when no assignment is active", () => {
+    setupMock({
+      assignments: ref({
+        results: defaultAssignments.results.map((a) => ({ ...a, endDate: "2024-09-01" })),
+        count: 2,
+      }),
+    })
+    const wrapper = mountComponent()
+    expect(wrapper.text()).not.toContain(
+      "This planting is currently located somewhere. End the active assignment before adding a new one.",
+    )
   })
 
   it("opens update dialog with correct id when edit is clicked", async () => {
