@@ -379,6 +379,31 @@ describe("PlantingLocationAssignmentSheet.vue", () => {
       expect(wrapper.text()).toContain("Page 1 of 3")
     })
 
+    it("resets to first page after create", async () => {
+      mockCreateAssignment.mockResolvedValue(undefined)
+      setupMock({
+        assignments: ref({
+          results: defaultAssignments.results.map((a) => ({ ...a, endDate: "2024-09-01" })),
+          count: 25,
+        }),
+      })
+      const wrapper = mountComponent()
+
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Next"))!
+        .trigger("click")
+      expect(wrapper.text()).toContain("Page 2 of 3")
+
+      const payload = { plantingLocation: 2, startDate: "2024-03-01" }
+      await wrapper
+        .findComponent({ name: "PlantingLocationAssignmentCreateDialog" })
+        .vm.$emit("submit", payload, vi.fn())
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.text()).toContain("Page 1 of 3")
+    })
+
     it("resets to first page after delete", async () => {
       mockDeleteAssignment.mockResolvedValue(undefined)
       setupMock({ assignments: ref(manyAssignments) })
