@@ -5,7 +5,10 @@ import type { PlantingLocationAssignmentPayload } from "@/types/plantingLocation
 import type { APIErrorResponse } from "@/types/api"
 import type { AxiosError } from "axios"
 
-export function usePlantingLocationAssignments(plantingId: Ref<number>) {
+export function usePlantingLocationAssignments(
+  plantingId: Ref<number>,
+  pagination?: Ref<{ pageIndex: number; pageSize: number }>,
+) {
   const queryClient = useQueryClient()
 
   const {
@@ -15,8 +18,12 @@ export function usePlantingLocationAssignments(plantingId: Ref<number>) {
     isError: isQueryError,
     refetch,
   } = useQuery({
-    queryKey: ["planting-location-assignments", plantingId],
-    queryFn: () => plantingLocationAssignmentService.getAll(plantingId.value),
+    queryKey: ["planting-location-assignments", plantingId, pagination],
+    queryFn: () => {
+      const page = pagination?.value ? pagination.value.pageIndex + 1 : 1
+      const size = pagination?.value ? pagination.value.pageSize : 10
+      return plantingLocationAssignmentService.getAll(plantingId.value, page, size)
+    },
     enabled: computed(() => plantingId.value > 0),
   })
 
