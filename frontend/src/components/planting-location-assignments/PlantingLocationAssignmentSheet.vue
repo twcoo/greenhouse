@@ -82,6 +82,7 @@ const handleCreate = async (
 ): Promise<void> => {
   try {
     await createAssignment(payload)
+    pagination.value.pageIndex = 0
   } catch (err) {
     onError(err)
   }
