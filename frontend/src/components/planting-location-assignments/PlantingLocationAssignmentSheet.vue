@@ -118,7 +118,7 @@ const isCurrentlyAssigned = computed(
 
 <template>
   <Sheet v-model:open="open">
-    <SheetContent class="sm:max-w-lg w-full flex flex-col gap-4">
+    <SheetContent class="sm:max-w-lg w-full flex flex-col gap-4 px-4">
       <SheetHeader>
         <SheetTitle>Location Assignments</SheetTitle>
         <SheetDescription> Manage the location history for this planting. </SheetDescription>
