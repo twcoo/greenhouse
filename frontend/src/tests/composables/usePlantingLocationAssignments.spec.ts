@@ -71,7 +71,7 @@ describe("usePlantingLocationAssignments", () => {
     mountComposable(ref(5))
     await flushPromises()
 
-    expect(plantingLocationAssignmentService.getAll).toHaveBeenCalledWith(5)
+    expect(plantingLocationAssignmentService.getAll).toHaveBeenCalledWith(5, 1, 10)
   })
 
   it("does not fetch assignments when plantingId is 0", async () => {

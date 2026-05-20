@@ -308,4 +308,94 @@ describe("PlantingLocationAssignmentSheet.vue", () => {
 
     expect(onError).toHaveBeenCalledWith(error)
   })
+
+  describe("pagination", () => {
+    const manyAssignments = { results: defaultAssignments.results, count: 25 }
+
+    it("does not show pagination when there are no assignments", () => {
+      setupMock({ assignments: ref({ results: [], count: 0 }) })
+      const wrapper = mountComponent()
+
+      expect(wrapper.findAll("button").find((b) => b.text().includes("Previous"))).toBeUndefined()
+      expect(wrapper.findAll("button").find((b) => b.text().includes("Next"))).toBeUndefined()
+    })
+
+    it("shows correct page counter", () => {
+      setupMock({ assignments: ref(manyAssignments) })
+      const wrapper = mountComponent()
+
+      expect(wrapper.text()).toContain("Page 1 of 3")
+    })
+
+    it("disables Previous button on first page", () => {
+      setupMock({ assignments: ref(manyAssignments) })
+      const wrapper = mountComponent()
+
+      const prevButton = wrapper.findAll("button").find((b) => b.text().includes("Previous"))
+      expect(prevButton!.attributes("disabled")).toBeDefined()
+    })
+
+    it("enables Next button when not on last page", () => {
+      setupMock({ assignments: ref(manyAssignments) })
+      const wrapper = mountComponent()
+
+      const nextButton = wrapper.findAll("button").find((b) => b.text().includes("Next"))
+      expect(nextButton!.attributes("disabled")).toBeUndefined()
+    })
+
+    it("disables Next button on last page", () => {
+      setupMock({ assignments: ref({ results: defaultAssignments.results, count: 2 }) })
+      const wrapper = mountComponent()
+
+      const nextButton = wrapper.findAll("button").find((b) => b.text().includes("Next"))
+      expect(nextButton!.attributes("disabled")).toBeDefined()
+    })
+
+    it("advances to next page when Next is clicked", async () => {
+      setupMock({ assignments: ref(manyAssignments) })
+      const wrapper = mountComponent()
+
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Next"))!
+        .trigger("click")
+
+      expect(wrapper.text()).toContain("Page 2 of 3")
+    })
+
+    it("goes back to previous page when Previous is clicked", async () => {
+      setupMock({ assignments: ref(manyAssignments) })
+      const wrapper = mountComponent()
+
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Next"))!
+        .trigger("click")
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Previous"))!
+        .trigger("click")
+
+      expect(wrapper.text()).toContain("Page 1 of 3")
+    })
+
+    it("resets to first page after delete", async () => {
+      mockDeleteAssignment.mockResolvedValue(undefined)
+      setupMock({ assignments: ref(manyAssignments) })
+      const wrapper = mountComponent()
+
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Next"))!
+        .trigger("click")
+      expect(wrapper.text()).toContain("Page 2 of 3")
+
+      const iconButtons = wrapper.findAll("button").filter((b) => !b.text())
+      await iconButtons[1].trigger("click")
+      await wrapper.find('[data-test="confirm"]').trigger("click")
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.text()).toContain("Page 1 of 3")
+    })
+  })
 })

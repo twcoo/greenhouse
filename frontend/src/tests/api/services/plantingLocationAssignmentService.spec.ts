@@ -32,15 +32,25 @@ beforeEach(() => {
 
 describe("plantingLocationAssignmentService", () => {
   describe("getAll", () => {
-    it("calls GET /plantings/:plantingId/locations/ with page_size 100", async () => {
+    it("calls GET /plantings/:plantingId/locations/ with default page and page_size", async () => {
       vi.mocked(apiClient.get).mockResolvedValue(paginatedResponse)
 
       const result = await plantingLocationAssignmentService.getAll(5)
 
       expect(apiClient.get).toHaveBeenCalledWith("/plantings/5/locations/", {
-        params: { page_size: 100 },
+        params: { page: 1, page_size: 10 },
       })
       expect(result).toEqual(paginatedResponse.data.data)
+    })
+
+    it("calls GET with explicit page and page_size when provided", async () => {
+      vi.mocked(apiClient.get).mockResolvedValue(paginatedResponse)
+
+      await plantingLocationAssignmentService.getAll(5, 3, 20)
+
+      expect(apiClient.get).toHaveBeenCalledWith("/plantings/5/locations/", {
+        params: { page: 3, page_size: 20 },
+      })
     })
 
     it("returns the paginated data from the response", async () => {
