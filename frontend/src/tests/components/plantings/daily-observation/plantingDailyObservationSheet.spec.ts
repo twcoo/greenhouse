@@ -94,7 +94,9 @@ const stubs = {
   TableEmpty: { template: "<tr><td><slot /></td></tr>" },
   Badge: { template: "<span><slot /></span>" },
   Button: {
-    template: "<button @click=\"$emit('click')\"><slot /></button>",
+    template:
+      "<button :disabled='disabled' @click=\"!disabled && $emit('click')\"><slot /></button>",
+    props: ["disabled"],
     emits: ["click"],
   },
   AlertDialog: { template: "<div><slot /></div>", props: ["open"] },
@@ -357,6 +359,122 @@ describe("PlantingDailyObservationSheet.vue", () => {
       await wrapper.vm.$nextTick()
 
       expect(mockDeleteObservation).toHaveBeenCalledWith(2)
+    })
+  })
+
+  describe("pagination", () => {
+    const manyObservations = { results: defaultObservations.results, count: 25 }
+
+    it("does not show pagination when there are no observations", () => {
+      setupMock({ observations: ref({ results: [], count: 0 }) })
+      const wrapper = mountComponent()
+
+      expect(wrapper.findAll("button").find((b) => b.text().includes("Previous"))).toBeUndefined()
+      expect(wrapper.findAll("button").find((b) => b.text().includes("Next"))).toBeUndefined()
+    })
+
+    it("shows correct page counter", () => {
+      setupMock({ observations: ref(manyObservations) })
+      const wrapper = mountComponent()
+
+      expect(wrapper.text()).toContain("Page 1 of 3")
+    })
+
+    it("disables Previous button on first page", () => {
+      setupMock({ observations: ref(manyObservations) })
+      const wrapper = mountComponent()
+
+      const prevButton = wrapper.findAll("button").find((b) => b.text().includes("Previous"))
+      expect(prevButton!.attributes("disabled")).toBeDefined()
+    })
+
+    it("enables Next button when not on last page", () => {
+      setupMock({ observations: ref(manyObservations) })
+      const wrapper = mountComponent()
+
+      const nextButton = wrapper.findAll("button").find((b) => b.text().includes("Next"))
+      expect(nextButton!.attributes("disabled")).toBeUndefined()
+    })
+
+    it("disables Next button on last page", () => {
+      setupMock({ observations: ref({ results: defaultObservations.results, count: 2 }) })
+      const wrapper = mountComponent()
+
+      const nextButton = wrapper.findAll("button").find((b) => b.text().includes("Next"))
+      expect(nextButton!.attributes("disabled")).toBeDefined()
+    })
+
+    it("advances to next page when Next is clicked", async () => {
+      setupMock({ observations: ref(manyObservations) })
+      const wrapper = mountComponent()
+
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Next"))!
+        .trigger("click")
+
+      expect(wrapper.text()).toContain("Page 2 of 3")
+    })
+
+    it("goes back to previous page when Previous is clicked", async () => {
+      setupMock({ observations: ref(manyObservations) })
+      const wrapper = mountComponent()
+
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Next"))!
+        .trigger("click")
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Previous"))!
+        .trigger("click")
+
+      expect(wrapper.text()).toContain("Page 1 of 3")
+    })
+
+    it("resets to first page after delete", async () => {
+      mockDeleteObservation.mockResolvedValue(undefined)
+      setupMock({ observations: ref(manyObservations) })
+      const wrapper = mountComponent()
+
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Next"))!
+        .trigger("click")
+      expect(wrapper.text()).toContain("Page 2 of 3")
+
+      // trash for row 1 is index 2
+      const iconButtons = wrapper.findAll("button").filter((b) => !b.text())
+      await iconButtons[2].trigger("click")
+      await wrapper.find('[data-test="confirm"]').trigger("click")
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.text()).toContain("Page 1 of 3")
+    })
+
+    it("resets to first page after create", async () => {
+      mockCreateObservation.mockResolvedValue(undefined)
+      setupMock({ observations: ref(manyObservations) })
+      const wrapper = mountComponent()
+
+      await wrapper
+        .findAll("button")
+        .find((b) => b.text().includes("Next"))!
+        .trigger("click")
+      expect(wrapper.text()).toContain("Page 2 of 3")
+
+      const payload = {
+        healthStatus: "GOOD",
+        pestPressure: "NONE",
+        diseaseSymptoms: false,
+        notes: "",
+      }
+      await wrapper
+        .findComponent({ name: "PlantingDailyObservationCreateDialog" })
+        .vm.$emit("submit", payload, vi.fn())
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.text()).toContain("Page 1 of 3")
     })
   })
 })
