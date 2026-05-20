@@ -6,11 +6,15 @@ import type {
 } from "@/types/plantingLocationAssignment"
 
 export const plantingLocationAssignmentService = {
-  async getAll(plantingId: number): Promise<PaginatedResponse<PlantingLocationAssignment>> {
+  async getAll(
+    plantingId: number,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<PaginatedResponse<PlantingLocationAssignment>> {
     const response = await apiClient.get<PaginatedAPIResponse<PlantingLocationAssignment>>(
       `/plantings/${plantingId}/locations/`,
       {
-        params: { page_size: 100 },
+        params: { page, page_size: pageSize },
       },
     )
     return response.data.data
