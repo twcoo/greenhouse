@@ -38,6 +38,8 @@ import { formatDate } from "@/utils/formatting"
 const open = defineModel<boolean>("open")
 const { plantingId } = defineProps<{ plantingId: number }>()
 
+const pagination = ref({ pageIndex: 0, pageSize: 10 })
+
 const {
   assignments,
   isLoading,
@@ -46,7 +48,10 @@ const {
   createAssignment,
   updateAssignment,
   deleteAssignment,
-} = usePlantingLocationAssignments(toRef(() => plantingId))
+} = usePlantingLocationAssignments(
+  toRef(() => plantingId),
+  pagination,
+)
 
 // Create dialog
 const openCreateDialog = ref<boolean>(false)
@@ -97,6 +102,7 @@ const handleUpdate = async (
 const handleDelete = async (): Promise<void> => {
   await deleteAssignment(assignmentIdToDelete.value)
   isDeleteDialogOpen.value = false
+  pagination.value.pageIndex = 0
 }
 
 const toAssignmentForm = (assignment: {
@@ -110,6 +116,10 @@ const toAssignmentForm = (assignment: {
 })
 
 const hasAssignments = computed(() => (assignments.value?.results?.length ?? 0) > 0)
+
+const totalPages = computed(() =>
+  Math.ceil((assignments.value?.count ?? 0) / pagination.value.pageSize),
+)
 
 const isCurrentlyAssigned = computed(
   () => assignments.value?.results?.some((a) => a.endDate === null) ?? false,
@@ -191,6 +201,30 @@ const isCurrentlyAssigned = computed(
           </TableRow>
         </TableBody>
       </Table>
+
+      <div v-if="hasAssignments" class="flex items-center justify-between gap-4 py-4">
+        <div class="text-sm font-medium">
+          Page {{ pagination.pageIndex + 1 }} of {{ totalPages }}
+        </div>
+        <div class="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant="outline"
+            :disabled="pagination.pageIndex === 0"
+            @click="pagination.pageIndex--"
+          >
+            Previous
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            :disabled="pagination.pageIndex + 1 >= totalPages"
+            @click="pagination.pageIndex++"
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </SheetContent>
   </Sheet>
 
