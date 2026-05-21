@@ -5,8 +5,7 @@ import AppLayout from "@/layouts/AppLayout.vue"
 import PlantingLocationTable from "@/components/planting-locations/PlantingLocationTable.vue"
 import PlantingLocationCreateDialog from "@/components/planting-locations/PlantingLocationCreateDialog.vue"
 import PlantingLocationUpdateDialog from "@/components/planting-locations/PlantingLocationUpdateDialog.vue"
-import PlantingLocationSetStatusDialog from "@/components/planting-locations/status/PlantingLocationSetStatusDialog.vue"
-import PlantingLocationStatusHistoryDialog from "@/components/planting-locations/status/PlantingLocationStatusHistoryDialog.vue"
+import PlantingLocationStatusSheet from "@/components/planting-locations/status/PlantingLocationStatusSheet.vue"
 import { usePlantingLocations } from "@/composables/usePlantingLocations"
 import { IconLoader2, IconPlus } from "@tabler/icons-vue"
 import type { PlantingLocationPayload } from "@/types/plantingLocation"
@@ -28,14 +27,10 @@ const openUpdateDialog = ref<boolean>(false)
 const locationIdToUpdate = ref<number>(0)
 const locationUpdateFormState = ref<PlantingLocationForm | null>(null)
 
-// Set Status Dialog Refs
-const openSetStatusDialog = ref<boolean>(false)
+// Status Sheet Refs
+const openStatusSheet = ref<boolean>(false)
 const locationIdForStatus = ref<number | null>(null)
 const currentStatusForStatus = ref<PlantingLocationStatus | null>(null)
-
-// Status History Dialog Refs
-const openHistoryDialog = ref<boolean>(false)
-const locationIdForHistory = ref<number | null>(null)
 
 // Location Composable
 const {
@@ -88,14 +83,11 @@ const handleDeleteLocation = async (id: number): Promise<void> => {
 }
 
 const handleTableAction = (name: string, id: number): void => {
-  if (name === "set-status") {
+  if (name === "manage-status") {
     const location = locations.value?.results.find((l) => l.id === id)
     locationIdForStatus.value = id
     currentStatusForStatus.value = location?.currentStatus ?? null
-    openSetStatusDialog.value = true
-  } else if (name === "view-history") {
-    locationIdForHistory.value = id
-    openHistoryDialog.value = true
+    openStatusSheet.value = true
   }
 }
 
@@ -136,17 +128,13 @@ watchDebounced(
     >
     </PlantingLocationUpdateDialog>
 
-    <!-- Set Status Dialog -->
-    <PlantingLocationSetStatusDialog
-      v-model:open="openSetStatusDialog"
+    <!-- Status Sheet -->
+    <PlantingLocationStatusSheet
+      v-if="locationIdForStatus"
+      :key="locationIdForStatus"
+      v-model:open="openStatusSheet"
       :locationId="locationIdForStatus"
       :currentStatus="currentStatusForStatus"
-    />
-
-    <!-- Status History Dialog -->
-    <PlantingLocationStatusHistoryDialog
-      v-model:open="openHistoryDialog"
-      :locationId="locationIdForHistory"
     />
 
     <!-- Locations Table -->
