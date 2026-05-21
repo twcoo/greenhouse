@@ -27,9 +27,11 @@ import {
   type PlantingLocationStatusForm,
 } from "@/schemas/plantingLocationStatus.schemas"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
-import { usePlantingLocationStatuses } from "@/composables/usePlantingLocationStatuses"
 import type { APIErrorResponse } from "@/types/api"
-import type { PlantingLocationStatus } from "@/types/plantingLocationStatus"
+import type {
+  PlantingLocationStatusPayload,
+  PlantingLocationStatus,
+} from "@/types/plantingLocationStatus"
 import { AxiosError } from "axios"
 import { computed } from "vue"
 
@@ -40,15 +42,17 @@ const STATUS_LABELS: Record<(typeof MANUAL_STATUS_CHOICES)[number], string> = {
 }
 
 const open = defineModel<boolean>("open")
-const { locationId, currentStatus } = defineProps<{
-  locationId: number | null
+const { currentStatus, isLoading, isCreateSuccess } = defineProps<{
   currentStatus: PlantingLocationStatus | null | undefined
+  isLoading: boolean
+  isCreateSuccess: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: "submit", payload: PlantingLocationStatusPayload, onError: (err: unknown) => void): void
 }>()
 
 const isBlocked = computed(() => currentStatus?.status === "IN_USE")
-
-const locationIdRef = computed(() => locationId)
-const { createStatus, isLoading, isCreateSuccess } = usePlantingLocationStatuses(locationIdRef)
 
 const formInitialState: PlantingLocationStatusForm = {
   status: "DAMAGED",
@@ -63,9 +67,7 @@ const handleImageChange = (event: Event): void => {
   form.image = getFileFromEvent(event)
 }
 
-const handleSubmit = async (): Promise<void> => {
-  if (!locationId) return
-
+const handleSubmit = (): void => {
   const result = plantingLocationStatusSchema.safeParse(form)
 
   if (!result.success) {
@@ -73,16 +75,14 @@ const handleSubmit = async (): Promise<void> => {
     return
   }
 
-  try {
-    await createStatus({ id: locationId, payload: result.data })
-  } catch (err) {
+  emit("submit", result.data, (err: unknown) => {
     const axiosError = err as AxiosError<APIErrorResponse>
     if (axiosError.response?.data) {
       errors.value = apiToFormErrors(axiosError.response.data.message)
     } else {
       errors.value.general = "Something went wrong. Please try again."
     }
-  }
+  })
 }
 
 const resetForm = (): void => {
@@ -91,7 +91,7 @@ const resetForm = (): void => {
 }
 
 watch(
-  () => isCreateSuccess.value,
+  () => isCreateSuccess,
   (success) => {
     if (success) {
       open.value = false
