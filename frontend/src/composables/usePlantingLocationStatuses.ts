@@ -5,7 +5,10 @@ import type { PlantingLocationStatusPayload } from "@/types/plantingLocationStat
 import type { APIErrorResponse } from "@/types/api"
 import type { AxiosError } from "axios"
 
-export function usePlantingLocationStatuses(locationId: Ref<number | null>) {
+export function usePlantingLocationStatuses(
+  locationId: Ref<number | null>,
+  pagination?: Ref<{ pageIndex: number; pageSize: number }>,
+) {
   const queryClient = useQueryClient()
 
   const {
@@ -14,8 +17,12 @@ export function usePlantingLocationStatuses(locationId: Ref<number | null>) {
     isFetching,
     isError: isQueryError,
   } = useQuery({
-    queryKey: ["planting-location-statuses", locationId],
-    queryFn: () => plantingLocationStatusService.getAll(locationId.value!),
+    queryKey: ["planting-location-statuses", locationId, pagination],
+    queryFn: () => {
+      const page = pagination?.value ? pagination.value.pageIndex + 1 : 1
+      const size = pagination?.value ? pagination.value.pageSize : 10
+      return plantingLocationStatusService.getAll(locationId.value!, page, size)
+    },
     enabled: computed(() => locationId.value !== null),
   })
 
