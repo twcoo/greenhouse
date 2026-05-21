@@ -54,16 +54,10 @@ const confirmDelete = async (id: number) => {
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem
-        @click="table.options.meta?.action?.('set-status', row.original.id)"
-        data-test="set-status-action"
+        @click="table.options.meta?.action?.('manage-status', row.original.id)"
+        data-test="manage-status-action"
       >
-        Set Status
-      </DropdownMenuItem>
-      <DropdownMenuItem
-        @click="table.options.meta?.action?.('view-history', row.original.id)"
-        data-test="view-history-action"
-      >
-        View History
+        Manage Status
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem @click="handleDelete">Delete</DropdownMenuItem>
