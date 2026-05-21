@@ -7,10 +7,14 @@ import type {
 } from "@/types/plantingLocationStatus"
 
 export const plantingLocationStatusService = {
-  async getAll(locationId: number): Promise<PaginatedResponse<PlantingLocationStatus>> {
+  async getAll(
+    locationId: number,
+    page: number = 1,
+    pageSize: number = 10,
+  ): Promise<PaginatedResponse<PlantingLocationStatus>> {
     const response = await apiClient.get<PaginatedAPIResponse<PlantingLocationStatus>>(
       `/planting-locations/${locationId}/statuses/`,
-      { params: { page_size: 100 } },
+      { params: { page, page_size: pageSize } },
     )
     return response.data.data
   },
