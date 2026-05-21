@@ -1,24 +1,7 @@
 import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { ref } from "vue"
 import PlantingLocationSetStatusDialog from "@/components/planting-locations/status/PlantingLocationSetStatusDialog.vue"
 import type { PlantingLocationStatus } from "@/types/plantingLocationStatus"
-import { AxiosError } from "axios"
-
-const mockCreateStatus = vi.fn()
-const mockIsLoading = ref(false)
-const mockIsCreateSuccess = ref(false)
-
-vi.mock("@/composables/usePlantingLocationStatuses", () => ({
-  usePlantingLocationStatuses: vi.fn(() => ({
-    statuses: ref(null),
-    isLoading: mockIsLoading,
-    isQueryError: ref(false),
-    createError: ref(false),
-    isCreateSuccess: mockIsCreateSuccess,
-    createStatus: mockCreateStatus,
-  })),
-}))
 
 const stubs = {
   Dialog: { template: "<div><slot /></div>" },
@@ -52,8 +35,9 @@ const mountComponent = (props = {}) =>
   mount(PlantingLocationSetStatusDialog, {
     props: {
       open: true,
-      locationId: 1,
       currentStatus: null,
+      isLoading: false,
+      isCreateSuccess: false,
       ...props,
     },
     global: { stubs },
@@ -61,9 +45,6 @@ const mountComponent = (props = {}) =>
 
 beforeEach(() => {
   vi.clearAllMocks()
-  mockIsLoading.value = false
-  mockIsCreateSuccess.value = false
-  mockCreateStatus.mockResolvedValue(undefined)
 })
 
 describe("PlantingLocationSetStatusDialog.vue", () => {
@@ -108,31 +89,28 @@ describe("PlantingLocationSetStatusDialog.vue", () => {
   })
 
   describe("submission", () => {
-    it("calls createStatus with correct id and payload on valid submit", async () => {
+    it("emits submit with payload on valid submit", async () => {
       const wrapper = mountComponent()
 
       await wrapper.find("#notes").setValue("Some notes.")
       await wrapper.find("form").trigger("submit.prevent")
 
-      expect(mockCreateStatus).toHaveBeenCalledWith({
-        id: 1,
-        payload: { status: "DAMAGED", notes: "Some notes." },
-      })
+      const emitted = wrapper.emitted("submit")
+      expect(emitted).toBeDefined()
+      expect(emitted![0][0]).toEqual({ status: "DAMAGED", notes: "Some notes." })
     })
 
-    it("calls createStatus with selected status", async () => {
+    it("emits submit with selected status", async () => {
       const wrapper = mountComponent()
 
       await wrapper.find('[data-stub="select"]').setValue("RETIRED")
       await wrapper.find("form").trigger("submit.prevent")
 
-      expect(mockCreateStatus).toHaveBeenCalledWith({
-        id: 1,
-        payload: expect.objectContaining({ status: "RETIRED" }),
-      })
+      const emitted = wrapper.emitted("submit")
+      expect(emitted![0][0]).toMatchObject({ status: "RETIRED" })
     })
 
-    it("calls createStatus with image when a file is selected", async () => {
+    it("emits submit with image when a file is selected", async () => {
       const wrapper = mountComponent()
 
       const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
@@ -141,37 +119,30 @@ describe("PlantingLocationSetStatusDialog.vue", () => {
       await wrapper.find("#image").trigger("change")
       await wrapper.find("form").trigger("submit.prevent")
 
-      expect(mockCreateStatus).toHaveBeenCalledWith({
-        id: 1,
-        payload: expect.objectContaining({ image: file }),
-      })
+      const emitted = wrapper.emitted("submit")
+      expect(emitted![0][0]).toMatchObject({ image: file })
     })
 
-    it("does not call createStatus when locationId is null", async () => {
-      const wrapper = mountComponent({ locationId: null })
-
-      await wrapper.find("form").trigger("submit.prevent")
-
-      expect(mockCreateStatus).not.toHaveBeenCalled()
-    })
-  })
-
-  describe("loading state", () => {
-    it("shows Saving... text when isLoading is true", () => {
-      mockIsLoading.value = true
+    it("does not emit submit when form is invalid", async () => {
+      // Force a Zod validation error by using an invalid status value
       const wrapper = mountComponent()
 
-      const buttons = wrapper.findAll("button")
-      expect(buttons.some((b) => b.text().includes("Saving..."))).toBe(true)
+      await wrapper.find('[data-stub="select"]').setValue("INVALID_STATUS")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      expect(wrapper.emitted("submit")).toBeUndefined()
     })
   })
 
   describe("error handling", () => {
-    it("shows general error when createStatus throws without response data", async () => {
-      mockCreateStatus.mockRejectedValue(new AxiosError("Network error"))
+    it("calls onError callback and shows general error on network failure", async () => {
       const wrapper = mountComponent()
 
       await wrapper.find("form").trigger("submit.prevent")
+
+      const emitted = wrapper.emitted("submit")!
+      const onError = emitted[0][1] as (err: unknown) => void
+      onError(new Error("Network error"))
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('[data-test="general-error"]').exists()).toBe(true)
@@ -180,7 +151,12 @@ describe("PlantingLocationSetStatusDialog.vue", () => {
       )
     })
 
-    it("shows field errors when createStatus throws with response data", async () => {
+    it("shows field errors when onError receives an axios response error", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const { AxiosError } = await import("axios")
       const error = new AxiosError("Bad request")
       error.response = {
         data: { message: { status: ["Invalid choice."] } },
@@ -189,13 +165,20 @@ describe("PlantingLocationSetStatusDialog.vue", () => {
         headers: {},
         config: {} as never,
       }
-      mockCreateStatus.mockRejectedValue(error)
-      const wrapper = mountComponent()
 
-      await wrapper.find("form").trigger("submit.prevent")
+      const onError = wrapper.emitted("submit")![0][1] as (err: unknown) => void
+      onError(error)
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('[data-test="statusError"]').exists()).toBe(true)
+    })
+  })
+
+  describe("loading state", () => {
+    it("shows Saving... text when isLoading is true", () => {
+      const wrapper = mountComponent({ isLoading: true })
+
+      expect(wrapper.findAll("button").some((b) => b.text().includes("Saving..."))).toBe(true)
     })
   })
 
@@ -218,7 +201,7 @@ describe("PlantingLocationSetStatusDialog.vue", () => {
     it("emits update:open false when isCreateSuccess becomes true", async () => {
       const wrapper = mountComponent()
 
-      mockIsCreateSuccess.value = true
+      await wrapper.setProps({ isCreateSuccess: true })
       await wrapper.vm.$nextTick()
 
       const openEvents = wrapper.emitted("update:open")

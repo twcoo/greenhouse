@@ -35,13 +35,14 @@ const mockLocation: PlantingLocation = {
 
 const mockUpdate = vi.fn()
 const mockDelete = vi.fn()
+const mockAction = vi.fn()
 
 const mountComponent = () =>
   mount(PlantingLocationTableActions, {
     props: {
       row: { original: mockLocation },
       table: {
-        options: { meta: { update: mockUpdate, delete: mockDelete } },
+        options: { meta: { update: mockUpdate, delete: mockDelete, action: mockAction } },
       } as unknown as Table<PlantingLocation>,
     },
     global: { stubs },
@@ -49,6 +50,7 @@ const mountComponent = () =>
 
 beforeEach(() => {
   vi.clearAllMocks()
+  mockAction.mockResolvedValue(undefined)
 })
 
 describe("PlantingLocationTableActions.vue", () => {
@@ -78,5 +80,15 @@ describe("PlantingLocationTableActions.vue", () => {
     const wrapper = mountComponent()
 
     expect(wrapper.text()).toContain(mockLocation.name)
+  })
+
+  it("calls table.options.meta.action with 'manage-status' when Manage Status is clicked", async () => {
+    const wrapper = mountComponent()
+
+    const buttons = wrapper.findAll("button")
+    const manageStatusBtn = buttons.find((b) => b.text() === "Manage Status")
+    await manageStatusBtn?.trigger("click")
+
+    expect(mockAction).toHaveBeenCalledWith("manage-status", mockLocation.id)
   })
 })

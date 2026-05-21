@@ -28,15 +28,25 @@ beforeEach(() => {
 
 describe("plantingLocationStatusService", () => {
   describe("getAll", () => {
-    it("calls GET /planting-locations/:id/statuses/ with page_size 100", async () => {
+    it("calls GET /planting-locations/:id/statuses/ with default page and page_size", async () => {
       vi.mocked(apiClient.get).mockResolvedValue(paginatedResponse)
 
       const result = await plantingLocationStatusService.getAll(1)
 
       expect(apiClient.get).toHaveBeenCalledWith("/planting-locations/1/statuses/", {
-        params: { page_size: 100 },
+        params: { page: 1, page_size: 10 },
       })
       expect(result).toEqual(paginatedResponse.data.data)
+    })
+
+    it("forwards page and pageSize params when provided", async () => {
+      vi.mocked(apiClient.get).mockResolvedValue(paginatedResponse)
+
+      await plantingLocationStatusService.getAll(1, 3, 20)
+
+      expect(apiClient.get).toHaveBeenCalledWith("/planting-locations/1/statuses/", {
+        params: { page: 3, page_size: 20 },
+      })
     })
   })
 
