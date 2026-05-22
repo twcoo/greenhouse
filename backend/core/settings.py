@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -86,7 +87,7 @@ CSRF_TRUSTED_ORIGINS = config(
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-TEST_DB_HOST = config("BACKEND_TEST_DB_HOST", cast=str)
+TEST_DB_HOST = config("BACKEND_TEST_DB_HOST", cast=str, default="localhost")
 DB_HOST = config("BACKEND_DB_HOST", cast=str)
 DB_USER = config("BACKEND_DB_USER", cast=str)
 DB_PASSWORD = config("BACKEND_DB_PASSWORD", cast=str)
@@ -165,6 +166,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 API_VERSION = "v1"
 
