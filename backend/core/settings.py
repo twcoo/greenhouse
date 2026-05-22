@@ -79,7 +79,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "core.wsgi.application"
 
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = config("CSRF_COOKIE_SECURE")
+CSRF_COOKIE_SECURE = config("CSRF_COOKIE_SECURE", cast=bool, default=False)
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS", cast=lambda v: [s.strip() for s in v.split(",")]
