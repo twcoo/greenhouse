@@ -1,0 +1,54 @@
+# Stage 1: Build stage
+FROM python:3.13-slim-bookworm AS builder
+
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+  curl ca-certificates && \
+  rm -rf /var/lib/apt/lists/*
+
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+
+ENV PATH="/root/.local/bin/:$PATH"
+
+WORKDIR /backend
+COPY pyproject.toml uv.lock ./
+
+RUN uv export --no-dev \
+  --no-editable \
+  --no-hashes \
+  --frozen \
+  -o requirements.txt
+
+# Stage 2: Final stage
+FROM python:3.13-slim-bookworm
+
+ENV PYTHONFAULTHANDLER=1 \
+  PYTHONUNBUFFERED=1 \
+  PYTHONHASHSEED=random \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  PIP_DEFAULT_TIMEOUT=100 \
+  PYTHONDONTWRITEBYTECODE=1
+
+RUN groupadd user && \
+  useradd --create-home --home-dir /home/user -g user user
+
+COPY --from=builder /backend/requirements.txt /backend/requirements.txt
+
+WORKDIR /backend
+
+RUN pip install --no-cache-dir -r /backend/requirements.txt
+
+COPY backend/ /backend
+
+RUN mkdir -p /backend/staticfiles && chown -R user:user /backend/staticfiles
+
+USER user
+
+EXPOSE 8000
+
+CMD ["sh", "-c", "python manage.py migrate --noinput && \
+  python manage.py collectstatic --noinput && \
+  python manage.py create_super_user && \
+  gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3"]
