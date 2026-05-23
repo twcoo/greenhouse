@@ -19,6 +19,11 @@ make test-frontend      # Vitest
 
 # Database
 make clear-dev-backend-db  # Destroy and recreate PostgreSQL container + volume
+
+# Production image
+make build-backend               # Build backend image tagged localhost/greenhouse-backend:latest
+make build-backend REGISTRY=x    # Build with registry prefix
+make build-backend IMAGE_TAG=x   # Build with custom tag
 ```
 
 `make dev-backend` requires a `.env` file at the repo root (consumed by the `backend` container). The `./backend` directory is mounted as a live volume, so code changes are reflected without rebuilding.
@@ -53,6 +58,34 @@ Database: PostgreSQL only. Never manually create or edit migration files — use
 ### Settings (`backend/core/settings.py`)
 
 Do not modify `settings.py`. If a task requires a settings change (e.g. adding a new env var, changing a default, registering an app), stop and tell the user what change is needed and why — let them decide whether to apply it.
+
+### Environment Variables
+
+Backend reads all config via `python-decouple` `config()`. Reference `.env.example` for the full list.
+
+**Required (no default — app will not start without these):**
+
+| Variable | Description |
+|----------|-------------|
+| `SECRET_KEY` | Django secret key |
+| `ALLOWED_HOSTS` | Comma-separated allowed hosts |
+| `BACKEND_DB_HOST` | PostgreSQL host |
+| `BACKEND_DB_USER` | PostgreSQL user |
+| `BACKEND_DB_PASSWORD` | PostgreSQL password |
+| `BACKEND_DB_NAME` | PostgreSQL database name |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated CORS origins |
+| `CSRF_TRUSTED_ORIGINS` | Comma-separated CSRF trusted origins |
+| `BACKEND_SUPERUSER_USERNAME` | Superuser username (created on first startup) |
+| `BACKEND_SUPERUSER_EMAIL` | Superuser email (created on first startup) |
+| `BACKEND_SUPERUSER_PASSWORD` | Superuser password (created on first startup) |
+
+**Optional (have defaults):**
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DEBUG` | `False` | Django debug mode |
+| `CSRF_COOKIE_SECURE` | `False` | Require HTTPS for CSRF cookie — set `False` on plain HTTP |
+| `BACKEND_TEST_DB_HOST` | `localhost` | PostgreSQL host used by test runner only |
 
 ### Key Conventions
 

@@ -2,7 +2,19 @@
 
 A self-hosted garden management app for tracking crops, varieties, plantings, planting locations, location assignments, and daily observations.
 
-> **Note:** This is a development setup only. Not intended for production use.
+---
+
+## Table of Contents
+
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Development Setup](#development-setup)
+- [Backend Docker Image](#backend-docker-image)
+- [API](#api)
+- [Features](#features)
+- [Code Quality](#code-quality)
+- [Database](#database)
+- [License](#license)
 
 ---
 
@@ -72,6 +84,74 @@ Starts the Vite dev server on `http://localhost:5173`.
 ### 4. First-run setup
 
 On first launch, the app will redirect to `/setup` where you create the admin account. This must be completed before any other routes are accessible.
+
+---
+
+## Backend Docker Image
+
+### Build
+
+```bash
+make build-backend REGISTRY=<your-registry>
+```
+
+Omit `REGISTRY` to tag as `localhost/greenhouse-backend:latest`. Use `IMAGE_TAG` to set a version:
+
+```bash
+make build-backend REGISTRY=harbor.yourdomain.com/greenhouse IMAGE_TAG=1.0.0
+```
+
+### Local Test
+
+Spin up a throwaway Postgres instance and the backend image on a shared network.
+
+**Terminal 1 — network + Postgres:**
+
+```bash
+docker network create greenhouse-test
+
+docker run --rm \
+  --name greenhouse-db \
+  --network greenhouse-test \
+  -e POSTGRES_USER=greenhouse \
+  -e POSTGRES_PASSWORD=greenhouse_pass \
+  -e POSTGRES_DB=greenhouse \
+  postgres:alpine
+```
+
+**Terminal 2 — backend:**
+
+```bash
+docker run --rm \
+  --name greenhouse-backend \
+  --network greenhouse-test \
+  -p 8000:8000 \
+  -e DEBUG=True \
+  -e SECRET_KEY=test-secret-key \
+  -e ALLOWED_HOSTS="0.0.0.0,localhost" \
+  -e BACKEND_DB_HOST=greenhouse-db \
+  -e BACKEND_DB_USER=greenhouse \
+  -e BACKEND_DB_PASSWORD=greenhouse_pass \
+  -e BACKEND_DB_NAME=greenhouse \
+  -e CORS_ALLOWED_ORIGINS="http://localhost:5173" \
+  -e CSRF_TRUSTED_ORIGINS="http://localhost:5173,http://localhost:8000,http://0.0.0.0:8000" \
+  -e CSRF_COOKIE_SECURE=False \
+  -e BACKEND_SUPERUSER_USERNAME=admin \
+  -e BACKEND_SUPERUSER_EMAIL=you@example.com \
+  -e BACKEND_SUPERUSER_PASSWORD=yourpassword \
+  -e BACKEND_TEST_DB_HOST=localhost \
+  localhost/greenhouse-backend:latest
+```
+
+Once running, visit:
+- `http://localhost:8000/admin/` — Django admin
+- `http://localhost:8000/api/v1/schema/redoc/` — API docs
+
+### Cleanup
+
+```bash
+docker network rm greenhouse-test
+```
 
 ---
 
