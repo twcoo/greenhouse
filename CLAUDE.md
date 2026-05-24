@@ -20,10 +20,12 @@ make test-frontend      # Vitest
 # Database
 make clear-dev-backend-db  # Destroy and recreate PostgreSQL container + volume
 
-# Production image
-make build-backend               # Build backend image tagged localhost/greenhouse-backend:latest
-make build-backend REGISTRY=x    # Build with registry prefix
-make build-backend IMAGE_TAG=x   # Build with custom tag
+# Production images
+make build-backend                              # Build backend image tagged localhost/greenhouse-backend:latest
+make build-backend REGISTRY=x                  # Build with registry prefix
+make build-backend IMAGE_TAG=x                 # Build with custom tag
+make build-frontend                            # Build frontend image (API_URL supplied at runtime)
+make build-frontend REGISTRY=x                 # Build frontend with registry prefix
 ```
 
 `make dev-backend` requires a `.env` file at the repo root (consumed by the `backend` container). The `./backend` directory is mounted as a live volume, so code changes are reflected without rebuilding.

@@ -10,6 +10,7 @@ A self-hosted garden management app for tracking crops, varieties, plantings, pl
 - [Prerequisites](#prerequisites)
 - [Development Setup](#development-setup)
 - [Backend Docker Image](#backend-docker-image)
+- [Frontend Docker Image](#frontend-docker-image)
 - [API](#api)
 - [Features](#features)
 - [Code Quality](#code-quality)
@@ -151,6 +152,37 @@ Once running, visit:
 
 ```bash
 docker network rm greenhouse-test
+```
+
+---
+
+## Frontend Docker Image
+
+### Build
+
+```bash
+make build-frontend
+```
+
+Omit `REGISTRY` to tag as `localhost/greenhouse-frontend:latest`. Use `IMAGE_TAG` to set a version:
+
+```bash
+make build-frontend REGISTRY=harbor.yourdomain.com/greenhouse IMAGE_TAG=1.0.0
+```
+
+### Local Test
+
+Pass `API_URL` at runtime — no rebuild needed per environment.
+
+```bash
+docker run --rm -p 3000:80 \
+  -e API_URL=http://localhost:8000/api/v1 \
+  localhost/greenhouse-frontend:latest
+```
+
+Visit `http://localhost:3000`. Verify the config loaded correctly in browser devtools:
+```js
+window.appConfig // { apiUrl: "http://localhost:8000/api/v1" }
 ```
 
 ---
