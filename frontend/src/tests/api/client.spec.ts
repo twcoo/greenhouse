@@ -44,6 +44,27 @@ function getResponseInterceptors() {
   return { onFulfilled: last.fulfilled, onRejected: last.rejected }
 }
 
+describe("apiClient baseURL", () => {
+  beforeEach(() => {
+    vi.resetModules()
+    delete (window as Window & { appConfig?: { apiUrl: string } }).appConfig
+  })
+
+  it("uses window.appConfig.apiUrl when set", async () => {
+    window.appConfig = { apiUrl: "http://runtime-api.example.com/api/v1" }
+
+    const { apiClient: client } = await import("@/api/client")
+
+    expect(client.defaults.baseURL).toBe("http://runtime-api.example.com/api/v1")
+  })
+
+  it("falls back to import.meta.env.VITE_API_URL when window.appConfig is not set", async () => {
+    const { apiClient: client } = await import("@/api/client")
+
+    expect(client.defaults.baseURL).toBe(import.meta.env.VITE_API_URL)
+  })
+})
+
 describe("apiClient request interceptor", () => {
   it("decamelizes request body", () => {
     const interceptor = getRequestInterceptor()
