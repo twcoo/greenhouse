@@ -1,4 +1,4 @@
-.PHONY: lint-backend dev-backend test-backend test-frontend clear-dev-backend-db build-backend
+.PHONY: lint-backend dev-backend test-backend test-frontend clear-dev-backend-db build-backend build-frontend
 
 lint-backend:
 	@uv run black --line-length 80 backend
@@ -34,6 +34,12 @@ build-backend:
 	@docker build \
 		-f dockerfiles/Dockerfile.backend \
 		-t $(REGISTRY)/greenhouse-backend:$(IMAGE_TAG) \
+		.
+
+build-frontend:
+	@docker build \
+		-f dockerfiles/Dockerfile.frontend \
+		-t $(REGISTRY)/greenhouse-frontend:$(IMAGE_TAG) \
 		.
 
 clear-dev-backend-db:
