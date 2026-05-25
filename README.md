@@ -21,16 +21,16 @@ A self-hosted garden management app for tracking crops, varieties, plantings, pl
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Backend | Django 6, Django REST Framework, PostgreSQL |
-| Auth | django-rest-knox (HttpOnly cookie token) |
-| API docs | drf-spectacular (ReDoc) |
-| Frontend | Vue 3, Vite, TypeScript |
-| UI | shadcn-vue, reka-ui, Tailwind CSS 4, Tabler Icons |
-| State / Data | Pinia, TanStack Vue Query, TanStack Vue Table |
-| Validation | Zod |
-| Package managers | uv (Python), pnpm (JS) |
+| Layer            | Technology                                        |
+| ---------------- | ------------------------------------------------- |
+| Backend          | Django 6, Django REST Framework, PostgreSQL       |
+| Auth             | django-rest-knox (HttpOnly cookie token)          |
+| API docs         | drf-spectacular (ReDoc)                           |
+| Frontend         | Vue 3, Vite, TypeScript                           |
+| UI               | shadcn-vue, reka-ui, Tailwind CSS 4, Tabler Icons |
+| State / Data     | Pinia, TanStack Vue Query, TanStack Vue Table     |
+| Validation       | Zod                                               |
+| Package managers | uv (Python), pnpm (JS)                            |
 
 ---
 
@@ -104,22 +104,22 @@ make build-backend REGISTRY=harbor.yourdomain.com/greenhouse IMAGE_TAG=1.0.0
 
 ### Environment Variables
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `SECRET_KEY` | Yes | — | Django secret key |
-| `ALLOWED_HOSTS` | Yes | — | Comma-separated list of allowed hosts |
-| `BACKEND_DB_HOST` | Yes | — | PostgreSQL host |
-| `BACKEND_DB_USER` | Yes | — | PostgreSQL user |
-| `BACKEND_DB_PASSWORD` | Yes | — | PostgreSQL password |
-| `BACKEND_DB_NAME` | Yes | — | PostgreSQL database name |
-| `CORS_ALLOWED_ORIGINS` | Yes | — | Comma-separated CORS origins |
-| `CSRF_TRUSTED_ORIGINS` | Yes | — | Comma-separated CSRF trusted origins |
-| `BACKEND_SUPERUSER_USERNAME` | Yes | — | Superuser username, created on first startup |
-| `BACKEND_SUPERUSER_EMAIL` | Yes | — | Superuser email, created on first startup |
-| `BACKEND_SUPERUSER_PASSWORD` | Yes | — | Superuser password, created on first startup |
-| `DEBUG` | No | `False` | Django debug mode |
-| `CSRF_COOKIE_SECURE` | No | `False` | Require HTTPS for CSRF cookie; set `False` for plain HTTP |
-| `BACKEND_TEST_DB_HOST` | No | `localhost` | PostgreSQL host used by the test runner only |
+| Variable                     | Required | Default     | Description                                               |
+| ---------------------------- | -------- | ----------- | --------------------------------------------------------- |
+| `SECRET_KEY`                 | Yes      | —           | Django secret key                                         |
+| `ALLOWED_HOSTS`              | Yes      | —           | Comma-separated list of allowed hosts                     |
+| `BACKEND_DB_HOST`            | Yes      | —           | PostgreSQL host                                           |
+| `BACKEND_DB_USER`            | Yes      | —           | PostgreSQL user                                           |
+| `BACKEND_DB_PASSWORD`        | Yes      | —           | PostgreSQL password                                       |
+| `BACKEND_DB_NAME`            | Yes      | —           | PostgreSQL database name                                  |
+| `CORS_ALLOWED_ORIGINS`       | Yes      | —           | Comma-separated CORS origins                              |
+| `CSRF_TRUSTED_ORIGINS`       | Yes      | —           | Comma-separated CSRF trusted origins                      |
+| `BACKEND_SUPERUSER_USERNAME` | Yes      | —           | Superuser username, created on first startup              |
+| `BACKEND_SUPERUSER_EMAIL`    | Yes      | —           | Superuser email, created on first startup                 |
+| `BACKEND_SUPERUSER_PASSWORD` | Yes      | —           | Superuser password, created on first startup              |
+| `DEBUG`                      | No       | `False`     | Django debug mode                                         |
+| `CSRF_COOKIE_SECURE`         | No       | `False`     | Require HTTPS for CSRF cookie; set `False` for plain HTTP |
+| `BACKEND_TEST_DB_HOST`       | No       | `localhost` | PostgreSQL host used by the test runner only              |
 
 ### Local Test
 
@@ -154,7 +154,7 @@ docker run --rm \
   -e BACKEND_DB_PASSWORD=greenhouse_pass \
   -e BACKEND_DB_NAME=greenhouse \
   -e CORS_ALLOWED_ORIGINS="http://localhost:5173" \
-  -e CSRF_TRUSTED_ORIGINS="http://localhost:5173,http://localhost:8000,http://0.0.0.0:8000" \
+  -e CSRF_TRUSTED_ORIGINS="http://localhost:5173,http://0.0.0.0:8000" \
   -e CSRF_COOKIE_SECURE=False \
   -e BACKEND_SUPERUSER_USERNAME=admin \
   -e BACKEND_SUPERUSER_EMAIL=you@example.com \
@@ -164,8 +164,9 @@ docker run --rm \
 ```
 
 Once running, visit:
+
 - `http://localhost:8000/admin/` — Django admin
-- `http://localhost:8000/api/v1/schema/redoc/` — API docs
+- `http://localhost:8000/api/v1/docs` — API docs
 
 ### Cleanup
 
@@ -191,9 +192,9 @@ make build-frontend REGISTRY=harbor.yourdomain.com/greenhouse IMAGE_TAG=1.0.0
 
 ### Environment Variables
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `API_URL` | Yes | — | Backend API base URL (e.g. `http://localhost:8000/api/v1`); injected at container startup |
+| Variable  | Required | Default | Description                                                                               |
+| --------- | -------- | ------- | ----------------------------------------------------------------------------------------- |
+| `API_URL` | Yes      | —       | Backend API base URL (e.g. `http://localhost:8000/api/v1`); injected at container startup |
 
 ### Local Test
 
@@ -206,6 +207,7 @@ docker run --rm -p 3000:80 \
 ```
 
 Visit `http://localhost:3000`. Verify the config loaded correctly in browser devtools:
+
 ```js
 window.appConfig // { apiUrl: "http://localhost:8000/api/v1" }
 ```
@@ -216,17 +218,17 @@ window.appConfig // { apiUrl: "http://localhost:8000/api/v1" }
 
 Base URL: `http://localhost:8000/api/v1/`
 
-| Resource | Endpoints |
-|---|---|
-| Auth | `POST /auth/login/`, `POST /auth/logout/` |
-| Setup | `GET /setup/status/`, `POST /setup/admin/` |
-| Crops | `GET/POST /crops/`, `GET/PUT/PATCH/DELETE /crops/<id>/`, `PUT /crops/<id>/image/` |
-| Varieties | `GET/POST /varieties/`, `GET/PUT/PATCH/DELETE /varieties/<id>/` |
-| Planting Locations | `GET/POST /planting-locations/`, `GET/PUT/PATCH/DELETE /planting-locations/<id>/`, `PUT /planting-locations/<id>/image/` |
-| Plantings | `GET/POST /plantings/`, `GET/PUT/PATCH/DELETE /plantings/<id>/` |
-| Planting Location Assignments | `GET/POST /plantings/<id>/locations/`, `GET/PUT/DELETE /plantings/<id>/locations/<id>/` |
-| Planting Daily Observations | `GET/POST /plantings/<id>/observations/`, `GET/PUT/DELETE /plantings/<id>/observations/<id>/` |
-| Planting Location Statuses | `GET/POST /planting-locations/<id>/statuses/` |
+| Resource                      | Endpoints                                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Auth                          | `POST /auth/login/`, `POST /auth/logout/`                                                                                |
+| Setup                         | `GET /setup/status/`, `POST /setup/admin/`                                                                               |
+| Crops                         | `GET/POST /crops/`, `GET/PUT/PATCH/DELETE /crops/<id>/`, `PUT /crops/<id>/image/`                                        |
+| Varieties                     | `GET/POST /varieties/`, `GET/PUT/PATCH/DELETE /varieties/<id>/`                                                          |
+| Planting Locations            | `GET/POST /planting-locations/`, `GET/PUT/PATCH/DELETE /planting-locations/<id>/`, `PUT /planting-locations/<id>/image/` |
+| Plantings                     | `GET/POST /plantings/`, `GET/PUT/PATCH/DELETE /plantings/<id>/`                                                          |
+| Planting Location Assignments | `GET/POST /plantings/<id>/locations/`, `GET/PUT/DELETE /plantings/<id>/locations/<id>/`                                  |
+| Planting Daily Observations   | `GET/POST /plantings/<id>/observations/`, `GET/PUT/DELETE /plantings/<id>/observations/<id>/`                            |
+| Planting Location Statuses    | `GET/POST /planting-locations/<id>/statuses/`                                                                            |
 
 Interactive API docs (ReDoc): `http://localhost:8000/api/v1/docs`
 
