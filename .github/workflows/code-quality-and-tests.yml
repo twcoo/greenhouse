@@ -29,11 +29,11 @@ jobs:
       CORS_ALLOWED_ORIGINS: http://localhost:5173
       CSRF_COOKIE_SECURE: "False"
       CSRF_TRUSTED_ORIGINS: http://localhost:5173
-      BACKEND_TEST_DB_HOST: localhost
-      BACKEND_DB_HOST: localhost
-      BACKEND_DB_USER: greenhouse
-      BACKEND_DB_PASSWORD: greenhouse
-      BACKEND_DB_NAME: greenhouse
+      TEST_DB_HOST: localhost
+      DB_HOST: localhost
+      DB_USER: greenhouse
+      DB_PASSWORD: greenhouse
+      DB_NAME: greenhouse
 
     steps:
       - uses: actions/checkout@v4
