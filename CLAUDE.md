@@ -42,7 +42,7 @@ To run a single backend test: `uv run python backend/manage.py test greenhouse.t
 - **Views** (`backend/greenhouse/views/`): DRF APIViews/generics. All viewsets must use `@extend_schema` decorators for OpenAPI docs and scope querysets to `self.request.user`.
 - **Serializers** (`backend/greenhouse/serializers/`): All validation goes through DRF Serializers — no other validation mechanism.
 - **Authentication**: django-rest-knox via `CustomAuthentication` — token stored as an HttpOnly cookie.
-- **URL structure**: `/api/v1/auth/`, `/api/v1/crops/`, `/api/v1/planting-locations/`, `/api/v1/setup/`
+- **URL structure**: `/api/v1/auth/`, `/api/v1/crops/`, `/api/v1/varieties/`, `/api/v1/plantings/` (nested: `/plantings/<id>/locations/`, `/plantings/<id>/observations/`), `/api/v1/planting-locations/` (nested: `/planting-locations/<id>/statuses/`), `/api/v1/setup/`
 - **OpenAPI docs**: `/api/v1/schema/redoc/`
 
 Database: PostgreSQL only. Never manually create or edit migration files — use Django's migration system exclusively.
@@ -50,10 +50,10 @@ Database: PostgreSQL only. Never manually create or edit migration files — use
 ### Frontend (`frontend/src/`)
 
 - **API client** (`api/client.ts`): Axios instance with interceptors that auto-convert camelCase ↔ snake_case and inject CSRF tokens. Redirects to `/login` on 401/403.
-- **Services** (`api/services/`): One service file per resource (`cropsService`, `plantingLocationService`, `authService`, `setupService`).
+- **Services** (`api/services/`): One service file per resource (`authService`, `cropsService`, `varietyService`, `plantingService`, `plantingLocationService`, `plantingDailyObservationService`, `plantingLocationAssignmentService`, `plantingLocationStatusService`, `setupService`).
 - **State** (`stores/`): Pinia stores for auth (`authStore`) and setup (`setupStore`). Use Vue Query (`@tanstack/vue-query`) for server data fetching — Pinia is for client-only global state.
 - **Router** (`router/index.ts`): Vue Router with route guards; unauthenticated users redirect to `/login` or `/setup`.
-- **Views** (`views/`): Page-level components. Feature components live in `components/crops/` and `components/planting-locations/`.
+- **Views** (`views/`): Page-level components — `login`, `setup`, `dashboard`, `crops`, `varieties`, `plantings`, `planting-locations`, `service-unavailable`. Feature components live in `components/crops/`, `components/varieties/`, `components/plantings/`, `components/planting-locations/`, and `components/planting-location-assignments/`.
 - **UI**: reka-ui (shadcn/ui port) + Tailwind CSS 4. All components use `<script setup lang="ts">`.
 - **Validation**: Zod schemas for all form/request validation.
 

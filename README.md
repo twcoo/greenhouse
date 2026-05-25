@@ -224,7 +224,7 @@ Base URL: `http://localhost:8000/api/v1/`
 | Setup                         | `GET /setup/status/`, `POST /setup/admin/`                                                                               |
 | Crops                         | `GET/POST /crops/`, `GET/PUT/PATCH/DELETE /crops/<id>/`, `PUT /crops/<id>/image/`                                        |
 | Varieties                     | `GET/POST /varieties/`, `GET/PUT/PATCH/DELETE /varieties/<id>/`                                                          |
-| Planting Locations            | `GET/POST /planting-locations/`, `GET/PUT/PATCH/DELETE /planting-locations/<id>/`, `PUT /planting-locations/<id>/image/` |
+| Planting Locations            | `GET/POST /planting-locations/`, `GET/PUT/PATCH/DELETE /planting-locations/<id>/`                                       |
 | Plantings                     | `GET/POST /plantings/`, `GET/PUT/PATCH/DELETE /plantings/<id>/`                                                          |
 | Planting Location Assignments | `GET/POST /plantings/<id>/locations/`, `GET/PUT/DELETE /plantings/<id>/locations/<id>/`                                  |
 | Planting Daily Observations   | `GET/POST /plantings/<id>/observations/`, `GET/PUT/DELETE /plantings/<id>/observations/<id>/`                            |
