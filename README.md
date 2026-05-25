@@ -56,12 +56,12 @@ CORS_ALLOWED_ORIGINS=http://localhost:5173
 CSRF_COOKIE_SECURE=False
 CSRF_TRUSTED_ORIGINS=http://localhost:8000
 
-BACKEND_DB_HOST=backend-db
-BACKEND_DB_USER=greenhouse
-BACKEND_DB_PASSWORD=greenhouse
-BACKEND_DB_NAME=greenhouse
+DB_HOST=backend-db
+DB_USER=greenhouse
+DB_PASSWORD=greenhouse
+DB_NAME=greenhouse
 
-BACKEND_TEST_DB_HOST=localhost
+TEST_DB_HOST=localhost
 
 API_VERSION=v1
 ```
@@ -108,18 +108,18 @@ make build-backend REGISTRY=harbor.yourdomain.com/greenhouse IMAGE_TAG=1.0.0
 | ---------------------------- | -------- | ----------- | --------------------------------------------------------- |
 | `SECRET_KEY`                 | Yes      | —           | Django secret key                                         |
 | `ALLOWED_HOSTS`              | Yes      | —           | Comma-separated list of allowed hosts                     |
-| `BACKEND_DB_HOST`            | Yes      | —           | PostgreSQL host                                           |
-| `BACKEND_DB_USER`            | Yes      | —           | PostgreSQL user                                           |
-| `BACKEND_DB_PASSWORD`        | Yes      | —           | PostgreSQL password                                       |
-| `BACKEND_DB_NAME`            | Yes      | —           | PostgreSQL database name                                  |
+| `DB_HOST`                    | Yes      | —           | PostgreSQL host                                           |
+| `DB_USER`                    | Yes      | —           | PostgreSQL user                                           |
+| `DB_PASSWORD`                | Yes      | —           | PostgreSQL password                                       |
+| `DB_NAME`                    | Yes      | —           | PostgreSQL database name                                  |
 | `CORS_ALLOWED_ORIGINS`       | Yes      | —           | Comma-separated CORS origins                              |
 | `CSRF_TRUSTED_ORIGINS`       | Yes      | —           | Comma-separated CSRF trusted origins                      |
-| `BACKEND_SUPERUSER_USERNAME` | Yes      | —           | Superuser username, created on first startup              |
-| `BACKEND_SUPERUSER_EMAIL`    | Yes      | —           | Superuser email, created on first startup                 |
-| `BACKEND_SUPERUSER_PASSWORD` | Yes      | —           | Superuser password, created on first startup              |
+| `SUPERUSER_USERNAME`         | Yes      | —           | Superuser username, created on first startup              |
+| `SUPERUSER_EMAIL`            | Yes      | —           | Superuser email, created on first startup                 |
+| `SUPERUSER_PASSWORD`         | Yes      | —           | Superuser password, created on first startup              |
 | `DEBUG`                      | No       | `False`     | Django debug mode                                         |
 | `CSRF_COOKIE_SECURE`         | No       | `False`     | Require HTTPS for CSRF cookie; set `False` for plain HTTP |
-| `BACKEND_TEST_DB_HOST`       | No       | `localhost` | PostgreSQL host used by the test runner only              |
+| `TEST_DB_HOST`               | No       | `localhost` | PostgreSQL host used by the test runner only              |
 
 ### Local Test
 
@@ -149,17 +149,17 @@ docker run --rm \
   -e DEBUG=True \
   -e SECRET_KEY=test-secret-key \
   -e ALLOWED_HOSTS="0.0.0.0,localhost" \
-  -e BACKEND_DB_HOST=greenhouse-db \
-  -e BACKEND_DB_USER=greenhouse \
-  -e BACKEND_DB_PASSWORD=greenhouse_pass \
-  -e BACKEND_DB_NAME=greenhouse \
+  -e DB_HOST=greenhouse-db \
+  -e DB_USER=greenhouse \
+  -e DB_PASSWORD=greenhouse_pass \
+  -e DB_NAME=greenhouse \
   -e CORS_ALLOWED_ORIGINS="http://localhost:5173" \
   -e CSRF_TRUSTED_ORIGINS="http://localhost:5173,http://0.0.0.0:8000" \
   -e CSRF_COOKIE_SECURE=False \
-  -e BACKEND_SUPERUSER_USERNAME=admin \
-  -e BACKEND_SUPERUSER_EMAIL=you@example.com \
-  -e BACKEND_SUPERUSER_PASSWORD=yourpassword \
-  -e BACKEND_TEST_DB_HOST=localhost \
+  -e SUPERUSER_USERNAME=admin \
+  -e SUPERUSER_EMAIL=you@example.com \
+  -e SUPERUSER_PASSWORD=yourpassword \
+  -e TEST_DB_HOST=localhost \
   localhost/greenhouse-backend:latest
 ```
 

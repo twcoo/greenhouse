@@ -71,15 +71,15 @@ Backend reads all config via `python-decouple` `config()`. Reference `.env.examp
 |----------|-------------|
 | `SECRET_KEY` | Django secret key |
 | `ALLOWED_HOSTS` | Comma-separated allowed hosts |
-| `BACKEND_DB_HOST` | PostgreSQL host |
-| `BACKEND_DB_USER` | PostgreSQL user |
-| `BACKEND_DB_PASSWORD` | PostgreSQL password |
-| `BACKEND_DB_NAME` | PostgreSQL database name |
+| `DB_HOST` | PostgreSQL host |
+| `DB_USER` | PostgreSQL user |
+| `DB_PASSWORD` | PostgreSQL password |
+| `DB_NAME` | PostgreSQL database name |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated CORS origins |
 | `CSRF_TRUSTED_ORIGINS` | Comma-separated CSRF trusted origins |
-| `BACKEND_SUPERUSER_USERNAME` | Superuser username (created on first startup) |
-| `BACKEND_SUPERUSER_EMAIL` | Superuser email (created on first startup) |
-| `BACKEND_SUPERUSER_PASSWORD` | Superuser password (created on first startup) |
+| `SUPERUSER_USERNAME` | Superuser username (created on first startup) |
+| `SUPERUSER_EMAIL` | Superuser email (created on first startup) |
+| `SUPERUSER_PASSWORD` | Superuser password (created on first startup) |
 
 **Optional (have defaults):**
 
@@ -87,7 +87,7 @@ Backend reads all config via `python-decouple` `config()`. Reference `.env.examp
 |----------|---------|-------------|
 | `DEBUG` | `False` | Django debug mode |
 | `CSRF_COOKIE_SECURE` | `False` | Require HTTPS for CSRF cookie — set `False` on plain HTTP |
-| `BACKEND_TEST_DB_HOST` | `localhost` | PostgreSQL host used by test runner only |
+| `TEST_DB_HOST` | `localhost` | PostgreSQL host used by test runner only |
 
 ### Key Conventions
 
