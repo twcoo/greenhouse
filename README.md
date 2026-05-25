@@ -102,6 +102,25 @@ Omit `REGISTRY` to tag as `localhost/greenhouse-backend:latest`. Use `IMAGE_TAG`
 make build-backend REGISTRY=harbor.yourdomain.com/greenhouse IMAGE_TAG=1.0.0
 ```
 
+### Environment Variables
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `SECRET_KEY` | Yes | — | Django secret key |
+| `ALLOWED_HOSTS` | Yes | — | Comma-separated list of allowed hosts |
+| `BACKEND_DB_HOST` | Yes | — | PostgreSQL host |
+| `BACKEND_DB_USER` | Yes | — | PostgreSQL user |
+| `BACKEND_DB_PASSWORD` | Yes | — | PostgreSQL password |
+| `BACKEND_DB_NAME` | Yes | — | PostgreSQL database name |
+| `CORS_ALLOWED_ORIGINS` | Yes | — | Comma-separated CORS origins |
+| `CSRF_TRUSTED_ORIGINS` | Yes | — | Comma-separated CSRF trusted origins |
+| `BACKEND_SUPERUSER_USERNAME` | Yes | — | Superuser username, created on first startup |
+| `BACKEND_SUPERUSER_EMAIL` | Yes | — | Superuser email, created on first startup |
+| `BACKEND_SUPERUSER_PASSWORD` | Yes | — | Superuser password, created on first startup |
+| `DEBUG` | No | `False` | Django debug mode |
+| `CSRF_COOKIE_SECURE` | No | `False` | Require HTTPS for CSRF cookie; set `False` for plain HTTP |
+| `BACKEND_TEST_DB_HOST` | No | `localhost` | PostgreSQL host used by the test runner only |
+
 ### Local Test
 
 Spin up a throwaway Postgres instance and the backend image on a shared network.
@@ -169,6 +188,12 @@ Omit `REGISTRY` to tag as `localhost/greenhouse-frontend:latest`. Use `IMAGE_TAG
 ```bash
 make build-frontend REGISTRY=harbor.yourdomain.com/greenhouse IMAGE_TAG=1.0.0
 ```
+
+### Environment Variables
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `API_URL` | Yes | — | Backend API base URL (e.g. `http://localhost:8000/api/v1`); injected at container startup |
 
 ### Local Test
 
