@@ -87,11 +87,11 @@ CSRF_TRUSTED_ORIGINS = config(
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-TEST_DB_HOST = config("BACKEND_TEST_DB_HOST", cast=str, default="localhost")
-DB_HOST = config("BACKEND_DB_HOST", cast=str)
-DB_USER = config("BACKEND_DB_USER", cast=str)
-DB_PASSWORD = config("BACKEND_DB_PASSWORD", cast=str)
-DB_NAME = config("BACKEND_DB_NAME", cast=str)
+TEST_DB_HOST = config("TEST_DB_HOST", cast=str, default="localhost")
+DB_HOST = config("DB_HOST", cast=str)
+DB_USER = config("DB_USER", cast=str)
+DB_PASSWORD = config("DB_PASSWORD", cast=str)
+DB_NAME = config("DB_NAME", cast=str)
 
 if "test" in sys.argv:
     DATABASES = {

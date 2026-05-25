@@ -10,9 +10,9 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs) -> None:
         User = get_user_model()
 
-        email = config("BACKEND_SUPERUSER_EMAIL")
-        username = config("BACKEND_SUPERUSER_USERNAME")
-        password = config("BACKEND_SUPERUSER_PASSWORD")
+        email = config("SUPERUSER_EMAIL")
+        username = config("SUPERUSER_USERNAME")
+        password = config("SUPERUSER_PASSWORD")
 
         if not User.objects.filter(email=email).exists():
             User.objects.create_superuser(

@@ -3,9 +3,9 @@ services:
     image: "postgres:alpine"
     container_name: backend-db
     environment:
-      - POSTGRES_USER=${BACKEND_DB_USER}
-      - POSTGRES_PASSWORD=${BACKEND_DB_PASSWORD}
-      - POSTGRES_DB=${BACKEND_DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
