@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "greenhouse.fullname" . }}-backend-config
+  labels:
+    {{- include "greenhouse.labels" . | nindent 4 }}
+data:
+  ALLOWED_HOSTS: {{ .Values.backend.config.ALLOWED_HOSTS | quote }}
+  CORS_ALLOWED_ORIGINS: {{ .Values.backend.config.CORS_ALLOWED_ORIGINS | quote }}
+  CSRF_TRUSTED_ORIGINS: {{ .Values.backend.config.CSRF_TRUSTED_ORIGINS | quote }}
+  CSRF_COOKIE_SECURE: {{ .Values.backend.config.CSRF_COOKIE_SECURE | quote }}
+  DEBUG: {{ .Values.backend.config.DEBUG | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "greenhouse.fullname" . }}-frontend-config
+  labels:
+    {{- include "greenhouse.labels" . | nindent 4 }}
+data:
+  API_URL: {{ .Values.frontend.config.API_URL | quote }}
