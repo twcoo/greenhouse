@@ -1,0 +1,152 @@
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+
+# ── Backend ───────────────────────────────────────────────────────────────────
+backend:
+  imagePullSecrets:
+    - name: harbor-regcred
+  image:
+    repository: your-registry/greenhouse-backend
+    tag: latest
+    pullPolicy: Always
+
+  replicaCount: 1
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Non-sensitive env vars → ConfigMap
+  config:
+    ALLOWED_HOSTS: "yourdomain.com"
+    CORS_ALLOWED_ORIGINS: "https://yourdomain.com"
+    CSRF_TRUSTED_ORIGINS: "https://yourdomain.com"
+    CSRF_COOKIE_SECURE: "True"
+    DEBUG: "False"
+
+  # Sensitive env vars → Secret
+  # DB_HOST is auto-derived as "<release-name>-postgresql" when postgresql.enabled=true
+  # DB_USER / DB_PASSWORD / DB_NAME must match postgresql.auth.* below
+  secret:
+    SECRET_KEY: "change-me-to-a-long-random-secret-key"
+    DB_USER: "greenhouse"
+    DB_PASSWORD: "change-me"
+    DB_NAME: "greenhouse"
+    SUPERUSER_USERNAME: "admin"
+    SUPERUSER_EMAIL: "admin@example.com"
+    SUPERUSER_PASSWORD: "change-me"
+
+  persistence:
+    enabled: true
+    storageClassName: longhorn
+    size: 5Gi
+    mountPath: /backend/media
+    accessMode: ReadWriteOnce
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
+frontend:
+  imagePullSecrets:
+    - name: harbor-regcred
+  image:
+    repository: your-registry/greenhouse-frontend
+    tag: latest
+    pullPolicy: Always
+
+  replicaCount: 1
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+  config:
+    API_URL: "https://yourdomain.com/api/v1"
+
+# ── PostgreSQL (Bitnami chart dependency) ─────────────────────────────────────
+# https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+# DB_HOST in the backend secret is auto-set to "<release-name>-postgresql"
+# auth.username / password / database must match backend.secret DB_USER / DB_PASSWORD / DB_NAME
+postgresql:
+  enabled: true
+  auth:
+    username: "greenhouse"
+    password: "change-me"
+    database: "greenhouse"
+  primary:
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      size: 10Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+# ── HTTPRoutes (Gateway API) ───────────────────────────────────────────────────
+# Each entry creates one HTTPRoute resource.
+# Rule "backend" field: "backend" → backend service, "frontend" → frontend service.
+# Rules without a "backend" field (e.g. redirect rules) produce no backendRefs.
+httpRoutes:
+  - name: greenhouse-https
+    enabled: true
+    parentRefs:
+      - name: your-gateway
+        namespace: your-namespace
+        sectionName: https
+    hostnames:
+      - yourdomain.com
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /api/
+        backend: backend
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /media/
+        backend: backend
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /admin/
+        backend: backend
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backend: frontend
+
+  - name: greenhouse-http
+    enabled: true
+    parentRefs:
+      - name: your-gateway
+        namespace: your-namespace
+        sectionName: http
+    hostnames:
+      - yourdomain.com
+    rules:
+      - filters:
+          - type: RequestRedirect
+            requestRedirect:
+              scheme: https
+              statusCode: 301
