@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "greenhouse.fullname" . }}-backend
+  labels:
+    {{- include "greenhouse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "greenhouse.selectorLabels" (dict "root" . "component" "backend") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "greenhouse.selectorLabels" (dict "root" . "component" "backend") | nindent 8 }}
+    spec:
+      {{- include "greenhouse.imagePullSecrets" (dict "secrets" .Values.backend.imagePullSecrets) | nindent 6 }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:alpine
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h "$DB_HOST" -U "$DB_USER"; do
+                echo "waiting for postgres..."
+                sleep 2
+              done
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "greenhouse.fullname" . }}-secret
+                  key: DB_HOST
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "greenhouse.fullname" . }}-secret
+                  key: DB_USER
+      containers:
+        - name: backend
+          image: {{ include "greenhouse.image" (dict "root" . "image" .Values.backend.image) }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "greenhouse.fullname" . }}-backend-config
+            - secretRef:
+                name: {{ include "greenhouse.fullname" . }}-secret
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          {{- if .Values.backend.persistence.enabled }}
+          volumeMounts:
+            - name: media
+              mountPath: {{ .Values.backend.persistence.mountPath }}
+          {{- end }}
+      {{- if .Values.backend.persistence.enabled }}
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ include "greenhouse.fullname" . }}-backend-media
+      {{- end }}

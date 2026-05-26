@@ -1,0 +1,15 @@
+{{- if .Values.backend.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "greenhouse.fullname" . }}-backend-media
+  labels:
+    {{- include "greenhouse.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.backend.persistence.accessMode }}
+  storageClassName: {{ .Values.backend.persistence.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.backend.persistence.size }}
+{{- end }}
