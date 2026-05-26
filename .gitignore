@@ -49,3 +49,7 @@ coverage/
 htmlcov/
 backend/media/locations
 backend/media/observations
+
+# Helm
+helm/greenhouse/values.yaml
+helm/greenhouse/charts/*.tgz
