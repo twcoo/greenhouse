@@ -30,17 +30,23 @@ test-frontend:
 REGISTRY ?= localhost
 IMAGE_TAG ?= latest
 
+PLATFORM ?= linux/amd64
+
 build-backend:
 	@docker build \
+		--platform $(PLATFORM) \
 		-f dockerfiles/Dockerfile.backend \
 		-t $(REGISTRY)/greenhouse-backend:$(IMAGE_TAG) \
-		.
+		. \
+		--push
 
 build-frontend:
 	@docker build \
+		--platform $(PLATFORM) \
 		-f dockerfiles/Dockerfile.frontend \
 		-t $(REGISTRY)/greenhouse-frontend:$(IMAGE_TAG) \
-		.
+		. \
+		--push
 
 clear-dev-backend-db:
 	@docker rm -f backend-db
