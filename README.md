@@ -11,6 +11,7 @@ A self-hosted garden management app for tracking crops, varieties, plantings, pl
 - [Development Setup](#development-setup)
 - [Backend Docker Image](#backend-docker-image)
 - [Frontend Docker Image](#frontend-docker-image)
+- [Helm (Kubernetes)](#helm-kubernetes)
 - [API](#api)
 - [Features](#features)
 - [Code Quality](#code-quality)
@@ -211,6 +212,118 @@ Visit `http://localhost:3000`. Verify the config loaded correctly in browser dev
 ```js
 window.appConfig // { apiUrl: "http://localhost:8000/api/v1" }
 ```
+
+---
+
+## Helm (Kubernetes)
+
+The chart lives at `helm/greenhouse/`. It deploys the backend, frontend, and a PostgreSQL database (Bitnami subchart) to a Kubernetes cluster.
+
+### Prerequisites
+
+- [Helm 3](https://helm.sh/docs/intro/install/)
+- A Kubernetes cluster with [Longhorn](https://longhorn.io/) for storage
+- Images pushed to a container registry accessible by the cluster
+- A `harbor-regcred` image pull secret in the target namespace (if using a private registry)
+- Gateway API CRDs installed (for HTTPRoute)
+
+### Setup
+
+**1. Copy and edit values:**
+
+```bash
+cp helm/greenhouse/values.example.yaml helm/greenhouse/values.yaml
+```
+
+Edit `values.yaml` — at minimum update:
+- `backend.image.repository` / `frontend.image.repository`
+- `backend.config.ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, `CSRF_TRUSTED_ORIGINS`
+- `backend.secret.SECRET_KEY`, `DB_PASSWORD`, `SUPERUSER_*`
+- `postgresql.auth.password`
+- `frontend.config.API_URL`
+- `httproute.host` and `httproute.parentRef` (if enabling HTTPRoute)
+
+**2. Create namespace:**
+
+```bash
+kubectl create namespace greenhouse
+```
+
+**3. Create image pull secret (if using a private registry):**
+
+```bash
+kubectl create secret docker-registry harbor-regcred \
+  --namespace greenhouse \
+  --docker-server=your-registry \
+  --docker-username=<user> \
+  --docker-password=<password>
+```
+
+**4. Install:**
+
+```bash
+helm install greenhouse ./helm/greenhouse --namespace greenhouse
+```
+
+### Commands
+
+```bash
+# Install
+helm install greenhouse ./helm/greenhouse --namespace greenhouse
+
+# Upgrade after values or image changes
+helm upgrade greenhouse ./helm/greenhouse --namespace greenhouse
+
+# Force restart all pods (e.g. after pushing a new image)
+kubectl rollout restart deployment -n greenhouse
+
+# Uninstall
+helm uninstall greenhouse --namespace greenhouse
+```
+
+### Build and push images
+
+`REGISTRY` defaults to `localhost`. When `localhost`, the image is built locally and **not pushed**. Provide a real registry to build and push in one step.
+
+```bash
+# Build locally (no push)
+make build-backend
+make build-frontend
+
+# Build + push to a registry (requires docker buildx)
+make build-backend REGISTRY=your-registry/greenhouse-backend
+make build-frontend REGISTRY=your-registry/greenhouse-frontend
+
+# Custom tag
+make build-backend REGISTRY=your-registry/greenhouse-backend IMAGE_TAG=1.0.0
+
+# Custom platform (default: linux/amd64)
+make build-backend REGISTRY=your-registry/greenhouse-backend PLATFORM=linux/arm64
+```
+
+> Push requires `docker buildx`. Run `docker buildx create --use` if not already set up.
+
+### Values reference
+
+| Key | Description |
+|-----|-------------|
+| `backend.image.repository` | Backend image repository |
+| `backend.image.tag` | Image tag (default: `latest`) |
+| `backend.image.pullPolicy` | `Always` recommended with `latest` tag |
+| `backend.config.*` | Non-sensitive env vars (ConfigMap) |
+| `backend.secret.*` | Sensitive env vars (Secret) |
+| `backend.persistence.size` | Media storage PVC size |
+| `backend.persistence.storageClassName` | Storage class (default: `longhorn`) |
+| `frontend.image.repository` | Frontend image repository |
+| `frontend.config.API_URL` | Backend API base URL seen by the browser |
+| `postgresql.enabled` | Deploy bundled PostgreSQL subchart |
+| `postgresql.primary.persistence.size` | PostgreSQL PVC size |
+| `httproute.enabled` | Create Gateway API HTTPRoute |
+| `httproute.host` | Hostname (no `https://` prefix) |
+| `httproute.parentRef.name` | Gateway resource name |
+| `httproute.parentRef.namespace` | Gateway resource namespace |
+
+> `DB_HOST` is automatically set to `<release-name>-postgresql` when `postgresql.enabled=true` — do not set it manually.
 
 ---
 

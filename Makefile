@@ -37,16 +37,16 @@ build-backend:
 		--platform $(PLATFORM) \
 		-f dockerfiles/Dockerfile.backend \
 		-t $(REGISTRY)/greenhouse-backend:$(IMAGE_TAG) \
-		. \
-		--push
+		$(if $(filter-out localhost,$(REGISTRY)),--push,) \
+		.
 
 build-frontend:
 	@docker build \
 		--platform $(PLATFORM) \
 		-f dockerfiles/Dockerfile.frontend \
 		-t $(REGISTRY)/greenhouse-frontend:$(IMAGE_TAG) \
-		. \
-		--push
+		$(if $(filter-out localhost,$(REGISTRY)),--push,) \
+		.
 
 clear-dev-backend-db:
 	@docker rm -f backend-db

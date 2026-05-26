@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Development
-make dev-backend        # Start Django + PostgreSQL via Docker Compose
+make dev-backend        # Start backend + PostgreSQL via Docker Compose
 make dev-frontend       # Start Vite dev server (http://localhost:5173)
 
 # Linting
@@ -21,11 +21,20 @@ make test-frontend      # Vitest
 make clear-dev-backend-db  # Destroy and recreate PostgreSQL container + volume
 
 # Production images
-make build-backend                              # Build backend image tagged localhost/greenhouse-backend:latest
-make build-backend REGISTRY=x                  # Build with registry prefix
-make build-backend IMAGE_TAG=x                 # Build with custom tag
-make build-frontend                            # Build frontend image (API_URL supplied at runtime)
-make build-frontend REGISTRY=x                 # Build frontend with registry prefix
+# REGISTRY defaults to localhost — push is skipped when REGISTRY=localhost
+# Provide a real registry to build and push in one step (requires docker buildx)
+make build-backend                                     # Build only (localhost, no push)
+make build-backend REGISTRY=registry.example.com/x    # Build + push
+make build-backend IMAGE_TAG=x                        # Custom tag
+make build-backend PLATFORM=linux/arm64               # Custom platform (default: linux/amd64)
+make build-frontend                                    # Build only (localhost, no push)
+make build-frontend REGISTRY=registry.example.com/x   # Build + push
+
+# Helm
+helm install greenhouse ./helm/greenhouse --namespace greenhouse    # Install
+helm upgrade greenhouse ./helm/greenhouse --namespace greenhouse    # Upgrade after changes
+kubectl rollout restart deployment -n greenhouse                    # Force restart all pods
+helm uninstall greenhouse --namespace greenhouse                    # Uninstall
 ```
 
 `make dev-backend` requires a `.env` file at the repo root (consumed by the `backend` container). The `./backend` directory is mounted as a live volume, so code changes are reflected without rebuilding.
