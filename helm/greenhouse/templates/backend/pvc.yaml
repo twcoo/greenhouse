@@ -3,6 +3,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "greenhouse.fullname" . }}-backend-media
+  annotations:
+    helm.sh/resource-policy: keep
   labels:
     {{- include "greenhouse.labels" . | nindent 4 }}
 spec:
