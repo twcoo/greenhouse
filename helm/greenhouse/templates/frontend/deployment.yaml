@@ -16,13 +16,21 @@ spec:
         {{- include "greenhouse.selectorLabels" (dict "root" . "component" "frontend") | nindent 8 }}
     spec:
       {{- include "greenhouse.imagePullSecrets" (dict "secrets" .Values.frontend.imagePullSecrets) | nindent 6 }}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: frontend
           image: {{ include "greenhouse.image" (dict "root" . "image" .Values.frontend.image) }}
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
           env:
             - name: API_URL
