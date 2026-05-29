@@ -76,6 +76,26 @@ describe("LoginForm.vue", (): void => {
     expect(wrapper.find('[data-test="general-error"]').text()).toContain("Invalid credentials")
   })
 
+  describe("password visibility toggle", (): void => {
+    it("password field defaults to type password", (): void => {
+      const wrapper = mountComponent()
+
+      expect((wrapper.get("#password").element as HTMLInputElement).type).toBe("password")
+    })
+
+    it("toggles password field to visible and back", async (): Promise<void> => {
+      const wrapper = mountComponent()
+      const toggleButton = wrapper.get('button[type="button"]')
+      const passwordInput = wrapper.get("#password").element as HTMLInputElement
+
+      await toggleButton.trigger("click")
+      expect(passwordInput.type).toBe("text")
+
+      await toggleButton.trigger("click")
+      expect(passwordInput.type).toBe("password")
+    })
+  })
+
   it("disables button and shows loading state", (): void => {
     vi.mocked(useAuthStore).mockReturnValueOnce(
       createAuthStoreMock({
@@ -85,7 +105,7 @@ describe("LoginForm.vue", (): void => {
 
     const wrapper = mountComponent()
 
-    const button = wrapper.find("button")
+    const button = wrapper.find('button[type="submit"]')
 
     expect(button.attributes("disabled")).toBeDefined()
     expect(button.text()).toContain("Logging in...")

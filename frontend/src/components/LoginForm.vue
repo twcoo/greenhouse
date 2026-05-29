@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useRoute, useRouter } from "vue-router"
 import { useAuthStore } from "@/stores/authStore"
 import { authLoginSchema, type loginForm } from "@/schemas/auth.schema"
-import { IconLoader2 } from "@tabler/icons-vue"
+import { IconLoader2, IconEye, IconEyeOff } from "@tabler/icons-vue"
 import { zodToFormErrors } from "@/utils/formErrors"
 
 const authStore = useAuthStore()
@@ -18,6 +18,7 @@ const form = reactive<loginForm>({
   password: "",
 })
 const errors = ref<Record<string, string>>({})
+const showPassword = ref(false)
 
 const handleSubmit = async (): Promise<void> => {
   errors.value = {}
@@ -67,7 +68,24 @@ const handleSubmit = async (): Promise<void> => {
               <div class="flex items-center">
                 <FieldLabel for="password"> Password </FieldLabel>
               </div>
-              <Input v-model="form.password" id="password" type="password" required />
+              <div class="relative">
+                <Input
+                  v-model="form.password"
+                  id="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  required
+                  class="pr-9"
+                />
+                <button
+                  type="button"
+                  class="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                  @click="showPassword = !showPassword"
+                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                >
+                  <IconEyeOff v-if="showPassword" :size="16" />
+                  <IconEye v-else :size="16" />
+                </button>
+              </div>
               <FieldError data-test="passwordError" v-if="errors.password">
                 {{ errors.password }}
               </FieldError>
