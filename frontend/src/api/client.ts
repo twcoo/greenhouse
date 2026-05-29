@@ -5,7 +5,9 @@ import { decamelizeKeys, camelizeKeys } from "humps"
 import { useAuthStore } from "@/stores/authStore"
 
 export const apiClient = axios.create({
-  baseURL: window.appConfig?.apiUrl ?? import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.DEV
+    ? import.meta.env.VITE_API_URL
+    : (window.appConfig?.apiUrl ?? import.meta.env.VITE_API_URL),
   timeout: 10000,
   withCredentials: true,
   headers: {

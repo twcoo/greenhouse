@@ -47,10 +47,20 @@ function getResponseInterceptors() {
 describe("apiClient baseURL", () => {
   beforeEach(() => {
     vi.resetModules()
+    vi.unstubAllEnvs()
     delete (window as Window & { appConfig?: { apiUrl: string } }).appConfig
   })
 
-  it("uses window.appConfig.apiUrl when set", async () => {
+  it("uses VITE_API_URL in dev mode even when appConfig is set", async () => {
+    window.appConfig = { apiUrl: "http://runtime-api.example.com/api/v1" }
+
+    const { apiClient: client } = await import("@/api/client")
+
+    expect(client.defaults.baseURL).toBe(import.meta.env.VITE_API_URL)
+  })
+
+  it("uses window.appConfig.apiUrl in production mode", async () => {
+    vi.stubEnv("DEV", false as unknown as string)
     window.appConfig = { apiUrl: "http://runtime-api.example.com/api/v1" }
 
     const { apiClient: client } = await import("@/api/client")
@@ -58,7 +68,9 @@ describe("apiClient baseURL", () => {
     expect(client.defaults.baseURL).toBe("http://runtime-api.example.com/api/v1")
   })
 
-  it("falls back to import.meta.env.VITE_API_URL when window.appConfig is not set", async () => {
+  it("falls back to VITE_API_URL in production mode when appConfig is not set", async () => {
+    vi.stubEnv("DEV", false as unknown as string)
+
     const { apiClient: client } = await import("@/api/client")
 
     expect(client.defaults.baseURL).toBe(import.meta.env.VITE_API_URL)
