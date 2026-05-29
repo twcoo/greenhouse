@@ -1,14 +1,29 @@
 name: Publish Images
 
 on:
+  push:
+    tags: ['v*.*.*']
   workflow_dispatch:
     inputs:
       image_tag:
-        description: 'Image tag'
-        required: false
-        default: 'latest'
+        description: 'Image tag (e.g. v1.2.3)'
+        required: true
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.tag.outputs.image_tag }}
+    steps:
+      - name: Determine image tag
+        id: tag
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "image_tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "image_tag=${{ inputs.image_tag }}" >> $GITHUB_OUTPUT
+          fi
+
   test-backend:
     runs-on: ubuntu-latest
     services:
@@ -77,7 +92,7 @@ jobs:
         run: make test-frontend
 
   publish-backend:
-    needs: test-backend
+    needs: [prepare, test-backend]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -93,10 +108,15 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push backend
-        run: make build-backend REGISTRY=ghcr.io/twcoo IMAGE_TAG=${{ inputs.image_tag }}
+        run: make build-backend REGISTRY=ghcr.io/twcoo IMAGE_TAG=${{ needs.prepare.outputs.image_tag }}
+
+      - name: Push latest tag
+        run: |
+          docker tag ghcr.io/twcoo/greenhouse-backend:${{ needs.prepare.outputs.image_tag }} ghcr.io/twcoo/greenhouse-backend:latest
+          docker push ghcr.io/twcoo/greenhouse-backend:latest
 
   publish-frontend:
-    needs: test-frontend
+    needs: [prepare, test-frontend]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -112,4 +132,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push frontend
-        run: make build-frontend REGISTRY=ghcr.io/twcoo IMAGE_TAG=${{ inputs.image_tag }}
+        run: make build-frontend REGISTRY=ghcr.io/twcoo IMAGE_TAG=${{ needs.prepare.outputs.image_tag }}
+
+      - name: Push latest tag
+        run: |
+          docker tag ghcr.io/twcoo/greenhouse-frontend:${{ needs.prepare.outputs.image_tag }} ghcr.io/twcoo/greenhouse-frontend:latest
+          docker push ghcr.io/twcoo/greenhouse-frontend:latest

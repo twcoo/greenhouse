@@ -12,6 +12,7 @@ A self-hosted garden management app for tracking crops, varieties, plantings, pl
 - [Backend Docker Image](#backend-docker-image)
 - [Frontend Docker Image](#frontend-docker-image)
 - [Helm (Kubernetes)](#helm-kubernetes)
+- [Releases](#releases)
 - [API](#api)
 - [Features](#features)
 - [Code Quality](#code-quality)
@@ -290,15 +291,16 @@ helm uninstall greenhouse --namespace greenhouse
 make build-backend
 make build-frontend
 
-# Build + push to a registry (requires docker buildx)
-make build-backend REGISTRY=your-registry/greenhouse-backend
-make build-frontend REGISTRY=your-registry/greenhouse-frontend
+# Build + push a versioned tag to a registry (requires docker buildx)
+make build-backend REGISTRY=your-registry IMAGE_TAG=v1.2.3
+make build-frontend REGISTRY=your-registry IMAGE_TAG=v1.2.3
 
-# Custom tag
-make build-backend REGISTRY=your-registry/greenhouse-backend IMAGE_TAG=1.0.0
+# Build + push a versioned tag AND also tag/push latest in one command
+make build-backend REGISTRY=your-registry IMAGE_TAG=v1.2.3 EXTRA_TAG=latest
+make build-frontend REGISTRY=your-registry IMAGE_TAG=v1.2.3 EXTRA_TAG=latest
 
 # Custom platform (default: linux/amd64)
-make build-backend REGISTRY=your-registry/greenhouse-backend PLATFORM=linux/arm64
+make build-backend REGISTRY=your-registry IMAGE_TAG=v1.2.3 PLATFORM=linux/arm64
 ```
 
 > Push requires `docker buildx`. Run `docker buildx create --use` if not already set up.
@@ -324,6 +326,65 @@ make build-backend REGISTRY=your-registry/greenhouse-backend PLATFORM=linux/arm6
 | `httproute.parentRef.namespace` | Gateway resource namespace |
 
 > `DB_HOST` is automatically set to `<release-name>-postgresql` when `postgresql.enabled=true` — do not set it manually.
+
+---
+
+## Releases
+
+Images are published to [GitHub Container Registry (GHCR)](https://ghcr.io/twcoo) via GitHub Actions. A release always produces two tags: the version tag and `latest`.
+
+### Tagging convention
+
+Releases follow [Semantic Versioning](https://semver.org/): `vMAJOR.MINOR.PATCH` (e.g. `v1.2.3`).
+
+### How to release
+
+**Option A — push a git tag (recommended):**
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+This triggers the `Publish Images` workflow automatically. No manual steps needed.
+
+**Option B — manual workflow dispatch:**
+
+Go to **Actions → Publish Images → Run workflow** and enter the tag (e.g. `v1.2.3`).
+
+### What the CI does
+
+1. Runs backend and frontend lint + tests
+2. Builds both images and pushes to GHCR with the version tag
+3. Tags and pushes `latest` to GHCR
+
+Images published:
+
+```
+ghcr.io/twcoo/greenhouse-backend:v1.2.3
+ghcr.io/twcoo/greenhouse-backend:latest
+ghcr.io/twcoo/greenhouse-frontend:v1.2.3
+ghcr.io/twcoo/greenhouse-frontend:latest
+```
+
+### Deploying after a release
+
+Update `values.yaml` with the new tag and upgrade the Helm release:
+
+```bash
+helm upgrade greenhouse ./helm/greenhouse --namespace greenhouse \
+  --set backend.image.tag=v1.2.3 \
+  --set frontend.image.tag=v1.2.3
+```
+
+### Mirroring to a private registry (e.g. Harbor)
+
+Use `EXTRA_TAG=latest` to build, push the version tag, and also update `latest` in one command:
+
+```bash
+make build-backend REGISTRY=harbor.yourdomain.com/greenhouse IMAGE_TAG=v1.2.3 EXTRA_TAG=latest
+make build-frontend REGISTRY=harbor.yourdomain.com/greenhouse IMAGE_TAG=v1.2.3 EXTRA_TAG=latest
+```
 
 ---
 

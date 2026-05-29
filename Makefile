@@ -29,6 +29,7 @@ test-frontend:
 
 REGISTRY ?= localhost
 IMAGE_TAG ?= latest
+EXTRA_TAG ?=
 
 PLATFORM ?= linux/amd64
 
@@ -39,6 +40,12 @@ build-backend:
 		-t $(REGISTRY)/greenhouse-backend:$(IMAGE_TAG) \
 		$(if $(filter-out localhost,$(REGISTRY)),--push,) \
 		.
+	@if [ -n "$(EXTRA_TAG)" ]; then \
+		docker tag $(REGISTRY)/greenhouse-backend:$(IMAGE_TAG) $(REGISTRY)/greenhouse-backend:$(EXTRA_TAG); \
+		if [ "$(REGISTRY)" != "localhost" ]; then \
+			docker push $(REGISTRY)/greenhouse-backend:$(EXTRA_TAG); \
+		fi; \
+	fi
 
 build-frontend:
 	@docker build \
@@ -47,6 +54,12 @@ build-frontend:
 		-t $(REGISTRY)/greenhouse-frontend:$(IMAGE_TAG) \
 		$(if $(filter-out localhost,$(REGISTRY)),--push,) \
 		.
+	@if [ -n "$(EXTRA_TAG)" ]; then \
+		docker tag $(REGISTRY)/greenhouse-frontend:$(IMAGE_TAG) $(REGISTRY)/greenhouse-frontend:$(EXTRA_TAG); \
+		if [ "$(REGISTRY)" != "localhost" ]; then \
+			docker push $(REGISTRY)/greenhouse-frontend:$(EXTRA_TAG); \
+		fi; \
+	fi
 
 clear-dev-backend-db:
 	@docker rm -f backend-db
