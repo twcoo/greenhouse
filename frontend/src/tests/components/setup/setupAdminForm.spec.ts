@@ -100,7 +100,7 @@ describe("SetupAdminForm.vue", (): void => {
 
     const wrapper = mountComponent()
 
-    const button = wrapper.get("button")
+    const button = wrapper.get('button[type="submit"]')
 
     expect(button.attributes("disabled")).toBeDefined()
     expect(button.text()).toBe("Creating...")
@@ -124,5 +124,53 @@ describe("SetupAdminForm.vue", (): void => {
     })
 
     expect(mockPush).toHaveBeenCalledWith({ name: "dashboard" })
+  })
+
+  describe("password visibility toggle", (): void => {
+    it("password fields default to type password", (): void => {
+      const wrapper = mountComponent()
+
+      expect((wrapper.get("#password").element as HTMLInputElement).type).toBe("password")
+      expect((wrapper.get("#password2").element as HTMLInputElement).type).toBe("password")
+    })
+
+    it("toggles password field to visible and back", async (): Promise<void> => {
+      const wrapper = mountComponent()
+      const toggleButtons = wrapper.findAll('button[type="button"]')
+      const passwordInput = wrapper.get("#password").element as HTMLInputElement
+
+      await toggleButtons[0].trigger("click")
+      expect(passwordInput.type).toBe("text")
+
+      await toggleButtons[0].trigger("click")
+      expect(passwordInput.type).toBe("password")
+    })
+
+    it("toggles confirm password field to visible and back", async (): Promise<void> => {
+      const wrapper = mountComponent()
+      const toggleButtons = wrapper.findAll('button[type="button"]')
+      const password2Input = wrapper.get("#password2").element as HTMLInputElement
+
+      await toggleButtons[1].trigger("click")
+      expect(password2Input.type).toBe("text")
+
+      await toggleButtons[1].trigger("click")
+      expect(password2Input.type).toBe("password")
+    })
+
+    it("toggles are independent of each other", async (): Promise<void> => {
+      const wrapper = mountComponent()
+      const toggleButtons = wrapper.findAll('button[type="button"]')
+      const passwordInput = wrapper.get("#password").element as HTMLInputElement
+      const password2Input = wrapper.get("#password2").element as HTMLInputElement
+
+      await toggleButtons[0].trigger("click")
+      expect(passwordInput.type).toBe("text")
+      expect(password2Input.type).toBe("password")
+
+      await toggleButtons[1].trigger("click")
+      expect(passwordInput.type).toBe("text")
+      expect(password2Input.type).toBe("text")
+    })
   })
 })

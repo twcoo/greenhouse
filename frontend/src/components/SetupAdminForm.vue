@@ -9,7 +9,7 @@ import { setupAdminSchema, type setupAdminForm } from "@/schemas/setup.schema"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
 import { AxiosError } from "axios"
 import type { APIErrorResponse } from "@/types/api"
-import { IconLoader2 } from "@tabler/icons-vue"
+import { IconLoader2, IconEye, IconEyeOff } from "@tabler/icons-vue"
 import { useRouter } from "vue-router"
 import { useSetupStore } from "@/stores/setupStore"
 
@@ -24,6 +24,8 @@ const form = reactive<setupAdminForm>({
 })
 
 const errors = ref<Record<string, string>>({})
+const showPassword = ref(false)
+const showPassword2 = ref(false)
 
 async function submit() {
   errors.value = {}
@@ -81,7 +83,24 @@ async function submit() {
           </Field>
           <Field>
             <FieldLabel for="password"> Password </FieldLabel>
-            <Input v-model="form.password" id="password" type="password" required />
+            <div class="relative">
+              <Input
+                v-model="form.password"
+                id="password"
+                :type="showPassword ? 'text' : 'password'"
+                required
+                class="pr-9"
+              />
+              <button
+                type="button"
+                class="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                @click="showPassword = !showPassword"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+              >
+                <IconEyeOff v-if="showPassword" :size="16" />
+                <IconEye v-else :size="16" />
+              </button>
+            </div>
             <FieldDescription>Must be at least 8 characters long.</FieldDescription>
             <FieldError data-test="passwordError" v-if="errors.password">
               {{ errors.password }}
@@ -89,7 +108,24 @@ async function submit() {
           </Field>
           <Field>
             <FieldLabel for="password2"> Confirm Password </FieldLabel>
-            <Input v-model="form.password2" id="password2" type="password" required />
+            <div class="relative">
+              <Input
+                v-model="form.password2"
+                id="password2"
+                :type="showPassword2 ? 'text' : 'password'"
+                required
+                class="pr-9"
+              />
+              <button
+                type="button"
+                class="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                @click="showPassword2 = !showPassword2"
+                :aria-label="showPassword2 ? 'Hide password' : 'Show password'"
+              >
+                <IconEyeOff v-if="showPassword2" :size="16" />
+                <IconEye v-else :size="16" />
+              </button>
+            </div>
 
             <FieldDescription>Please confirm your password.</FieldDescription>
             <FieldError data-test="password2Error" v-if="errors.password2">
