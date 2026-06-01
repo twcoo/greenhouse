@@ -1,0 +1,39 @@
+name: Feature Request
+description: Suggest a new feature for Greenhouse
+title: '[Feature] '
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Problem / motivation
+      description: What problem does this solve? Why is it needed?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the feature you'd like.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Frontend
+        - Backend
+        - Helm/Infra
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Mockups, references, or anything else relevant.
+    validations:
+      required: false
