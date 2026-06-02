@@ -30,16 +30,14 @@ body:
     validations:
       required: true
 
-  - type: dropdown
+  - type: checkboxes
     id: area
     attributes:
       label: Affected area
       options:
-        - Frontend
-        - Backend
-        - Helm/Infra
-    validations:
-      required: true
+        - label: Frontend
+        - label: Backend
+        - label: Helm/Infra
 
   - type: checkboxes
     id: environment
