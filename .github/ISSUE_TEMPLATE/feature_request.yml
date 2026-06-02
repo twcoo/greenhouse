@@ -4,18 +4,10 @@ title: '[Feature] '
 labels: ['enhancement']
 body:
   - type: textarea
-    id: motivation
+    id: description
     attributes:
-      label: Problem / motivation
-      description: What problem does this solve? Why is it needed?
-    validations:
-      required: true
-
-  - type: textarea
-    id: solution
-    attributes:
-      label: Proposed solution
-      description: Describe the feature you'd like.
+      label: Description
+      description: What problem does this solve and what would you like to see?
     validations:
       required: true
 
