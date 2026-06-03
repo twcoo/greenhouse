@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('greenhouse', '0024_remove_plantinglocation_image'),
+        ("greenhouse", "0024_remove_plantinglocation_image"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='plantingdailyobservation',
-            name='watered',
+            model_name="plantingdailyobservation",
+            name="watered",
             field=models.BooleanField(default=False),
         ),
     ]

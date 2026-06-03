@@ -101,9 +101,7 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
     )
     watered = serializers.BooleanField(
         default=False,
-        help_text=(
-            "Whether the planting was watered during this observation."
-        ),
+        help_text=("Whether the planting was watered during this observation."),
     )
 
     notes = serializers.CharField(
