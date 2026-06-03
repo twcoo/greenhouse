@@ -10,6 +10,14 @@ on:
       - 'uv.lock'
       - 'pnpm-lock.yaml'
       - 'package.json'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
 
 jobs:
   changes:
