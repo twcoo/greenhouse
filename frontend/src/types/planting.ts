@@ -4,6 +4,7 @@ export interface Planting {
   cropName: string
   variety: number
   varietyName: string
+  currentLocation: string | null
   createdAt: string
 }
 
