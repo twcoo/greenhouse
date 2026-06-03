@@ -19,6 +19,7 @@ const baseObservation: PlantingDailyObservation = {
   healthStatus: "GOOD",
   pestPressure: "LOW",
   diseaseSymptoms: false,
+  watered: false,
   heightCm: "15.50",
   leafCount: 3,
   temperatureC: "22.0",
@@ -71,6 +72,21 @@ describe("PlantingDailyObservationViewDialog.vue", () => {
       const wrapper = mountComponent({ ...baseObservation, diseaseSymptoms: false })
 
       expect(wrapper.text()).not.toContain("Disease symptoms present")
+    })
+  })
+
+  describe("watered", () => {
+    it("shows Watered badge when watered is true", () => {
+      const wrapper = mountComponent({ ...baseObservation, watered: true })
+
+      expect(wrapper.text()).toContain("Watered")
+    })
+
+    it("hides Watered badge when watered is false", () => {
+      const wrapper = mountComponent({ ...baseObservation, watered: false })
+
+      const badges = wrapper.findAll('[data-test="badge"]')
+      expect(badges.every((b) => b.text() !== "Watered")).toBe(true)
     })
   })
 
