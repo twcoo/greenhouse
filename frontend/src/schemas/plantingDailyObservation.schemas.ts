@@ -11,6 +11,7 @@ export const plantingDailyObservationSchema = z.object({
     error: "Pest pressure is required",
   }),
   diseaseSymptoms: z.boolean(),
+  watered: z.boolean(),
   heightCm: optionalDecimal(),
   leafCount: z.preprocess(
     (v) => (v === "" ? undefined : v),
