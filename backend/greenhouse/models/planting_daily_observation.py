@@ -60,6 +60,7 @@ class PlantingDailyObservation(models.Model):
         max_length=20, choices=PEST_PRESSURE_CHOICES, default="NONE"
     )
     disease_symptoms = models.BooleanField(default=False)
+    watered = models.BooleanField(default=False)
 
     notes = models.TextField(blank=True)
     image = models.ImageField(upload_to="observations/", null=True, blank=True)
