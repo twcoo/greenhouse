@@ -11,6 +11,7 @@ const mockPlanting: Planting = {
   cropName: "Tomato",
   variety: 1,
   varietyName: "Sun Gold",
+  currentLocation: "Greenhouse A",
   // Use a midday UTC date to avoid timezone edge cases in formatted output
   createdAt: "2024-06-15T12:00:00Z",
 }
@@ -48,6 +49,17 @@ describe("PlantingColumns", () => {
     const text = renderCell("createdAt").text()
     expect(text).toContain("2024")
     expect(text).not.toBe(mockPlanting.createdAt)
+  })
+
+  it("currentLocation column renders the location name", () => {
+    expect(renderCell("currentLocation").text()).toBe("Greenhouse A")
+  })
+
+  it("currentLocation column renders dash when null", () => {
+    const original = mockPlanting.currentLocation
+    mockPlanting.currentLocation = null
+    expect(renderCell("currentLocation").text()).toBe("—")
+    mockPlanting.currentLocation = original
   })
 
   it("actions column cell type is PlantingTableActions", () => {
