@@ -2,8 +2,11 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ..models import Planting
-from .commons.factories import (CropFactory, PlantingFactory, UserFactory,
+from ..models import Planting, PlantingLocationStatus
+from .commons.factories import (CropFactory, PlantingFactory,
+                                PlantingLocationAssignmentFactory,
+                                PlantingLocationFactory,
+                                PlantingLocationStatusFactory, UserFactory,
                                 VarietyFactory)
 from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixin
 
@@ -533,3 +536,26 @@ class PlantingDeleteApiViewTests(
         self.assertEqual(response_status, "error")
         self.assertIsNone(data)
         self.assertEqual(message, "Resource not found.")
+
+    def test_delete_planting_sets_location_available(self):
+        self.authenticate()
+
+        location = PlantingLocationFactory(user=self.user, location_type="POT")
+        PlantingLocationAssignmentFactory(
+            planting=self.planting,
+            planting_location=location,
+            end_date=None,
+        )
+        PlantingLocationStatusFactory(
+            planting_location=location, status="IN_USE"
+        )
+
+        self.client.delete(self.url)
+
+        latest_status = (
+            PlantingLocationStatus.objects.filter(planting_location=location)
+            .order_by("-pk")
+            .first()
+        )
+        self.assertIsNotNone(latest_status)
+        self.assertEqual(latest_status.status, "AVAILABLE")
