@@ -48,6 +48,7 @@ const baseInitialState: PlantingDailyObservationForm = {
   healthStatus: "FAIR",
   pestPressure: "LOW",
   diseaseSymptoms: false,
+  watered: false,
   heightCm: 20,
   leafCount: 5,
   temperatureC: undefined,
@@ -96,7 +97,7 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
     it("reflects diseaseSymptoms = false from observationFormInitialState", () => {
       const wrapper = mountComponent()
 
-      const checkbox = wrapper.find('input[type="checkbox"]').element as HTMLInputElement
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[0].element as HTMLInputElement
       expect(checkbox.checked).toBe(false)
     })
 
@@ -105,7 +106,23 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
         observationFormInitialState: { ...baseInitialState, diseaseSymptoms: true },
       })
 
-      const checkbox = wrapper.find('input[type="checkbox"]').element as HTMLInputElement
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[0].element as HTMLInputElement
+      expect(checkbox.checked).toBe(true)
+    })
+
+    it("reflects watered = false from observationFormInitialState", () => {
+      const wrapper = mountComponent()
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[1].element as HTMLInputElement
+      expect(checkbox.checked).toBe(false)
+    })
+
+    it("reflects watered = true from observationFormInitialState", () => {
+      const wrapper = mountComponent({
+        observationFormInitialState: { ...baseInitialState, watered: true },
+      })
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[1].element as HTMLInputElement
       expect(checkbox.checked).toBe(true)
     })
 
@@ -133,11 +150,21 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
     it("emits submit with diseaseSymptoms = true when toggled on", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.find('input[type="checkbox"]').setValue(true)
+      await wrapper.findAll('input[type="checkbox"]')[0].setValue(true)
       await wrapper.find("form").trigger("submit.prevent")
 
       const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
       expect(payload.diseaseSymptoms).toBe(true)
+    })
+
+    it("emits submit with watered = true when toggled on", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[1].setValue(true)
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
+      expect(payload.watered).toBe(true)
     })
 
     it("emits submit with updated notes", async () => {

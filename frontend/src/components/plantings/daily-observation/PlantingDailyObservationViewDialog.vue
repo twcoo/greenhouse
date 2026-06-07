@@ -67,6 +67,12 @@ const closePreview = (): void => {
           <span v-if="observation.diseaseSymptoms" class="text-sm text-destructive">
             · Disease symptoms present
           </span>
+          <Badge
+            v-if="observation.watered"
+            variant="secondary"
+            class="bg-blue-500 text-white dark:bg-blue-600"
+            >Watered
+          </Badge>
         </div>
 
         <!-- Detail grid -->

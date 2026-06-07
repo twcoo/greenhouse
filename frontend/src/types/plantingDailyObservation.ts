@@ -16,6 +16,7 @@ export interface PlantingDailyObservation {
   healthStatus: HealthStatus
   pestPressure: PestPressure
   diseaseSymptoms: boolean
+  watered: boolean
   notes: string
   image: string | null
   createdAt: string
@@ -34,6 +35,7 @@ export interface PlantingDailyObservationPayload {
   healthStatus: HealthStatus
   pestPressure: PestPressure
   diseaseSymptoms: boolean
+  watered: boolean
   notes?: string
   image?: File
 }

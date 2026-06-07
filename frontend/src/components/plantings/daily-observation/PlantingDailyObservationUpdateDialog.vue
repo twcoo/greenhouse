@@ -155,6 +155,12 @@ watch(
               <FieldLabel for="diseaseSymptoms" class="mb-0">Disease symptoms present</FieldLabel>
             </div>
           </Field>
+          <Field>
+            <div class="flex items-center gap-2">
+              <Checkbox id="watered" v-model="form.watered" />
+              <FieldLabel for="watered" class="mb-0">Watered</FieldLabel>
+            </div>
+          </Field>
 
           <!-- Growth -->
           <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">

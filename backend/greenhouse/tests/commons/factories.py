@@ -100,6 +100,7 @@ class PlantingDailyObservationFactory(DjangoModelFactory):
     health_status = "GOOD"
     pest_pressure = "NONE"
     disease_symptoms = False
+    watered = False
     notes = ""
     image = None
 
