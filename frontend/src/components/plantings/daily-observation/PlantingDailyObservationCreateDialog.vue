@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from "vue"
+import { computed, reactive, ref, useTemplateRef, watch } from "vue"
 import { getFileFromEvent } from "@/utils/formData"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { FieldGroup, Field, FieldLabel, FieldError } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
-import { IconLoader2 } from "@tabler/icons-vue"
+import { IconLoader2, IconX } from "@tabler/icons-vue"
 import {
   plantingDailyObservationSchema,
   type PlantingDailyObservationForm,
@@ -60,14 +60,28 @@ const formInitialState: PlantingDailyObservationForm = {
 
 const form = reactive<PlantingDailyObservationForm>({ ...formInitialState })
 const errors = ref<Record<string, string>>({})
+const fileInputRef = useTemplateRef<HTMLInputElement>("fileInputRef")
+
+const imageLabel = computed(() => (form.image instanceof File ? form.image.name : "No image"))
+
+const showRemoveImageButton = computed(() => form.image instanceof File)
 
 const resetForm = (): void => {
   Object.assign(form, formInitialState)
   errors.value = {}
 }
 
+const triggerFileInput = (): void => {
+  fileInputRef.value?.click()
+}
+
 const handleImageChange = (event: Event): void => {
   form.image = getFileFromEvent(event)
+}
+
+const handleRemoveImage = (): void => {
+  form.image = undefined
+  if (fileInputRef.value) fileInputRef.value.value = ""
 }
 
 const handleSubmit = (): void => {
@@ -90,15 +104,16 @@ const handleSubmit = (): void => {
 watch(
   () => isCreateSuccess,
   (success) => {
-    if (success) {
-      open.value = false
-      resetForm()
-    }
+    if (success) open.value = false
   },
 )
 
 watch(open, (isOpen) => {
-  if (!isOpen) resetForm()
+  if (isOpen) {
+    resetForm()
+  } else {
+    if (fileInputRef.value) fileInputRef.value.value = ""
+  }
 })
 </script>
 
@@ -275,8 +290,32 @@ watch(open, (isOpen) => {
             </FieldError>
           </Field>
           <Field>
-            <FieldLabel for="image">Image (optional)</FieldLabel>
-            <Input id="image" type="file" accept="image/*" @change="handleImageChange" />
+            <FieldLabel>Image (optional)</FieldLabel>
+            <div
+              class="flex items-center border rounded-md overflow-hidden cursor-pointer"
+              data-test="image-input-area"
+              @click="triggerFileInput"
+            >
+              <span class="flex-1 px-3 py-2 text-sm truncate text-muted-foreground">
+                {{ imageLabel }}
+              </span>
+              <button
+                v-if="showRemoveImageButton"
+                type="button"
+                data-test="remove-image-button"
+                class="px-2 py-2 hover:bg-muted"
+                @click.stop="handleRemoveImage"
+              >
+                <IconX :size="14" />
+              </button>
+            </div>
+            <input
+              ref="fileInputRef"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="handleImageChange"
+            />
             <FieldError data-test="imageError" v-if="errors.image">
               {{ errors.image }}
             </FieldError>
