@@ -42,6 +42,7 @@ const stubs = {
     emits: ["click"],
   },
   IconLoader2: { template: "<span />" },
+  IconX: { template: "<span />" },
 }
 
 const baseInitialState: PlantingDailyObservationForm = {
@@ -279,6 +280,105 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('[data-test="healthStatusError"]').exists()).toBe(false)
+    })
+  })
+
+  describe("image management", () => {
+    it("imageLabel shows 'No image' when no currentImage and no file selected", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find('[data-test="image-input-area"]').text()).toContain("No image")
+    })
+
+    it("imageLabel shows filename from currentImage when no file selected", () => {
+      const wrapper = mountComponent({
+        currentImage: "http://example.com/media/observations/photo.png",
+      })
+
+      expect(wrapper.find('[data-test="image-input-area"]').text()).toContain("photo.png")
+    })
+
+    it("imageLabel shows 'No image' when currentImage present but image is null (removed)", async () => {
+      const wrapper = mountComponent({
+        currentImage: "http://example.com/media/observations/photo.png",
+      })
+
+      await wrapper.find('[data-test="remove-image-button"]').trigger("click")
+
+      expect(wrapper.find('[data-test="image-input-area"]').text()).toContain("No image")
+    })
+
+    it("remove button is visible when currentImage is set and no file selected", () => {
+      const wrapper = mountComponent({
+        currentImage: "http://example.com/media/observations/photo.png",
+      })
+
+      expect(wrapper.find('[data-test="remove-image-button"]').exists()).toBe(true)
+    })
+
+    it("remove button is not visible when no currentImage and no file selected", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find('[data-test="remove-image-button"]').exists()).toBe(false)
+    })
+
+    it("clicking remove button sets image to null and shows hint text", async () => {
+      const wrapper = mountComponent({
+        currentImage: "http://example.com/media/observations/photo.png",
+      })
+
+      await wrapper.find('[data-test="remove-image-button"]').trigger("click")
+
+      const hint = wrapper.find('[data-test="image-removal-hint"]')
+      expect(hint.exists()).toBe(true)
+      expect(hint.text()).toContain("Image will be removed on save")
+    })
+
+    it("hint text not shown when image is not null", () => {
+      const wrapper = mountComponent({
+        currentImage: "http://example.com/media/observations/photo.png",
+      })
+
+      const hint = wrapper.find('[data-test="image-removal-hint"]')
+      expect(hint.exists()).toBe(false)
+    })
+
+    it("emits submit with image: null when image was removed", async () => {
+      const wrapper = mountComponent({
+        currentImage: "http://example.com/media/observations/photo.png",
+      })
+
+      await wrapper.find('[data-test="remove-image-button"]').trigger("click")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
+      expect(payload.image).toBeNull()
+    })
+
+    it("emits submit with image: undefined when no image was set or touched", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
+      expect(payload.image).toBeUndefined()
+    })
+
+    it("resets image state when dialog is reopened", async () => {
+      const wrapper = mountComponent({
+        currentImage: "http://example.com/media/observations/photo.png",
+      })
+
+      await wrapper.find('[data-test="remove-image-button"]').trigger("click")
+      expect(wrapper.find('[data-test="image-removal-hint"]').exists()).toBe(true)
+
+      await wrapper.setProps({ open: false })
+      await wrapper.vm.$nextTick()
+      await wrapper.setProps({ open: true })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('[data-test="image-removal-hint"]').exists()).toBe(false)
+      expect(wrapper.find('[data-test="image-input-area"]').text()).toContain("photo.png")
     })
   })
 

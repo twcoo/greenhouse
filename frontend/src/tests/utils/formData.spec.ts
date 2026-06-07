@@ -35,10 +35,10 @@ describe("toFormData", () => {
     expect(result.get("height_cm")).toBeNull()
   })
 
-  it("skips null values", () => {
+  it("sends empty string for null values", () => {
     const result = toFormData({ heightCm: null })
 
-    expect(result.get("height_cm")).toBeNull()
+    expect(result.get("height_cm")).toBe("")
   })
 
   it("skips undefined values", () => {
@@ -68,7 +68,7 @@ describe("toFormData", () => {
     expect(result.get("health_status")).toBe("GOOD")
     expect(result.get("leaf_count")).toBe("5")
     expect(result.get("disease_symptoms")).toBe("false")
-    expect(result.get("height_cm")).toBeNull()
+    expect(result.get("height_cm")).toBe("")
     expect(result.get("notes")).toBeNull()
     expect(result.get("image")).toBe(file)
   })
