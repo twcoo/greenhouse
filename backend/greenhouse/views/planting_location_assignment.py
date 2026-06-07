@@ -200,12 +200,7 @@ class PlantingLocationAssignmentDetailApiView(
             )
 
     def perform_destroy(self, instance):
-        location = instance.planting_location
         super().perform_destroy(instance)
-        if location.location_type in ["NURSERYPOT", "POT"]:
-            PlantingLocationStatus.objects.create(
-                planting_location=location, status="AVAILABLE"
-            )
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.retrieve(request, *args, **kwargs)
