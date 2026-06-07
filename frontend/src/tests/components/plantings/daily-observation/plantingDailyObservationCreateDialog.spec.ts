@@ -41,6 +41,7 @@ const stubs = {
     emits: ["click"],
   },
   IconLoader2: { template: "<span />" },
+  IconX: { template: "<span />" },
 }
 
 const mountComponent = (props = {}) =>
@@ -85,10 +86,10 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(wrapper.find("#notes").exists()).toBe(true)
     })
 
-    it("renders the image file input", () => {
+    it("renders the image input area", () => {
       const wrapper = mountComponent()
 
-      expect(wrapper.find("#image").exists()).toBe(true)
+      expect(wrapper.find('[data-test="image-input-area"]').exists()).toBe(true)
     })
 
     it("shows Saving... on the submit button when isLoading is true", () => {
@@ -190,9 +191,9 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       const wrapper = mountComponent()
 
       const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
-      const input = wrapper.find("#image").element as HTMLInputElement
+      const input = wrapper.find('input[type="file"]').element as HTMLInputElement
       Object.defineProperty(input, "files", { value: [file], configurable: true })
-      await wrapper.find("#image").trigger("change")
+      await wrapper.find('input[type="file"]').trigger("change")
       await wrapper.find("form").trigger("submit.prevent")
 
       const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
@@ -262,6 +263,87 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       const openEvents = wrapper.emitted("update:open")
       expect(openEvents).toBeDefined()
       expect(openEvents?.[openEvents.length - 1][0]).toBe(false)
+    })
+  })
+
+  describe("image management", () => {
+    it("shows 'No image' when no file is selected", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find('[data-test="image-input-area"]').text()).toContain("No image")
+    })
+
+    it("remove button is not visible when no file is selected", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find('[data-test="remove-image-button"]').exists()).toBe(false)
+    })
+
+    it("shows filename in input area after file is selected", async () => {
+      const wrapper = mountComponent()
+
+      const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
+      const input = wrapper.find('input[type="file"]').element as HTMLInputElement
+      Object.defineProperty(input, "files", { value: [file], configurable: true })
+      await wrapper.find('input[type="file"]').trigger("change")
+
+      expect(wrapper.find('[data-test="image-input-area"]').text()).toContain("photo.jpg")
+    })
+
+    it("shows remove button after file is selected", async () => {
+      const wrapper = mountComponent()
+
+      const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
+      const input = wrapper.find('input[type="file"]').element as HTMLInputElement
+      Object.defineProperty(input, "files", { value: [file], configurable: true })
+      await wrapper.find('input[type="file"]').trigger("change")
+
+      expect(wrapper.find('[data-test="remove-image-button"]').exists()).toBe(true)
+    })
+
+    it("clears file and shows 'No image' after remove button is clicked", async () => {
+      const wrapper = mountComponent()
+
+      const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
+      const input = wrapper.find('input[type="file"]').element as HTMLInputElement
+      Object.defineProperty(input, "files", { value: [file], configurable: true })
+      await wrapper.find('input[type="file"]').trigger("change")
+      await wrapper.find('[data-test="remove-image-button"]').trigger("click")
+
+      expect(wrapper.find('[data-test="image-input-area"]').text()).toContain("No image")
+      expect(wrapper.find('[data-test="remove-image-button"]').exists()).toBe(false)
+    })
+
+    it("emits submit with image: undefined after file is removed", async () => {
+      const wrapper = mountComponent()
+
+      const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
+      const input = wrapper.find('input[type="file"]').element as HTMLInputElement
+      Object.defineProperty(input, "files", { value: [file], configurable: true })
+      await wrapper.find('input[type="file"]').trigger("change")
+      await wrapper.find('[data-test="remove-image-button"]').trigger("click")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.image).toBeUndefined()
+    })
+
+    it("resets image state when dialog reopens", async () => {
+      const wrapper = mountComponent()
+
+      const file = new File(["content"], "photo.jpg", { type: "image/jpeg" })
+      const input = wrapper.find('input[type="file"]').element as HTMLInputElement
+      Object.defineProperty(input, "files", { value: [file], configurable: true })
+      await wrapper.find('input[type="file"]').trigger("change")
+      expect(wrapper.find('[data-test="image-input-area"]').text()).toContain("photo.jpg")
+
+      await wrapper.setProps({ open: false })
+      await wrapper.vm.$nextTick()
+      await wrapper.setProps({ open: true })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('[data-test="image-input-area"]').text()).toContain("No image")
+      expect(wrapper.find('[data-test="remove-image-button"]').exists()).toBe(false)
     })
   })
 

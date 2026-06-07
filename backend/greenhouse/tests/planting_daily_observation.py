@@ -460,3 +460,94 @@ class PlantingDailyObservationDetailApiViewTests(
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class PlantingDailyObservationImageClearTests(
+    CreateTestImageMixin,
+    RequiredAuthTestsMixin,
+    ResponseUtilsMixin,
+    APITestCase,
+):
+    http_method = "PUT"
+
+    def setUp(self):
+        super().setUp()
+        self.planting = PlantingFactory(user=self.user)
+        self.observation = PlantingDailyObservationFactory(
+            planting=self.planting, health_status="GOOD"
+        )
+        self.url = reverse(
+            "planting-daily-observation-detail",
+            args=[self.planting.id, self.observation.id],
+        )
+
+    def _attach_image(self):
+        """Upload an image to the observation and return the updated instance."""
+        self.authenticate()
+        image = self.create_test_image(name="obs_img")
+        self.client.put(
+            self.url,
+            {"health_status": "GOOD", "image": image},
+            format="multipart",
+        )
+        self.observation.refresh_from_db()
+
+    def test_clear_image_sets_image_to_null_in_response(self):
+        self._attach_image()
+        self.assertTrue(self.observation.image)
+
+        response = self.client.put(
+            self.url,
+            {"health_status": "GOOD", "image": ""},
+            format="multipart",
+        )
+
+        response_status, response_data, message = self.get_response_data(
+            response
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_status, "success")
+        self.assertIsNone(response_data["image"])
+        self.assertIsNone(message)
+
+    def test_clear_image_deletes_file_from_storage(self):
+        self._attach_image()
+        image_path = self.observation.image.path
+        self.assertTrue(self.observation.image.storage.exists(image_path))
+
+        self.client.put(
+            self.url,
+            {"health_status": "GOOD", "image": ""},
+            format="multipart",
+        )
+
+        self.assertFalse(self.observation.image.storage.exists(image_path))
+
+    def test_update_without_image_key_preserves_existing_image(self):
+        self._attach_image()
+        original_image_name = self.observation.image.name
+
+        self.client.put(
+            self.url,
+            {"health_status": "FAIR"},
+            format="multipart",
+        )
+
+        self.observation.refresh_from_db()
+        self.assertEqual(self.observation.image.name, original_image_name)
+
+    def test_clear_image_when_no_image_returns_200(self):
+        self.authenticate()
+        self.assertFalse(self.observation.image)
+
+        response = self.client.put(
+            self.url,
+            {"health_status": "GOOD", "image": ""},
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        _, response_data, _ = self.get_response_data(response)
+        self.assertIsNone(response_data["image"])

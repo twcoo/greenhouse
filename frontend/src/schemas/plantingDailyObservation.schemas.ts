@@ -24,7 +24,7 @@ export const plantingDailyObservationSchema = z.object({
   soilPh: optionalDecimal(),
   ecMsCm: optionalDecimal(),
   notes: z.string().optional(),
-  image: z.instanceof(File).optional(),
+  image: z.instanceof(File).nullable().optional(),
 })
 
 export type PlantingDailyObservationForm = z.infer<typeof plantingDailyObservationSchema>

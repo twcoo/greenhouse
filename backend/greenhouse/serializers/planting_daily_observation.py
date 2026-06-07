@@ -129,9 +129,18 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
         return None
 
     def validate_image(self, value):
-        if value is None:
-            return value
+        if value in (None, ""):
+            return None
         return validate_image_file(value)
+
+    def update(self, instance, validated_data):
+        if (
+            "image" in validated_data
+            and validated_data["image"] is None
+            and instance.image
+        ):
+            instance.image.delete(save=False)
+        return super().update(instance, validated_data)
 
     class Meta:
         model = PlantingDailyObservation
