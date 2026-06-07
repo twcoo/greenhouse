@@ -27,6 +27,13 @@ export const columns: ColumnDef<Planting>[] = [
     enableSorting: true,
   },
   {
+    id: "currentLocation",
+    accessorKey: "currentLocation",
+    header: "Location",
+    cell: ({ row }) => h("div", row.getValue("currentLocation") ?? "—"),
+    enableSorting: false,
+  },
+  {
     id: "actions",
     enableHiding: false,
     cell: ({ row, table }) => h(PlantingTableActions, { row, table }),

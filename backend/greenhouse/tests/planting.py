@@ -1,9 +1,13 @@
+from datetime import date
+
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from ..models import Planting
-from .commons.factories import (CropFactory, PlantingFactory, UserFactory,
+from .commons.factories import (CropFactory, PlantingFactory,
+                                PlantingLocationAssignmentFactory,
+                                PlantingLocationFactory, UserFactory,
                                 VarietyFactory)
 from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixin
 
@@ -58,6 +62,7 @@ class PlantingListApiViewTests(
         self.assertIsNone(data["next"])
         self.assertIsNone(data["previous"])
         self.assertIsNone(message)
+        self.assertIsNone(plantings[0]["current_location"])
         self.validate_no_cross_user_data_leakage(
             user_data=plantings,
             another_user_data=self.another_user_plantings,
@@ -155,6 +160,7 @@ class PlantingCreateApiViewTests(
         self.assertEqual(data["crop_name"], self.crop.name)
         self.assertEqual(data["variety"], self.variety.id)
         self.assertEqual(data["variety_name"], self.variety.name)
+        self.assertIsNone(data["current_location"])
         self.assertIsNotNone(data["created_at"])
         self.assertTrue(
             Planting.objects.filter(
@@ -278,6 +284,7 @@ class PlantingGetApiViewTests(
         self.assertEqual(data["crop_name"], self.crop.name)
         self.assertEqual(data["variety"], self.variety.id)
         self.assertEqual(data["variety_name"], self.variety.name)
+        self.assertIsNone(data["current_location"])
         self.assertIsNotNone(data["created_at"])
         self.assertIsNone(message)
 
@@ -533,3 +540,68 @@ class PlantingDeleteApiViewTests(
         self.assertEqual(response_status, "error")
         self.assertIsNone(data)
         self.assertEqual(message, "Resource not found.")
+
+
+class PlantingCurrentLocationTests(ResponseUtilsMixin, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = UserFactory()
+        self.url = reverse("planting-list-create")
+        self.crop = CropFactory(user=self.user)
+        self.variety = VarietyFactory(crop=self.crop)
+
+    def authenticate(self):
+        self.client.force_authenticate(user=self.user)
+
+    def test_current_location_is_null_with_no_assignment(self):
+        self.authenticate()
+
+        PlantingFactory(user=self.user, crop=self.crop, variety=self.variety)
+
+        response = self.client.get(self.url)
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNone(plantings[0]["current_location"])
+
+    def test_current_location_returns_name_when_active_assignment(self):
+        self.authenticate()
+
+        planting = PlantingFactory(
+            user=self.user, crop=self.crop, variety=self.variety
+        )
+        location = PlantingLocationFactory(user=self.user)
+        PlantingLocationAssignmentFactory(
+            planting=planting,
+            planting_location=location,
+            end_date=None,
+        )
+
+        response = self.client.get(self.url)
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(plantings[0]["current_location"], location.name)
+
+    def test_current_location_is_null_when_assignment_closed(self):
+        self.authenticate()
+
+        planting = PlantingFactory(
+            user=self.user, crop=self.crop, variety=self.variety
+        )
+        location = PlantingLocationFactory(user=self.user)
+        PlantingLocationAssignmentFactory(
+            planting=planting,
+            planting_location=location,
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 6, 1),
+        )
+
+        response = self.client.get(self.url)
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNone(plantings[0]["current_location"])
