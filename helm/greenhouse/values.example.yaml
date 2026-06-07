@@ -16,6 +16,17 @@ backend:
   service:
     type: ClusterIP
     port: 8000
+    mediaPort: 9000
+
+  mediaNginx:
+    image: nginxinc/nginx-unprivileged:alpine
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
 
   resources:
     requests:
@@ -125,6 +136,7 @@ httpRoutes:
               type: PathPrefix
               value: /media/
         backend: backend
+        port: 9000
       - matches:
           - path:
               type: PathPrefix

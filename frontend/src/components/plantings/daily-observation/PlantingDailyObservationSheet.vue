@@ -126,6 +126,7 @@ const toObservationForm = (obs: {
   healthStatus: string
   pestPressure: string
   diseaseSymptoms: boolean
+  watered: boolean
   heightCm: string | null
   leafCount: number | null
   temperatureC: string | null
@@ -139,6 +140,7 @@ const toObservationForm = (obs: {
   healthStatus: obs.healthStatus as HealthStatus,
   pestPressure: obs.pestPressure as "NONE" | "LOW" | "MEDIUM" | "HIGH",
   diseaseSymptoms: obs.diseaseSymptoms,
+  watered: obs.watered,
   heightCm: obs.heightCm !== null ? Number(obs.heightCm) : undefined,
   leafCount: obs.leafCount ?? undefined,
   temperatureC: obs.temperatureC !== null ? Number(obs.temperatureC) : undefined,

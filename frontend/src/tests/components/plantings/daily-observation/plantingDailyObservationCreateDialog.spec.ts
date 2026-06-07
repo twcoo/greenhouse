@@ -73,6 +73,12 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(wrapper.find('input[type="checkbox"]').exists()).toBe(true)
     })
 
+    it("renders the watered checkbox", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(2)
+    })
+
     it("renders the notes textarea", () => {
       const wrapper = mountComponent()
 
@@ -110,7 +116,14 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
     it("defaults diseaseSymptoms checkbox to unchecked", () => {
       const wrapper = mountComponent()
 
-      const checkbox = wrapper.find('input[type="checkbox"]').element as HTMLInputElement
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[0].element as HTMLInputElement
+      expect(checkbox.checked).toBe(false)
+    })
+
+    it("defaults watered checkbox to unchecked", () => {
+      const wrapper = mountComponent()
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[1].element as HTMLInputElement
       expect(checkbox.checked).toBe(false)
     })
   })
@@ -128,6 +141,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
         healthStatus: "GOOD",
         pestPressure: "NONE",
         diseaseSymptoms: false,
+        watered: false,
       })
     })
 
@@ -145,11 +159,21 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
     it("emits submit with diseaseSymptoms = true when checkbox is checked", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.find('input[type="checkbox"]').setValue(true)
+      await wrapper.findAll('input[type="checkbox"]')[0].setValue(true)
       await wrapper.find("form").trigger("submit.prevent")
 
       const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
       expect(payload.diseaseSymptoms).toBe(true)
+    })
+
+    it("emits submit with watered = true when watered checkbox is checked", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[1].setValue(true)
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.watered).toBe(true)
     })
 
     it("emits submit with notes when provided", async () => {

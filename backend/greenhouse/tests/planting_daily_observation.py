@@ -165,6 +165,7 @@ class PlantingDailyObservationCreateApiViewTests(
             "health_status": "FAIR",
             "pest_pressure": "LOW",
             "disease_symptoms": False,
+            "watered": True,
             "height_cm": "15.50",
             "leaf_count": 10,
             "temperature_c": "22.5",
@@ -186,6 +187,22 @@ class PlantingDailyObservationCreateApiViewTests(
         self.assertEqual(response_data["health_status"], "FAIR")
         self.assertEqual(response_data["leaf_count"], 10)
         self.assertEqual(response_data["notes"], "Some notes.")
+        self.assertEqual(response_data["watered"], True)
+        self.assertIsNone(message)
+
+    def test_create_observation_watered_defaults_to_false(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        response_status, response_data, message = self.get_response_data(
+            response
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_status, "success")
+        self.assertFalse(response_data["watered"])
         self.assertIsNone(message)
 
     def test_create_observation_invalid_health_status(self):
@@ -282,7 +299,11 @@ class PlantingDailyObservationDetailApiViewTests(
     def test_update_observation_success(self):
         self.authenticate()
 
-        data = {"health_status": "FAIR", "notes": "Updated notes."}
+        data = {
+            "health_status": "FAIR",
+            "notes": "Updated notes.",
+            "watered": True,
+        }
         response = self.client.put(self.url, data, format="multipart")
 
         response_status, response_data, message = self.get_response_data(
@@ -293,6 +314,7 @@ class PlantingDailyObservationDetailApiViewTests(
         self.assertEqual(response_status, "success")
         self.assertEqual(response_data["health_status"], "FAIR")
         self.assertEqual(response_data["notes"], "Updated notes.")
+        self.assertEqual(response_data["watered"], True)
         self.assertIsNone(message)
 
     def test_update_observation_invalid_health_status(self):

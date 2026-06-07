@@ -27,12 +27,22 @@ class PlantingSerializer(serializers.ModelSerializer):
     variety_name = serializers.SerializerMethodField(
         help_text="Name of the variety being planted.",
     )
+    current_location = serializers.SerializerMethodField(
+        help_text=("Name of the currently active planting location, if any."),
+    )
 
     def get_crop_name(self, obj: Planting) -> str:
         return str(obj.crop.name)
 
     def get_variety_name(self, obj: Planting) -> str:
         return str(obj.variety.name)
+
+    def get_current_location(self, obj: Planting) -> str | None:
+        active = next(
+            (a for a in obj.locations.all() if a.end_date is None),
+            None,
+        )
+        return str(active.planting_location.name) if active else None
 
     def get_fields(self):
         fields = super().get_fields()
@@ -63,5 +73,6 @@ class PlantingSerializer(serializers.ModelSerializer):
             "crop_name",
             "variety",
             "variety_name",
+            "current_location",
             "created_at",
         )

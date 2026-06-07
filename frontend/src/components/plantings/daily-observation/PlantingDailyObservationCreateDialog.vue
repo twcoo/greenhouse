@@ -45,6 +45,7 @@ const formInitialState: PlantingDailyObservationForm = {
   healthStatus: "GOOD",
   pestPressure: "NONE",
   diseaseSymptoms: false,
+  watered: false,
   heightCm: undefined,
   leafCount: undefined,
   temperatureC: undefined,
@@ -157,6 +158,12 @@ watch(open, (isOpen) => {
             <div class="flex items-center gap-2">
               <Checkbox id="diseaseSymptoms" v-model="form.diseaseSymptoms" />
               <FieldLabel for="diseaseSymptoms" class="mb-0">Disease symptoms present</FieldLabel>
+            </div>
+          </Field>
+          <Field>
+            <div class="flex items-center gap-2">
+              <Checkbox id="watered" v-model="form.watered" />
+              <FieldLabel for="watered" class="mb-0">Watered</FieldLabel>
             </div>
           </Field>
 

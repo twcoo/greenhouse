@@ -32,6 +32,7 @@ export function usePlantingLocationAssignments(
       plantingLocationAssignmentService.create(plantingId.value, payload),
     onSuccess: (): void => {
       queryClient.invalidateQueries({ queryKey: ["planting-location-assignments", plantingId] })
+      queryClient.invalidateQueries({ queryKey: ["plantings"] })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err
@@ -48,6 +49,7 @@ export function usePlantingLocationAssignments(
     }): Promise<void> => plantingLocationAssignmentService.update(plantingId.value, id, payload),
     onSuccess: (): void => {
       queryClient.invalidateQueries({ queryKey: ["planting-location-assignments", plantingId] })
+      queryClient.invalidateQueries({ queryKey: ["plantings"] })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err
@@ -59,6 +61,7 @@ export function usePlantingLocationAssignments(
       plantingLocationAssignmentService.delete(plantingId.value, id),
     onSuccess: (): void => {
       queryClient.invalidateQueries({ queryKey: ["planting-location-assignments", plantingId] })
+      queryClient.invalidateQueries({ queryKey: ["plantings"] })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err

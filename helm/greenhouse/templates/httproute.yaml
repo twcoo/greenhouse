@@ -28,7 +28,7 @@ spec:
       {{- if .backend }}
       backendRefs:
         - name: {{ include "greenhouse.fullname" $root }}-{{ .backend }}
-          port: {{ if eq .backend "backend" }}{{ $root.Values.backend.service.port }}{{ else }}{{ $root.Values.frontend.service.port }}{{ end }}
+          port: {{ if .port }}{{ .port }}{{ else if eq .backend "backend" }}{{ $root.Values.backend.service.port }}{{ else }}{{ $root.Values.frontend.service.port }}{{ end }}
           weight: 1
       {{- end }}
     {{- end }}

@@ -33,7 +33,7 @@ function mountComposable(plantingId = ref(1)) {
     { global: { plugins: [[VueQueryPlugin, { queryClient }]] } },
   )
 
-  return result
+  return { result, queryClient }
 }
 
 beforeEach(() => {
@@ -44,7 +44,7 @@ const payload = { plantingLocation: 2, startDate: "2024-01-01" }
 
 describe("usePlantingLocationAssignments", () => {
   it("returns expected API shape", () => {
-    const result = mountComposable()
+    const { result } = mountComposable()
 
     expect(result.assignments).toBeDefined()
     expect(result.isLoading).toBeDefined()
@@ -62,7 +62,7 @@ describe("usePlantingLocationAssignments", () => {
   })
 
   it("isLoading is false after query settles with no pending mutations", async () => {
-    const result = mountComposable()
+    const { result } = mountComposable()
     await flushPromises()
     expect(result.isLoading.value).toBe(false)
   })
@@ -82,7 +82,7 @@ describe("usePlantingLocationAssignments", () => {
   })
 
   it("createAssignment calls service.create with the plantingId and payload", async () => {
-    const result = mountComposable(ref(5))
+    const { result } = mountComposable(ref(5))
 
     await result.createAssignment(payload)
 
@@ -90,7 +90,7 @@ describe("usePlantingLocationAssignments", () => {
   })
 
   it("updateAssignment calls service.update with plantingId, id, and payload", async () => {
-    const result = mountComposable(ref(5))
+    const { result } = mountComposable(ref(5))
 
     await result.updateAssignment({ id: 3, payload })
 
@@ -98,10 +98,37 @@ describe("usePlantingLocationAssignments", () => {
   })
 
   it("deleteAssignment calls service.delete with plantingId and id", async () => {
-    const result = mountComposable(ref(5))
+    const { result } = mountComposable(ref(5))
 
     await result.deleteAssignment(3)
 
     expect(plantingLocationAssignmentService.delete).toHaveBeenCalledWith(5, 3)
+  })
+
+  it("createAssignment invalidates the plantings query", async () => {
+    const { result, queryClient } = mountComposable(ref(5))
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries")
+
+    await result.createAssignment(payload)
+
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["plantings"] })
+  })
+
+  it("updateAssignment invalidates the plantings query", async () => {
+    const { result, queryClient } = mountComposable(ref(5))
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries")
+
+    await result.updateAssignment({ id: 3, payload })
+
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["plantings"] })
+  })
+
+  it("deleteAssignment invalidates the plantings query", async () => {
+    const { result, queryClient } = mountComposable(ref(5))
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries")
+
+    await result.deleteAssignment(3)
+
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["plantings"] })
   })
 })

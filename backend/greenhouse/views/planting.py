@@ -62,7 +62,9 @@ class PlantingListApiView(
     serializer_class = PlantingSerializer
 
     def get_queryset(self):
-        return Planting.objects.filter(user=self.request.user)
+        return Planting.objects.filter(user=self.request.user).prefetch_related(
+            "locations__planting_location"
+        )
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -132,7 +134,9 @@ class PlantingDetailApiView(
     serializer_class = PlantingSerializer
 
     def get_queryset(self):
-        return Planting.objects.filter(user=self.request.user)
+        return Planting.objects.filter(user=self.request.user).prefetch_related(
+            "locations__planting_location"
+        )
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.retrieve(request, *args, **kwargs)

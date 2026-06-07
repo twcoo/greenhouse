@@ -316,6 +316,9 @@ make build-backend REGISTRY=your-registry IMAGE_TAG=v1.2.3 PLATFORM=linux/arm64
 | `backend.secret.*` | Sensitive env vars (Secret) |
 | `backend.persistence.size` | Media storage PVC size |
 | `backend.persistence.storageClassName` | Storage class (default: `longhorn`) |
+| `backend.service.mediaPort` | Port for the nginx media sidecar (default: `9000`) |
+| `backend.mediaNginx.image` | nginx sidecar image (default: `nginxinc/nginx-unprivileged:alpine`) |
+| `backend.mediaNginx.resources` | CPU/memory requests and limits for the nginx sidecar |
 | `frontend.image.repository` | Frontend image repository |
 | `frontend.config.API_URL` | Backend API base URL seen by the browser |
 | `postgresql.enabled` | Deploy bundled PostgreSQL subchart |
@@ -326,6 +329,10 @@ make build-backend REGISTRY=your-registry IMAGE_TAG=v1.2.3 PLATFORM=linux/arm64
 | `httproute.parentRef.namespace` | Gateway resource namespace |
 
 > `DB_HOST` is automatically set to `<release-name>-postgresql` when `postgresql.enabled=true` — do not set it manually.
+
+### Media serving
+
+In production (`DEBUG=False`), Django does not serve uploaded media files. The chart handles this with an **nginx sidecar** running inside the backend pod (`nginxinc/nginx-unprivileged:alpine`). It mounts the same media PVC (read-only) and serves `/media/` on port `9000`. The HTTPRoute routes `/media/` traffic directly to the nginx sidecar port — Django is not involved in media delivery.
 
 ---
 
