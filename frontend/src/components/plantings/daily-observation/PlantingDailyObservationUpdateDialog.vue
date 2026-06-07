@@ -321,7 +321,11 @@ watch(
               class="hidden"
               @change="handleImageChange"
             />
-            <p v-if="form.image === null" data-test="image-removal-hint" class="text-xs text-muted-foreground">
+            <p
+              v-if="form.image === null"
+              data-test="image-removal-hint"
+              class="text-xs text-muted-foreground"
+            >
               Image will be removed on save. Click above to add a new one.
             </p>
             <FieldError data-test="imageError" v-if="errors.image">
