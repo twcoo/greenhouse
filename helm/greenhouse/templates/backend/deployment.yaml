@@ -85,9 +85,47 @@ spec:
             - name: media
               mountPath: {{ .Values.backend.persistence.mountPath }}
           {{- end }}
+        - name: media-nginx
+          image: {{ .Values.backend.mediaNginx.image }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsUser: 101
+          ports:
+            - name: media
+              containerPort: 9000
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: media
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: media
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.backend.mediaNginx.resources | nindent 12 }}
+          {{- if .Values.backend.persistence.enabled }}
+          volumeMounts:
+            - name: media
+              mountPath: /backend/media
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          {{- end }}
       {{- if .Values.backend.persistence.enabled }}
       volumes:
         - name: media
           persistentVolumeClaim:
             claimName: {{ include "greenhouse.fullname" . }}-backend-media
+        - name: nginx-config
+          configMap:
+            name: {{ include "greenhouse.fullname" . }}-backend-nginx-config
       {{- end }}
