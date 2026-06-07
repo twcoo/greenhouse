@@ -37,5 +37,5 @@ export interface PlantingDailyObservationPayload {
   diseaseSymptoms: boolean
   watered: boolean
   notes?: string
-  image?: File
+  image?: File | null
 }

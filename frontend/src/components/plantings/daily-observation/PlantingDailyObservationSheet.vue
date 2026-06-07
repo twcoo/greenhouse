@@ -67,6 +67,7 @@ const openCreateDialog = ref<boolean>(false)
 const openUpdateDialog = ref<boolean>(false)
 const observationIdToUpdate = ref<number>(0)
 const observationUpdateFormState = ref<PlantingDailyObservationForm | null>(null)
+const currentImageToUpdate = ref<string | null>(null)
 
 // View dialog
 const openViewDialog = ref<boolean>(false)
@@ -81,9 +82,10 @@ const setViewDialog = (obs: PlantingDailyObservation): void => {
   openViewDialog.value = true
 }
 
-const setUpdateDialog = (id: number, form: PlantingDailyObservationForm): void => {
-  observationIdToUpdate.value = id
-  observationUpdateFormState.value = form
+const setUpdateDialog = (obs: PlantingDailyObservation): void => {
+  observationIdToUpdate.value = obs.id
+  observationUpdateFormState.value = toObservationForm(obs)
+  currentImageToUpdate.value = obs.image
   openUpdateDialog.value = true
 }
 
@@ -209,12 +211,7 @@ const hasObservations = computed(() => (observations.value?.results?.length ?? 0
                 <Button variant="ghost" size="icon" class="h-8 w-8" @click="setViewDialog(obs)">
                   <IconEye :size="14" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  class="h-8 w-8"
-                  @click="setUpdateDialog(obs.id, toObservationForm(obs))"
-                >
+                <Button variant="ghost" size="icon" class="h-8 w-8" @click="setUpdateDialog(obs)">
                   <IconPencil :size="14" />
                 </Button>
                 <Button
@@ -278,6 +275,7 @@ const hasObservations = computed(() => (observations.value?.results?.length ?? 0
     v-model:open="openUpdateDialog"
     :id="observationIdToUpdate"
     :observationFormInitialState="observationUpdateFormState"
+    :currentImage="currentImageToUpdate"
     :isLoading="isLoading"
     :isUpdateSuccess="isUpdateSuccess"
     @submit="handleUpdate"

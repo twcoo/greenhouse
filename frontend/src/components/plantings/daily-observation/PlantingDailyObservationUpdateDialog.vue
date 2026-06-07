@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from "vue"
+import { computed, reactive, ref, useTemplateRef, watch } from "vue"
 import { getFileFromEvent } from "@/utils/formData"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { FieldGroup, Field, FieldLabel, FieldError } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
-import { IconLoader2 } from "@tabler/icons-vue"
+import { IconLoader2, IconX } from "@tabler/icons-vue"
 import {
   plantingDailyObservationSchema,
   type PlantingDailyObservationForm,
@@ -32,11 +32,12 @@ import { AxiosError } from "axios"
 import { HEALTH_STATUS_OPTIONS, PEST_PRESSURE_OPTIONS } from "./constants"
 
 const open = defineModel<boolean>("open")
-const { id, observationFormInitialState, isLoading, isUpdateSuccess } = defineProps<{
+const { id, observationFormInitialState, isLoading, isUpdateSuccess, currentImage } = defineProps<{
   id: number
   observationFormInitialState: PlantingDailyObservationForm
   isLoading: boolean
   isUpdateSuccess: boolean
+  currentImage?: string | null
 }>()
 
 const emit = defineEmits<{
@@ -50,6 +51,7 @@ const emit = defineEmits<{
 
 const form = reactive<PlantingDailyObservationForm>({ ...observationFormInitialState })
 const errors = ref<Record<string, string>>({})
+const fileInputRef = useTemplateRef<HTMLInputElement>("fileInputRef")
 
 watch(
   () => observationFormInitialState,
@@ -60,8 +62,29 @@ watch(
   { deep: true },
 )
 
+const imageLabel = computed(() => {
+  if (form.image instanceof File) return form.image.name
+  if (currentImage && form.image !== null) return currentImage.split("/").pop()
+  return "No image"
+})
+
+const showRemoveImageButton = computed(
+  () =>
+    (!!currentImage && form.image !== null && !(form.image instanceof File)) ||
+    form.image instanceof File,
+)
+
+const triggerFileInput = (): void => {
+  fileInputRef.value?.click()
+}
+
 const handleImageChange = (event: Event): void => {
   form.image = getFileFromEvent(event)
+}
+
+const handleRemoveImage = (): void => {
+  form.image = currentImage ? null : undefined
+  if (fileInputRef.value) fileInputRef.value.value = ""
 }
 
 const handleSubmit = (): void => {
@@ -84,6 +107,8 @@ const handleSubmit = (): void => {
 
 watch(open, (isOpen) => {
   if (!isOpen) {
+    if (fileInputRef.value) fileInputRef.value.value = ""
+  } else {
     errors.value = {}
     Object.assign(form, observationFormInitialState)
   }
@@ -270,8 +295,35 @@ watch(
             </FieldError>
           </Field>
           <Field>
-            <FieldLabel for="image">Image (optional)</FieldLabel>
-            <Input id="image" type="file" accept="image/*" @change="handleImageChange" />
+            <FieldLabel>Image (optional)</FieldLabel>
+            <div
+              class="flex items-center border rounded-md overflow-hidden cursor-pointer"
+              data-test="image-input-area"
+              @click="triggerFileInput"
+            >
+              <span class="flex-1 px-3 py-2 text-sm truncate text-muted-foreground">
+                {{ imageLabel }}
+              </span>
+              <button
+                v-if="showRemoveImageButton"
+                type="button"
+                data-test="remove-image-button"
+                class="px-2 py-2 hover:bg-muted"
+                @click.stop="handleRemoveImage"
+              >
+                <IconX :size="14" />
+              </button>
+            </div>
+            <input
+              ref="fileInputRef"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="handleImageChange"
+            />
+            <p v-if="form.image === null" data-test="image-removal-hint" class="text-xs text-muted-foreground">
+              Image will be removed on save. Click above to add a new one.
+            </p>
             <FieldError data-test="imageError" v-if="errors.image">
               {{ errors.image }}
             </FieldError>
