@@ -1,11 +1,5 @@
 ## Linked issue
 
-Closes #
-
-## What changed
-
--
-
 ## Type of change
 
 - [ ] Bug fix
@@ -14,15 +8,9 @@ Closes #
 - [ ] Docs
 - [ ] Infra/CI
 
-## Backend checklist
+## What changed
 
-- [ ] `make lint-backend` passes
-- [ ] `make test-backend` passes
-
-## Frontend checklist
-
-- [ ] `make lint-frontend` passes
-- [ ] `make test-frontend` passes
+-
 
 ## Screenshots
 
