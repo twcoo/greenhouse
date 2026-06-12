@@ -222,3 +222,23 @@ PLANTING_LOCATION_ASSIGNMENT_ALREADY_ASSIGNED_EXAMPLE = OpenApiExample(
         },
     },
 )
+
+PLANTING_LOCATION_ASSIGNMENT_ACTIVE_EXISTS_EXAMPLE = OpenApiExample(
+    name="Active assignment exists",
+    summary="Planting has an active location assignment",
+    description=(
+        "Example response returned when updating an assignment's "
+        "start_date while the planting has another open-ended "
+        "assignment (no end date)."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "non_field_errors": [
+                "This planting already has an active location assignment."
+            ],
+        },
+    },
+)
