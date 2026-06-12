@@ -87,12 +87,19 @@ class PlantingLocationAssignmentSerializer(serializers.ModelSerializer):
             if self.instance:
                 qs = qs.exclude(pk=self.instance.pk)
 
-            # Two date ranges [A, B] and [C, D] overlap when A <= D and C <= B.
-            # open-ended ranges (end_date=None) are treated as extending to
-            # date.max so the same formula applies uniformly.
+            if qs.filter(end_date__isnull=True).exists():
+                raise serializers.ValidationError(
+                    {
+                        "non_field_errors": "This planting already has an active location assignment."
+                    }
+                )
+
+            # Find existing assignments that overlap with the new date range.
+            # An overlap occurs when an existing assignment starts before the new one
+            # ends, and ends after the new one starts (or is still open-ended).
             overlap_qs = qs.filter(
                 start_date__lte=(end_date or date.max)
-            ).filter(Q(end_date__isnull=True) | Q(end_date__gte=start_date))
+            ).filter(Q(end_date__isnull=True) | Q(end_date__gt=start_date))
 
             if overlap_qs.exists():
                 raise serializers.ValidationError(
@@ -106,6 +113,7 @@ class PlantingLocationAssignmentSerializer(serializers.ModelSerializer):
                 )
 
         planting_location = data.get("planting_location")
+
         if (
             planting
             and planting_location
