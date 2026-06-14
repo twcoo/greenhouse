@@ -28,7 +28,9 @@ dev = [
     "factory-boy>=3.3.3",
     "isort>=7.0.0",
     "mypy>=1.19.1",
+    "python-dateutil>=2.9.0.post0",
     "ruff>=0.14.11",
+    "types-python-dateutil>=2.9.0.20260518",
 ]
 
 [tool.coverage.run]
