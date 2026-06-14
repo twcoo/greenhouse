@@ -13,3 +13,6 @@ class Planting(models.Model):
     variety = models.ForeignKey(Variety, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
