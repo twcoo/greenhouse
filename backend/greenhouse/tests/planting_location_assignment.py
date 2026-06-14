@@ -369,6 +369,22 @@ class PlantingLocationAssignmentCreateApiViewTests(
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_create_assignment_same_day_start_as_previous_end_date(self):
+        self.authenticate()
+
+        PlantingLocationAssignmentFactory(
+            planting=self.planting,
+            planting_location=self.planting_location,
+            start_date="2024-01-01",
+            end_date="2024-06-01",
+        )
+
+        payload = {**self.payload, "start_date": "2024-06-01"}
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_create_assignment_pot_occupied_by_other_planting(self):
         self.authenticate()
 
