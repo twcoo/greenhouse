@@ -1,5 +1,6 @@
 from datetime import date
 
+from dateutil.parser import parse
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -54,6 +55,10 @@ class PlantingListApiViewTests(
         response_status, data, plantings, message = self.get_response_data_many(
             response
         )
+
+        timestamps = [parse(planting["created_at"]) for planting in plantings]
+
+        self.assertEqual(timestamps, sorted(timestamps, reverse=True))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_status, "success")
