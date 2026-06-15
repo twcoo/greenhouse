@@ -42,7 +42,7 @@ RUN pip install --no-cache-dir -r /backend/requirements.txt
 
 COPY backend/ /backend
 
-RUN mkdir -p /backend/staticfiles && chown -R user:user /backend/staticfiles
+RUN mkdir -p /backend/staticfiles /backend/media && chown -R user:user /backend/staticfiles /backend/media
 
 USER user
 
