@@ -11,6 +11,7 @@ A self-hosted garden management app for tracking crops, varieties, plantings, pl
 - [Development Setup](#development-setup)
 - [Backend Docker Image](#backend-docker-image)
 - [Frontend Docker Image](#frontend-docker-image)
+- [Docker Compose (self-hosted)](#docker-compose-self-hosted)
 - [Helm (Kubernetes)](#helm-kubernetes)
 - [Releases](#releases)
 - [API](#api)
@@ -213,6 +214,51 @@ Visit `http://localhost:3000`. Verify the config loaded correctly in browser dev
 ```js
 window.appConfig // { apiUrl: "http://localhost:8000/api/v1" }
 ```
+
+---
+
+## Docker Compose (self-hosted)
+
+Use the pre-built GHCR images to run Greenhouse on any machine with Docker — no build step required.
+
+**1. Download the example compose file:**
+
+```bash
+curl -O https://raw.githubusercontent.com/twcoo/greenhouse/main/docker-compose.example.yml
+```
+
+**2. Create a `.env` file in the same directory:**
+
+```env
+DEBUG=True
+SECRET_KEY=change-me-use-a-long-random-string
+
+ALLOWED_HOSTS=localhost
+
+DB_HOST=db
+DB_USER=greenhouse
+DB_PASSWORD=change-me-db-password
+DB_NAME=greenhouse
+
+SUPERUSER_USERNAME=admin
+SUPERUSER_EMAIL=admin@example.com
+SUPERUSER_PASSWORD=change-me-superuser-password
+
+CORS_ALLOWED_ORIGINS=http://localhost:8080
+CSRF_COOKIE_SECURE=False
+CSRF_TRUSTED_ORIGINS=http://localhost:8080
+
+# Must be the URL the browser can reach — not a docker-internal hostname
+API_URL=http://localhost:8000/api/v1
+```
+
+**3. Start:**
+
+```bash
+docker compose -f docker-compose.example.yml up -d
+```
+
+The backend runs on port `8000` and the frontend on port `8080`. Visit `http://localhost:8080`.
 
 ---
 

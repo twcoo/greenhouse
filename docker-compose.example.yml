@@ -1,0 +1,35 @@
+services:
+  db:
+    image: "postgres:17-alpine"
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - greenhouse-db-data:/var/lib/postgresql/data
+    restart: on-failure:5
+
+  backend:
+    image: "ghcr.io/twcoo/greenhouse-backend:latest"
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - greenhouse-media:/backend/media
+    depends_on:
+      - db
+    restart: on-failure:5
+
+  frontend:
+    image: "ghcr.io/twcoo/greenhouse-frontend:latest"
+    environment:
+      - API_URL=${API_URL:-http://localhost:8000/api/v1}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    restart: on-failure:5
+
+volumes:
+  greenhouse-db-data:
+  greenhouse-media:
