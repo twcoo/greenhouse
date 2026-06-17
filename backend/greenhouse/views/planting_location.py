@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.db import transaction
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
 from rest_framework.filters import SearchFilter
@@ -7,7 +8,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
-from ..models import PlantingLocation
+from ..models import PlantingLocation, PlantingLocationStatus
 from ..openapi.planting_location.examples import (
     CREATE_PLANTING_LOCATION_REQUEST_GROUND_EXAMPLE,
     CREATE_PLANTING_LOCATION_REQUEST_POT_EXAMPLE,
@@ -43,7 +44,8 @@ from ..utils.api import CustomAuthentication
         description=(
             "Create a new planting location record. The planting "
             "location will automatically be associated with the "
-            "authenticated user."
+            "authenticated user and an initial status of AVAILABLE "
+            "will be set."
         ),
         examples=[
             CREATE_PLANTING_LOCATION_REQUEST_GROUND_EXAMPLE,
@@ -71,7 +73,12 @@ class PlantingLocationListApiView(
         return PlantingLocation.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        with transaction.atomic():
+            planting_location = serializer.save(user=self.request.user)
+
+            PlantingLocationStatus.objects.create(
+                planting_location=planting_location, status="AVAILABLE"
+            )
 
     def get(self, request: Request, *args: Any, **kwargs: Any):
         return self.list(request, *args, **kwargs)
