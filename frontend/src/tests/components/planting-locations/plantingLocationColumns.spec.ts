@@ -4,6 +4,7 @@ import { mount } from "@vue/test-utils"
 import { columns } from "@/components/planting-locations/PlantingLocationColumns"
 import PlantingLocationTableActions from "@/components/planting-locations/PlantingLocationTableActions.vue"
 import type { PlantingLocation } from "@/types/plantingLocation"
+import { includesMultiple } from "@/utils/filterFns"
 
 const mockLocation: PlantingLocation = {
   id: 1,
@@ -100,5 +101,10 @@ describe("PlantingLocationColumns", () => {
 
   it("actions column cell type is PlantingLocationTableActions", () => {
     expect(getVnode("actions").type).toBe(PlantingLocationTableActions)
+  })
+
+  it("locationType column uses includesMultiple filterFn for exact matching", () => {
+    const col = columns.find((c) => c.id === "locationType")!
+    expect((col as { filterFn?: unknown }).filterFn).toBe(includesMultiple)
   })
 })

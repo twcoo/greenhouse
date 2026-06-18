@@ -1,8 +1,10 @@
 import { mount } from "@vue/test-utils"
+import { defineComponent, nextTick } from "vue"
 import { describe, it, expect } from "vitest"
 import BaseDataTable from "@/components/BaseDataTable.vue"
 import type { ColumnDef } from "@tanstack/vue-table"
 import type { PaginationState } from "@/types/pagination"
+import { includesMultiple } from "@/utils/filterFns"
 
 interface SampleData {
   id: number
@@ -176,6 +178,127 @@ describe("BaseDataTable.vue", () => {
     })
 
     expect(wrapper.text()).toContain("No data available.")
+  })
+
+  it("filters rows to only exact matching values when column filter applied", async () => {
+    const SelectStub = defineComponent({
+      name: "SelectStub",
+      props: ["modelValue"],
+      emits: ["update:modelValue"],
+      template: "<div><slot /></div>",
+    })
+
+    const columnsWithFilterFn: ColumnDef<SampleData>[] = [
+      { accessorKey: "id", header: "ID" },
+      { accessorKey: "name", header: "Name" },
+      { id: "status", accessorKey: "status", header: "Status", filterFn: includesMultiple },
+    ]
+
+    const wrapper = mount(BaseDataTable<SampleData>, {
+      props: {
+        tableData: sampleData,
+        columns: columnsWithFilterFn,
+        filterableColumns: ["status"],
+        rowCount: sampleData.length,
+        pagination: samplePagination,
+      },
+      global: {
+        stubs: {
+          Table: { template: "<table><slot /></table>" },
+          TableHeader: { template: "<thead><slot /></thead>" },
+          TableBody: { template: "<tbody><slot /></tbody>" },
+          TableRow: { template: "<tr><slot /></tr>" },
+          TableHead: { template: "<th><slot /></th>" },
+          TableCell: { template: "<td><slot /></td>" },
+          Button: { template: "<button @click=\"$emit('click')\"><slot /></button>" },
+          Select: SelectStub,
+          SelectTrigger: { template: "<div><slot /></div>" },
+          SelectValue: { template: "<div><slot /></div>" },
+          SelectContent: { template: "<div><slot /></div>" },
+          SelectGroup: { template: "<div><slot /></div>" },
+          SelectItem: { template: "<div><slot /></div>" },
+          Input: {
+            template:
+              '<input @input="$emit(\'update:modelValue\', ($event.target).value)" :value="modelValue" />',
+          },
+          Label: { template: "<div><slot /></div>" },
+          IconGhost2: { template: "<svg />" },
+        },
+      },
+    })
+
+    expect(wrapper.findAll("tbody tr")).toHaveLength(3)
+
+    const filterSelect = wrapper.findAllComponents(SelectStub)[0]
+    await filterSelect.vm.$emit("update:modelValue", "Active")
+    await nextTick()
+
+    const rows = wrapper.findAll("tbody tr")
+    expect(rows).toHaveLength(2)
+    expect(rows[0].text()).toContain("Alpha")
+    expect(rows[1].text()).toContain("Gamma")
+  })
+
+  it("does not show substring matches when column filter is applied", async () => {
+    const SelectStub = defineComponent({
+      name: "SelectStub",
+      props: ["modelValue"],
+      emits: ["update:modelValue"],
+      template: "<div><slot /></div>",
+    })
+
+    const dataWithSubstrings: SampleData[] = [
+      { id: 1, name: "Alpha", status: "Active" },
+      { id: 2, name: "Beta", status: "Inactive" },
+      { id: 3, name: "Gamma", status: "Very Active" },
+    ]
+
+    const columnsWithFilterFn: ColumnDef<SampleData>[] = [
+      { accessorKey: "id", header: "ID" },
+      { accessorKey: "name", header: "Name" },
+      { id: "status", accessorKey: "status", header: "Status", filterFn: includesMultiple },
+    ]
+
+    const wrapper = mount(BaseDataTable<SampleData>, {
+      props: {
+        tableData: dataWithSubstrings,
+        columns: columnsWithFilterFn,
+        filterableColumns: ["status"],
+        rowCount: dataWithSubstrings.length,
+        pagination: samplePagination,
+      },
+      global: {
+        stubs: {
+          Table: { template: "<table><slot /></table>" },
+          TableHeader: { template: "<thead><slot /></thead>" },
+          TableBody: { template: "<tbody><slot /></tbody>" },
+          TableRow: { template: "<tr><slot /></tr>" },
+          TableHead: { template: "<th><slot /></th>" },
+          TableCell: { template: "<td><slot /></td>" },
+          Button: { template: "<button @click=\"$emit('click')\"><slot /></button>" },
+          Select: SelectStub,
+          SelectTrigger: { template: "<div><slot /></div>" },
+          SelectValue: { template: "<div><slot /></div>" },
+          SelectContent: { template: "<div><slot /></div>" },
+          SelectGroup: { template: "<div><slot /></div>" },
+          SelectItem: { template: "<div><slot /></div>" },
+          Input: {
+            template:
+              '<input @input="$emit(\'update:modelValue\', ($event.target).value)" :value="modelValue" />',
+          },
+          Label: { template: "<div><slot /></div>" },
+          IconGhost2: { template: "<svg />" },
+        },
+      },
+    })
+
+    const filterSelect = wrapper.findAllComponents(SelectStub)[0]
+    await filterSelect.vm.$emit("update:modelValue", "Active")
+    await nextTick()
+
+    const rows = wrapper.findAll("tbody tr")
+    expect(rows).toHaveLength(1)
+    expect(rows[0].text()).toContain("Alpha")
   })
 
   it("handles empty results search state", async () => {
