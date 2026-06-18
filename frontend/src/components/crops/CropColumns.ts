@@ -2,6 +2,7 @@ import type { ColumnDef } from "@tanstack/vue-table"
 import { h } from "vue"
 import type { Crop } from "@/types/crop"
 import CropTableActions from "./CropTableActions.vue"
+import { includesMultiple } from "@/utils/filterFns"
 
 export const columns: ColumnDef<Crop>[] = [
   {
@@ -24,6 +25,7 @@ export const columns: ColumnDef<Crop>[] = [
     header: "Category",
     cell: ({ row }) => h("div", row.getValue("category")),
     enableSorting: true,
+    filterFn: includesMultiple,
   },
   {
     id: "sunlightRequirement",
@@ -31,6 +33,7 @@ export const columns: ColumnDef<Crop>[] = [
     header: "Sunlight",
     cell: ({ row }) => h("div", row.getValue("sunlightRequirement")),
     enableSorting: true,
+    filterFn: includesMultiple,
   },
   {
     id: "minDaysToHarvest",
