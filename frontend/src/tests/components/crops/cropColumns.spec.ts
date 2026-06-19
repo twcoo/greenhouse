@@ -4,6 +4,7 @@ import { mount } from "@vue/test-utils"
 import { columns } from "@/components/crops/CropColumns"
 import CropTableActions from "@/components/crops/CropTableActions.vue"
 import type { Crop } from "@/types/crop"
+import { includesMultiple } from "@/utils/filterFns"
 
 const mockCrop: Crop = {
   id: 1,
@@ -55,5 +56,15 @@ describe("CropColumns", () => {
 
   it("actions column cell type is CropTableActions", () => {
     expect(getVnode("actions").type).toBe(CropTableActions)
+  })
+
+  it("category column uses includesMultiple filterFn for exact matching", () => {
+    const col = columns.find((c) => c.id === "category")!
+    expect((col as { filterFn?: unknown }).filterFn).toBe(includesMultiple)
+  })
+
+  it("sunlightRequirement column uses includesMultiple filterFn for exact matching", () => {
+    const col = columns.find((c) => c.id === "sunlightRequirement")!
+    expect((col as { filterFn?: unknown }).filterFn).toBe(includesMultiple)
   })
 })

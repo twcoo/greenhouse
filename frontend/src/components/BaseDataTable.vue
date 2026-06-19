@@ -1,12 +1,6 @@
 <script setup lang="ts" generic="TData">
 import { ref, computed } from "vue"
-import type {
-  ColumnDef,
-  SortingState,
-  ColumnFiltersState,
-  FilterFn,
-  Row,
-} from "@tanstack/vue-table"
+import type { ColumnDef, SortingState, ColumnFiltersState } from "@tanstack/vue-table"
 import type { PaginationState } from "@/types/pagination"
 import {
   FlexRender,
@@ -58,33 +52,6 @@ const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 const pageSizes = [5, 10, 20, 50]
 
-/**
- * We use a generic <TData> to represent the shape of your table row.
- * We type filterValue as unknown initially, then narrow it.
- */
-const includesMultiple: FilterFn<unknown> = (
-  row: Row<unknown>,
-  columnId: string,
-  filterValue: unknown,
-) => {
-  // 1. Narrowing: Ensure filterValue is actually an array
-  if (!Array.isArray(filterValue) || filterValue.length === 0) {
-    return true
-  }
-
-  // 2. Safely get and stringify the cell value
-  const cellValue = row.getValue(columnId)
-  const searchableValue = cellValue !== null && cellValue !== undefined ? String(cellValue) : ""
-
-  // 3. Narrowing: Ensure the array contains the value
-  // We cast to string[] here because we've already checked it's an array
-  return (filterValue as unknown[]).some((val) => String(val) === searchableValue)
-}
-
-const filterFns = {
-  includesMultiple,
-}
-
 const filterOptionsMap = computed(() => {
   const map: Record<string, Set<unknown>> = {}
   if (!filterableColumns) return map
@@ -105,7 +72,7 @@ const getFilterOptions = (columnKey: keyof TData) => {
 
 const table = useVueTable({
   manualPagination: true,
-  manualFiltering: true,
+  manualFiltering: false,
   get data() {
     return tableData
   },
@@ -120,7 +87,6 @@ const table = useVueTable({
     update: (id: number, data: unknown) => emit("update", id, data),
     action: (name: string, id: number) => emit("action", name, id),
   },
-  filterFns,
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
@@ -207,7 +173,7 @@ const pages = computed(() => {
           <Select
             :model-value="table.getColumn(col as string)?.getFilterValue() ?? ''"
             @update:model-value="
-              (value) => table.getColumn(col as string)?.setFilterValue(value || undefined)
+              (value) => table.getColumn(col as string)?.setFilterValue(value ? [value] : undefined)
             "
           >
             <SelectTrigger class="w-[200px]">

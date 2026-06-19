@@ -4,6 +4,7 @@ import type { PlantingLocation } from "@/types/plantingLocation"
 import type { PlantingLocationStatusChoice } from "@/types/plantingLocationStatus"
 import { Badge } from "@/components/ui/badge"
 import PlantingLocationTableActions from "./PlantingLocationTableActions.vue"
+import { includesMultiple } from "@/utils/filterFns"
 
 const STATUS_BADGE_VARIANT: Record<
   PlantingLocationStatusChoice,
@@ -38,6 +39,7 @@ export const columns: ColumnDef<PlantingLocation>[] = [
     header: "Type",
     cell: ({ row }) => h("div", row.getValue("locationType")),
     enableSorting: true,
+    filterFn: includesMultiple,
   },
   {
     id: "width",
