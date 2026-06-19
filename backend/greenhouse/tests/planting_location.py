@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ..models import PlantingLocation
+from ..models import PlantingLocation, PlantingLocationStatus
 from .commons.factories import PlantingLocationFactory, UserFactory
 from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixin
 
@@ -124,6 +124,8 @@ class PlantingLocationCreateApiViewTests(
         self.assertEqual(data["width"], self.ground_payload["width"])
         self.assertEqual(data["length"], self.ground_payload["length"])
         self.assertIsNone(data["height"])
+        self.assertIsNotNone(data["current_status"])
+        self.assertEqual(data["current_status"]["status"], "AVAILABLE")
         location = PlantingLocation.objects.get(id=data["id"])
         self.assertEqual(location.user_id, self.user.id)
         self.assertIsNone(message)
@@ -145,7 +147,26 @@ class PlantingLocationCreateApiViewTests(
         self.assertEqual(data["width"], self.pot_payload["width"])
         self.assertEqual(data["height"], self.pot_payload["height"])
         self.assertIsNone(data["length"])
+        self.assertIsNotNone(data["current_status"])
+        self.assertEqual(data["current_status"]["status"], "AVAILABLE")
         self.assertIsNone(message)
+
+    def test_create_planting_location_creates_available_status(self):
+        self.authenticate()
+
+        response = self.client.post(
+            self.url, self.ground_payload, format="json"
+        )
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        location = PlantingLocation.objects.get(id=data["id"])
+        status_record = PlantingLocationStatus.objects.filter(
+            planting_location=location
+        ).first()
+        self.assertIsNotNone(status_record)
+        self.assertEqual(status_record.status, "AVAILABLE")
 
     def test_create_planting_location_missing_required_fields(self):
         self.authenticate()
