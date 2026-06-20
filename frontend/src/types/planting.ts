@@ -5,6 +5,7 @@ export interface Planting {
   variety: number
   varietyName: string
   currentLocation: string | null
+  hasDailyObservation: boolean
   createdAt: string
 }
 
