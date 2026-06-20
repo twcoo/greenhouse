@@ -1,5 +1,7 @@
+from datetime import date
 from typing import Any
 
+from django.db.models import Exists, OuterRef
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
 from rest_framework.filters import SearchFilter
@@ -7,7 +9,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 
-from ..models import Planting
+from ..models import Planting, PlantingDailyObservation
 from ..openapi.planting.examples import (
     CREATE_PLANTING_REQUEST_EXAMPLE, PARTIAL_UPDATE_PLANTING_REQUEST_EXAMPLE,
     UPDATE_PLANTING_REQUEST_EXAMPLE)
@@ -62,8 +64,17 @@ class PlantingListApiView(
     serializer_class = PlantingSerializer
 
     def get_queryset(self):
-        return Planting.objects.filter(user=self.request.user).prefetch_related(
-            "locations__planting_location"
+        return (
+            Planting.objects.filter(user=self.request.user)
+            .prefetch_related("locations__planting_location")
+            .annotate(
+                has_daily_observation=Exists(
+                    PlantingDailyObservation.objects.filter(
+                        planting=OuterRef("pk"),
+                        created_at__date=date.today(),
+                    )
+                )
+            )
         )
 
     def perform_create(self, serializer):
@@ -134,8 +145,17 @@ class PlantingDetailApiView(
     serializer_class = PlantingSerializer
 
     def get_queryset(self):
-        return Planting.objects.filter(user=self.request.user).prefetch_related(
-            "locations__planting_location"
+        return (
+            Planting.objects.filter(user=self.request.user)
+            .prefetch_related("locations__planting_location")
+            .annotate(
+                has_daily_observation=Exists(
+                    PlantingDailyObservation.objects.filter(
+                        planting=OuterRef("pk"),
+                        created_at__date=date.today(),
+                    )
+                )
+            )
         )
 
     def get(self, request: Request, *args: Any, **kwargs: Any):

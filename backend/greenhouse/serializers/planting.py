@@ -30,6 +30,13 @@ class PlantingSerializer(serializers.ModelSerializer):
     current_location = serializers.SerializerMethodField(
         help_text=("Name of the currently active planting location, if any."),
     )
+    has_daily_observation = serializers.BooleanField(
+        read_only=True,
+        help_text=(
+            "Whether this planting has a daily observation "
+            "recorded for today."
+        ),
+    )
 
     def get_crop_name(self, obj: Planting) -> str:
         return str(obj.crop.name)
@@ -74,5 +81,6 @@ class PlantingSerializer(serializers.ModelSerializer):
             "variety",
             "variety_name",
             "current_location",
+            "has_daily_observation",
             "created_at",
         )
