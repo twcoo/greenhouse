@@ -33,7 +33,7 @@ function mountComposable(plantingId = ref(1)) {
     { global: { plugins: [[VueQueryPlugin, { queryClient }]] } },
   )
 
-  return result
+  return { result, queryClient }
 }
 
 beforeEach(() => {
@@ -48,7 +48,7 @@ const payload = {
 
 describe("usePlantingDailyObservations", () => {
   it("returns expected API shape", () => {
-    const result = mountComposable()
+    const { result } = mountComposable()
 
     expect(result.observations).toBeDefined()
     expect(result.isLoading).toBeDefined()
@@ -66,7 +66,7 @@ describe("usePlantingDailyObservations", () => {
   })
 
   it("isLoading is false after query settles with no pending mutations", async () => {
-    const result = mountComposable()
+    const { result } = mountComposable()
     await flushPromises()
 
     expect(result.isLoading.value).toBe(false)
@@ -87,7 +87,7 @@ describe("usePlantingDailyObservations", () => {
   })
 
   it("createObservation calls service.create with the plantingId and payload", async () => {
-    const result = mountComposable(ref(5))
+    const { result } = mountComposable(ref(5))
 
     await result.createObservation(payload)
 
@@ -95,7 +95,7 @@ describe("usePlantingDailyObservations", () => {
   })
 
   it("updateObservation calls service.update with plantingId, id, and payload", async () => {
-    const result = mountComposable(ref(5))
+    const { result } = mountComposable(ref(5))
 
     await result.updateObservation({ id: 3, payload })
 
@@ -103,7 +103,7 @@ describe("usePlantingDailyObservations", () => {
   })
 
   it("deleteObservation calls service.delete with plantingId and id", async () => {
-    const result = mountComposable(ref(5))
+    const { result } = mountComposable(ref(5))
 
     await result.deleteObservation(3)
 
@@ -111,7 +111,7 @@ describe("usePlantingDailyObservations", () => {
   })
 
   it("isCreateSuccess is true after a successful create", async () => {
-    const result = mountComposable(ref(5))
+    const { result } = mountComposable(ref(5))
 
     await result.createObservation(payload)
     await flushPromises()
@@ -120,7 +120,7 @@ describe("usePlantingDailyObservations", () => {
   })
 
   it("isUpdateSuccess is true after a successful update", async () => {
-    const result = mountComposable(ref(5))
+    const { result } = mountComposable(ref(5))
 
     await result.updateObservation({ id: 3, payload })
     await flushPromises()
@@ -129,11 +129,20 @@ describe("usePlantingDailyObservations", () => {
   })
 
   it("isDeleteSuccess is true after a successful delete", async () => {
-    const result = mountComposable(ref(5))
+    const { result } = mountComposable(ref(5))
 
     await result.deleteObservation(3)
     await flushPromises()
 
     expect(result.isDeleteSuccess.value).toBe(true)
+  })
+
+  it("createObservation invalidates the plantings query", async () => {
+    const { result, queryClient } = mountComposable(ref(5))
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries")
+
+    await result.createObservation(payload)
+
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["plantings"] })
   })
 })

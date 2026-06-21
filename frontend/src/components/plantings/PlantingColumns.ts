@@ -2,6 +2,7 @@ import type { ColumnDef } from "@tanstack/vue-table"
 import { h } from "vue"
 import type { Planting } from "@/types/planting"
 import PlantingTableActions from "./PlantingTableActions.vue"
+import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/utils/formatting"
 
 export const columns: ColumnDef<Planting>[] = [
@@ -31,6 +32,18 @@ export const columns: ColumnDef<Planting>[] = [
     accessorKey: "currentLocation",
     header: "Location",
     cell: ({ row }) => h("div", row.getValue("currentLocation") ?? "—"),
+    enableSorting: false,
+  },
+  {
+    id: "hasDailyObservation",
+    accessorKey: "hasDailyObservation",
+    header: "Today's Observation",
+    cell: ({ row }) => {
+      const has = row.getValue<boolean>("hasDailyObservation")
+      return has
+        ? h(Badge, { variant: "default" }, () => "Recorded")
+        : h(Badge, { variant: "outline" }, () => "Pending")
+    },
     enableSorting: false,
   },
   {

@@ -12,6 +12,7 @@ const mockPlanting: Planting = {
   variety: 1,
   varietyName: "Sun Gold",
   currentLocation: "Greenhouse A",
+  hasDailyObservation: true,
   // Use a midday UTC date to avoid timezone edge cases in formatted output
   createdAt: "2024-06-15T12:00:00Z",
 }
@@ -60,6 +61,17 @@ describe("PlantingColumns", () => {
     mockPlanting.currentLocation = null
     expect(renderCell("currentLocation").text()).toBe("—")
     mockPlanting.currentLocation = original
+  })
+
+  it("hasDailyObservation column renders 'Recorded' when true", () => {
+    expect(renderCell("hasDailyObservation").text()).toBe("Recorded")
+  })
+
+  it("hasDailyObservation column renders 'Pending' when false", () => {
+    const original = mockPlanting.hasDailyObservation
+    mockPlanting.hasDailyObservation = false
+    expect(renderCell("hasDailyObservation").text()).toBe("Pending")
+    mockPlanting.hasDailyObservation = original
   })
 
   it("actions column cell type is PlantingTableActions", () => {

@@ -1,12 +1,13 @@
-from datetime import date
+from datetime import date, datetime, timezone
 
 from dateutil.parser import parse
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ..models import Planting
-from .commons.factories import (CropFactory, PlantingFactory,
+from ..models import Planting, PlantingDailyObservation
+from .commons.factories import (CropFactory, PlantingDailyObservationFactory,
+                                PlantingFactory,
                                 PlantingLocationAssignmentFactory,
                                 PlantingLocationFactory, UserFactory,
                                 VarietyFactory)
@@ -610,3 +611,76 @@ class PlantingCurrentLocationTests(ResponseUtilsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNone(plantings[0]["current_location"])
+
+
+class PlantingHasDailyObservationTests(ResponseUtilsMixin, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = UserFactory()
+        self.list_url = reverse("planting-list-create")
+        self.crop = CropFactory(user=self.user)
+        self.variety = VarietyFactory(crop=self.crop)
+
+    def authenticate(self):
+        self.client.force_authenticate(user=self.user)
+
+    def test_false_when_no_observations(self):
+        self.authenticate()
+
+        PlantingFactory(user=self.user, crop=self.crop, variety=self.variety)
+
+        response = self.client.get(self.list_url)
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(plantings[0]["has_daily_observation"])
+
+    def test_true_when_observation_exists_for_today(self):
+        self.authenticate()
+
+        planting = PlantingFactory(
+            user=self.user, crop=self.crop, variety=self.variety
+        )
+        PlantingDailyObservationFactory(planting=planting)
+
+        response = self.client.get(self.list_url)
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(plantings[0]["has_daily_observation"])
+
+    def test_false_when_observation_exists_only_for_past_date(self):
+        self.authenticate()
+
+        planting = PlantingFactory(
+            user=self.user, crop=self.crop, variety=self.variety
+        )
+        obs = PlantingDailyObservationFactory(planting=planting)
+        PlantingDailyObservation.objects.filter(pk=obs.pk).update(
+            created_at=datetime(2024, 1, 1, tzinfo=timezone.utc)
+        )
+
+        response = self.client.get(self.list_url)
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(plantings[0]["has_daily_observation"])
+
+    def test_detail_view_returns_has_daily_observation(self):
+        self.authenticate()
+
+        planting = PlantingFactory(
+            user=self.user, crop=self.crop, variety=self.variety
+        )
+        PlantingDailyObservationFactory(planting=planting)
+
+        url = reverse("planting-detail", args=[planting.id])
+        response = self.client.get(url)
+
+        _, data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(data["has_daily_observation"])
