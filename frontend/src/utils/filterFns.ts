@@ -1,6 +1,6 @@
 import type { FilterFn, Row } from "@tanstack/vue-table"
 
- 
+// oxlint-disable-next-line typescript-eslint/no-explicit-any
 export const includesMultiple: FilterFn<any> = (
   row: Row<unknown>,
   columnId: string,
