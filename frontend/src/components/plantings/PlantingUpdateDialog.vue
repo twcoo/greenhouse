@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { FieldGroup, Field, FieldLabel, FieldError } from "@/components/ui/field"
-import { plantingSchema, type plantingForm } from "@/schemas/planting.schemas"
+import { plantingSchema, PLANTING_STATUSES, type plantingForm } from "@/schemas/planting.schemas"
 import type { PlantingPayload } from "@/types/planting"
 import type { APIErrorResponse } from "@/types/api"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
@@ -47,6 +47,7 @@ const { varieties } = useVarieties(varietyPagination)
 
 const selectedCropId = ref<string>(String(plantingFormInitialState.crop))
 const selectedVarietyId = ref<string>(String(plantingFormInitialState.variety))
+const selectedStatus = ref<string>(plantingFormInitialState.status ?? "ACTIVE")
 const errors = ref<Record<string, string>>({})
 
 const filteredVarieties = computed(
@@ -62,6 +63,7 @@ watch(
   (newVal) => {
     selectedCropId.value = String(newVal.crop)
     selectedVarietyId.value = String(newVal.variety)
+    selectedStatus.value = newVal.status ?? "ACTIVE"
     errors.value = {}
   },
   { deep: true },
@@ -71,6 +73,7 @@ const handleSubmit = async (): Promise<void> => {
   const result = plantingSchema.safeParse({
     crop: selectedCropId.value,
     variety: selectedVarietyId.value,
+    status: selectedStatus.value,
   })
 
   if (!result.success) {
@@ -93,6 +96,7 @@ watch(open, (isOpen) => {
     errors.value = {}
     selectedCropId.value = String(plantingFormInitialState.crop)
     selectedVarietyId.value = String(plantingFormInitialState.variety)
+    selectedStatus.value = plantingFormInitialState.status ?? "ACTIVE"
   }
 })
 
@@ -147,6 +151,22 @@ watch(
             </Select>
             <FieldError data-test="varietyError" v-if="errors.variety">
               {{ errors.variety }}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel for="status">Status</FieldLabel>
+            <Select id="status" v-model="selectedStatus">
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="s in PLANTING_STATUSES" :key="s" :value="s">
+                  {{ s.charAt(0) + s.slice(1).toLowerCase() }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <FieldError data-test="statusError" v-if="errors.status">
+              {{ errors.status }}
             </FieldError>
           </Field>
         </FieldGroup>
