@@ -56,6 +56,7 @@ const stubs = {
 const defaultInitialState: plantingForm = {
   crop: 1,
   variety: 1,
+  status: "ACTIVE",
 }
 
 const mountComponent = (props = {}) =>
@@ -79,12 +80,13 @@ beforeEach(() => {
 })
 
 describe("PlantingUpdateDialog.vue", () => {
-  it("pre-populates crop and variety selects from initial state", () => {
+  it("pre-populates crop, variety, and status selects from initial state", () => {
     const wrapper = mountComponent()
 
     const selects = wrapper.findAll('[data-stub="select"]')
-    expect((selects[0].element as HTMLInputElement).value).toBe("1")
-    expect((selects[1].element as HTMLInputElement).value).toBe("1")
+    expect((selects[0].element as HTMLInputElement).value).toBe("1") // crop
+    expect((selects[1].element as HTMLInputElement).value).toBe("1") // variety
+    expect((selects[2].element as HTMLInputElement).value).toBe("ACTIVE") // status
   })
 
   it("emits submit with id and validated payload on valid form", async () => {
@@ -97,7 +99,19 @@ describe("PlantingUpdateDialog.vue", () => {
     const emitted = wrapper.emitted("submit")
     expect(emitted).toBeDefined()
     expect(emitted?.[0][0]).toBe(1)
-    expect(emitted?.[0][1]).toMatchObject({ crop: 1, variety: 2 })
+    expect(emitted?.[0][1]).toMatchObject({ crop: 1, variety: 2, status: "ACTIVE" })
+  })
+
+  it("emits submit with updated status in payload", async () => {
+    const wrapper = mountComponent()
+
+    const selects = wrapper.findAll('[data-stub="select"]')
+    await selects[2].setValue("DEAD")
+    await wrapper.find("form").trigger("submit.prevent")
+
+    const emitted = wrapper.emitted("submit")
+    expect(emitted).toBeDefined()
+    expect(emitted?.[0][1]).toMatchObject({ crop: 1, variety: 1, status: "DEAD" })
   })
 
   it("emits update:open with false when isUpdateSuccess becomes true", async () => {
@@ -148,11 +162,12 @@ describe("PlantingUpdateDialog.vue", () => {
   it("syncs form values when plantingFormInitialState prop changes", async () => {
     const wrapper = mountComponent()
 
-    const newState: plantingForm = { crop: 1, variety: 2 }
+    const newState: plantingForm = { crop: 1, variety: 2, status: "HARVESTED" }
     await wrapper.setProps({ plantingFormInitialState: newState })
     await wrapper.vm.$nextTick()
 
     const selects = wrapper.findAll('[data-stub="select"]')
     expect((selects[1].element as HTMLInputElement).value).toBe("2")
+    expect((selects[2].element as HTMLInputElement).value).toBe("HARVESTED")
   })
 })

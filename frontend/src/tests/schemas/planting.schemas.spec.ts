@@ -47,4 +47,24 @@ describe("plantingSchema", () => {
       expect(result.success).toBe(false)
     })
   })
+
+  describe("status validation", () => {
+    it.each(["ACTIVE", "HARVESTED", "DEAD", "REMOVED"])("accepts status '%s'", (status) => {
+      const result = plantingSchema.safeParse({ crop: 1, variety: 1, status })
+      expect(result.success).toBe(true)
+    })
+
+    it("allows missing status (optional)", () => {
+      const result = plantingSchema.safeParse({ crop: 1, variety: 1 })
+      expect(result.success).toBe(true)
+    })
+
+    it("rejects invalid status", () => {
+      const result = plantingSchema.safeParse({ crop: 1, variety: 1, status: "INVALID" })
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error.issues.map((i) => i.path[0])).toContain("status")
+      }
+    })
+  })
 })

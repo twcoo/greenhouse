@@ -18,6 +18,9 @@ const mockPlanting = {
   cropName: "Tomato",
   variety: 1,
   varietyName: "Sun Gold",
+  status: "ACTIVE",
+  currentLocation: null,
+  hasDailyObservation: false,
   createdAt: "2024-01-01T00:00:00Z",
 }
 
