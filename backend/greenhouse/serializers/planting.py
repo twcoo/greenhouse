@@ -80,6 +80,7 @@ class PlantingSerializer(serializers.ModelSerializer):
             "crop_name",
             "variety",
             "variety_name",
+            "status",
             "current_location",
             "has_daily_observation",
             "created_at",
