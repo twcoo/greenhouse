@@ -12,6 +12,7 @@ PLANTING_SERIALIZER_EXAMPLE = OpenApiExample(
         "crop_name": "Tomato",
         "variety": 1,
         "variety_name": "Sun Gold",
+        "status": "ACTIVE",
         "current_location": None,
         "has_daily_observation": False,
         "created_at": "2024-01-01T00:00:00Z",
@@ -22,7 +23,7 @@ CREATE_PLANTING_REQUEST_EXAMPLE = OpenApiExample(
     name="Create planting payload",
     summary="Create a planting",
     description="Example request payload for creating a planting.",
-    value={"crop": 1, "variety": 1},
+    value={"crop": 1, "variety": 1, "status": "ACTIVE"},
     request_only=True,
 )
 
@@ -30,7 +31,7 @@ UPDATE_PLANTING_REQUEST_EXAMPLE = OpenApiExample(
     name="Update planting payload",
     summary="Update a planting",
     description="Example request payload for updating a planting.",
-    value={"crop": 1, "variety": 2},
+    value={"crop": 1, "variety": 2, "status": "HARVESTED"},
     request_only=True,
 )
 
@@ -38,7 +39,7 @@ PARTIAL_UPDATE_PLANTING_REQUEST_EXAMPLE = OpenApiExample(
     name="Partially update planting payload",
     summary="Partially update a planting",
     description="Example request payload for partially updating a planting.",
-    value={"variety": 2},
+    value={"status": "DEAD"},
     request_only=True,
 )
 
@@ -56,6 +57,7 @@ CREATE_PLANTING_RESPONSE_EXAMPLE = OpenApiExample(
             "crop_name": "Tomato",
             "variety": 1,
             "variety_name": "Sun Gold",
+            "status": "ACTIVE",
             "current_location": None,
             "has_daily_observation": False,
             "created_at": "2024-01-01T00:00:00Z",
@@ -76,6 +78,7 @@ RETRIEVE_PLANTING_RESPONSE_EXAMPLE = OpenApiExample(
             "crop_name": "Tomato",
             "variety": 1,
             "variety_name": "Sun Gold",
+            "status": "ACTIVE",
             "current_location": None,
             "has_daily_observation": False,
             "created_at": "2024-01-01T00:00:00Z",
@@ -96,6 +99,7 @@ UPDATE_PLANTING_RESPONSE_EXAMPLE = OpenApiExample(
             "crop_name": "Tomato",
             "variety": 2,
             "variety_name": "Sweet 100",
+            "status": "HARVESTED",
             "current_location": None,
             "has_daily_observation": False,
             "created_at": "2024-01-01T00:00:00Z",
