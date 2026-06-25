@@ -166,6 +166,7 @@ class PlantingCreateApiViewTests(
         self.assertEqual(data["crop_name"], self.crop.name)
         self.assertEqual(data["variety"], self.variety.id)
         self.assertEqual(data["variety_name"], self.variety.name)
+        self.assertEqual(data["status"], "ACTIVE")
         self.assertIsNone(data["current_location"])
         self.assertIsNotNone(data["created_at"])
         self.assertTrue(
@@ -174,6 +175,34 @@ class PlantingCreateApiViewTests(
             ).exists()
         )
         self.assertIsNone(message)
+
+    def test_create_planting_with_explicit_status(self):
+        self.authenticate()
+
+        payload = {**self.payload, "status": "DEAD"}
+
+        response = self.client.post(self.url, payload, format="json")
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_status, "success")
+        self.assertEqual(data["status"], "DEAD")
+        self.assertIsNone(message)
+
+    def test_create_planting_invalid_status(self):
+        self.authenticate()
+
+        payload = {**self.payload, "status": "INVALID"}
+
+        response = self.client.post(self.url, payload, format="json")
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertIn("status", message)
 
     def test_create_planting_missing_required_fields(self):
         self.authenticate()
@@ -290,6 +319,7 @@ class PlantingGetApiViewTests(
         self.assertEqual(data["crop_name"], self.crop.name)
         self.assertEqual(data["variety"], self.variety.id)
         self.assertEqual(data["variety_name"], self.variety.name)
+        self.assertEqual(data["status"], self.planting.status)
         self.assertIsNone(data["current_location"])
         self.assertIsNotNone(data["created_at"])
         self.assertIsNone(message)
@@ -353,6 +383,7 @@ class PlantingUpdateApiViewTests(
         self.assertEqual(data["crop"], self.crop.id)
         self.assertEqual(data["variety"], new_variety.id)
         self.assertEqual(data["variety_name"], new_variety.name)
+        self.assertEqual(data["status"], "ACTIVE")
         self.assertIsNone(message)
 
     def test_update_planting_not_found(self):
@@ -438,7 +469,36 @@ class PlantingPartialUpdateApiViewTests(
         self.assertEqual(data["crop"], self.crop.id)
         self.assertEqual(data["variety"], new_variety.id)
         self.assertEqual(data["variety_name"], new_variety.name)
+        self.assertEqual(data["status"], "ACTIVE")
         self.assertIsNone(message)
+
+    def test_partially_update_planting_status(self):
+        self.authenticate()
+
+        response = self.client.patch(
+            self.url, {"status": "HARVESTED"}, format="json"
+        )
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_status, "success")
+        self.assertEqual(data["status"], "HARVESTED")
+        self.assertIsNone(message)
+
+    def test_partially_update_planting_invalid_status(self):
+        self.authenticate()
+
+        response = self.client.patch(
+            self.url, {"status": "INVALID"}, format="json"
+        )
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertIn("status", message)
 
     def test_partial_update_planting_variety_crop_mismatch(self):
         self.authenticate()

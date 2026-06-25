@@ -35,6 +35,32 @@ export const columns: ColumnDef<Planting>[] = [
     enableSorting: false,
   },
   {
+    id: "status",
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue<string>("status")
+      const variantMap: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+        ACTIVE: "default",
+        HARVESTED: "secondary",
+        DEAD: "destructive",
+        REMOVED: "outline",
+      }
+      const labelMap: Record<string, string> = {
+        ACTIVE: "Active",
+        HARVESTED: "Harvested",
+        DEAD: "Dead",
+        REMOVED: "Removed",
+      }
+      return h(
+        Badge,
+        { variant: variantMap[status] ?? "outline" },
+        () => labelMap[status] ?? status,
+      )
+    },
+    enableSorting: false,
+  },
+  {
     id: "hasDailyObservation",
     accessorKey: "hasDailyObservation",
     header: "Today's Observation",

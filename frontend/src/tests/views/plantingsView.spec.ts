@@ -17,6 +17,9 @@ const mockPlantings: Planting[] = [
     cropName: "Tomato",
     variety: 1,
     varietyName: "Sun Gold",
+    status: "ACTIVE",
+    currentLocation: null,
+    hasDailyObservation: false,
     createdAt: "2024-01-01T00:00:00Z",
   },
   {
@@ -25,6 +28,9 @@ const mockPlantings: Planting[] = [
     cropName: "Tomato",
     variety: 2,
     varietyName: "Cherokee Purple",
+    status: "ACTIVE",
+    currentLocation: null,
+    hasDailyObservation: false,
     createdAt: "2024-02-01T00:00:00Z",
   },
 ]

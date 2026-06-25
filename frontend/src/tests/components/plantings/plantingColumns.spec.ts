@@ -11,6 +11,7 @@ const mockPlanting: Planting = {
   cropName: "Tomato",
   variety: 1,
   varietyName: "Sun Gold",
+  status: "ACTIVE",
   currentLocation: "Greenhouse A",
   hasDailyObservation: true,
   // Use a midday UTC date to avoid timezone edge cases in formatted output
@@ -61,6 +62,25 @@ describe("PlantingColumns", () => {
     mockPlanting.currentLocation = null
     expect(renderCell("currentLocation").text()).toBe("—")
     mockPlanting.currentLocation = original
+  })
+
+  it("status column renders 'Active' badge for ACTIVE status", () => {
+    expect(renderCell("status").text()).toBe("Active")
+  })
+
+  it("status column renders correct label for each status", () => {
+    const cases: Array<[Planting["status"], string]> = [
+      ["ACTIVE", "Active"],
+      ["HARVESTED", "Harvested"],
+      ["DEAD", "Dead"],
+      ["REMOVED", "Removed"],
+    ]
+    for (const [statusValue, label] of cases) {
+      const original = mockPlanting.status
+      mockPlanting.status = statusValue
+      expect(renderCell("status").text()).toBe(label)
+      mockPlanting.status = original
+    }
   })
 
   it("hasDailyObservation column renders 'Recorded' when true", () => {
