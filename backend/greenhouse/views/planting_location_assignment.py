@@ -83,7 +83,7 @@ class PlantingLocationAssignmentListApiView(
     def get_queryset(self):
         return PlantingLocationAssignment.objects.filter(
             planting=self._get_planting()
-        ).order_by("start_date")
+        ).order_by("-start_date")
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
