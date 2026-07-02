@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Any
 
-from django.db.models import Exists, OuterRef
+from django.db.models import Case, Exists, IntegerField, OuterRef, Value, When
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
 from rest_framework.filters import SearchFilter
@@ -68,13 +68,19 @@ class PlantingListApiView(
             Planting.objects.filter(user=self.request.user)
             .prefetch_related("locations__planting_location")
             .annotate(
+                status_order=Case(
+                    When(status="ACTIVE", then=Value(0)),
+                    default=Value(1),
+                    output_field=IntegerField(),
+                ),
                 has_daily_observation=Exists(
                     PlantingDailyObservation.objects.filter(
                         planting=OuterRef("pk"),
                         created_at__date=date.today(),
                     )
-                )
+                ),
             )
+            .order_by("status_order", "-created_at")
         )
 
     def perform_create(self, serializer):
