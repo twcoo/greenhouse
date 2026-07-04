@@ -97,6 +97,27 @@ class PlantingListApiViewTests(
             another_user_data=self.another_user_plantings,
         )
 
+    def test_list_active_plantings_sorted_first(self):
+        self.authenticate()
+
+        harvested_planting = PlantingFactory(user=self.user, status="HARVESTED")
+        active_planting = PlantingFactory(user=self.user, status="ACTIVE")
+
+        response = self.client.get(self.url)
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        statuses = [p["status"] for p in plantings]
+        first_non_active = next(
+            (i for i, s in enumerate(statuses) if s != "ACTIVE"), len(statuses)
+        )
+        self.assertTrue(
+            all(s == "ACTIVE" for s in statuses[:first_non_active]),
+            "All ACTIVE plantings should appear before non-ACTIVE ones",
+        )
+        self.assertEqual(plantings[0]["id"], active_planting.id)
+        self.assertEqual(plantings[-1]["id"], harvested_planting.id)
+
     def test_list_search_by_crop_name(self):
         self.authenticate()
 
