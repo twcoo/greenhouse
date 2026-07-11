@@ -19,6 +19,7 @@ export interface PlantingDailyObservation {
   watered: boolean
   notes: string
   image: string | null
+  observationDate: string
   createdAt: string
   updatedAt: string
 }
@@ -38,4 +39,5 @@ export interface PlantingDailyObservationPayload {
   watered: boolean
   notes?: string
   image?: File | null
+  observationDate?: string
 }
