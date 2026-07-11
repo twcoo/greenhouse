@@ -34,6 +34,7 @@ const defaultObservations = {
       ecMsCm: null,
       notes: "Healthy growth",
       image: null,
+      observationDate: "2024-03-01",
       createdAt: "2024-03-01T00:00:00Z",
       updatedAt: "2024-03-01T00:00:00Z",
     },
@@ -55,6 +56,7 @@ const defaultObservations = {
       ecMsCm: null,
       notes: "",
       image: null,
+      observationDate: "2024-03-02",
       createdAt: "2024-03-02T00:00:00Z",
       updatedAt: "2024-03-02T00:00:00Z",
     },
@@ -157,6 +159,13 @@ describe("PlantingDailyObservationSheet.vue", () => {
       const wrapper = mountComponent()
 
       expect(wrapper.text()).toContain("Healthy growth")
+    })
+
+    it("renders the observation date in the table", () => {
+      const wrapper = mountComponent()
+
+      // formatDate("2024-03-01") → "Mar 1, 2024" (or similar)
+      expect(wrapper.text()).toMatch(/Mar.*2024|2024.*Mar/)
     })
 
     it("renders — when heightCm is null", () => {

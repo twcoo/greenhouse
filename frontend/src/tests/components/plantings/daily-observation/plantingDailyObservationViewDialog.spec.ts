@@ -30,6 +30,7 @@ const baseObservation: PlantingDailyObservation = {
   ecMsCm: "1.2",
   notes: "Healthy today",
   image: null,
+  observationDate: "2024-03-01",
   createdAt: "2024-03-01T00:00:00Z",
   updatedAt: "2024-03-01T00:00:00Z",
 }
@@ -163,11 +164,17 @@ describe("PlantingDailyObservationViewDialog.vue", () => {
   })
 
   describe("date", () => {
-    it("renders the created date in the description", () => {
+    it("renders the observationDate in the description", () => {
       const wrapper = mountComponent()
 
-      // formatDate("2024-03-01T00:00:00Z") → "Mar 1, 2024" (or similar)
+      // formatDate("2024-03-01") → "Mar 1, 2024" (or similar)
       expect(wrapper.text()).toMatch(/Mar.*2024|2024.*Mar/)
+    })
+
+    it("renders a different observationDate when provided", () => {
+      const wrapper = mountComponent({ ...baseObservation, observationDate: "2023-07-04" })
+
+      expect(wrapper.text()).toMatch(/Jul.*2023|2023.*Jul/)
     })
   })
 })
