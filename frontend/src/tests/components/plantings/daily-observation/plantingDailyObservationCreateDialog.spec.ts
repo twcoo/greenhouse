@@ -45,8 +45,8 @@ const stubs = {
   DatePicker: {
     template:
       '<input data-stub="date-picker" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
-    props: ['modelValue'],
-    emits: ['update:modelValue'],
+    props: ["modelValue"],
+    emits: ["update:modelValue"],
   },
 }
 
@@ -113,7 +113,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
   describe("default form state", () => {
     it("defaults observationDate to today's date", () => {
-      const today = new Date().toISOString().split('T')[0]
+      const today = new Date().toISOString().split("T")[0]
       const wrapper = mountComponent()
 
       const datePicker = wrapper.find('[data-stub="date-picker"]').element as HTMLInputElement
@@ -151,7 +151,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
   describe("submission", () => {
     it("emits submit with default payload when form is valid", async () => {
-      const today = new Date().toISOString().split('T')[0]
+      const today = new Date().toISOString().split("T")[0]
       const wrapper = mountComponent()
 
       await wrapper.find("form").trigger("submit.prevent")
@@ -381,7 +381,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
   describe("form reset", () => {
     it("resets observationDate to today when dialog is closed and reopened", async () => {
-      const today = new Date().toISOString().split('T')[0]
+      const today = new Date().toISOString().split("T")[0]
       const wrapper = mountComponent()
 
       await wrapper.find('[data-stub="date-picker"]').setValue("2020-01-01")
