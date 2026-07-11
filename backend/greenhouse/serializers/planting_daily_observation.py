@@ -114,6 +114,12 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
         allow_null=True,
         help_text="Optional image documenting this observation.",
     )
+    observation_date = serializers.DateField(
+        help_text=(
+            "The date this observation was recorded "
+            "(defaults to today)."
+        ),
+    )
     created_at = serializers.DateTimeField(
         read_only=True,
         help_text="Timestamp when this observation was recorded.",
@@ -162,6 +168,7 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
             "watered",
             "notes",
             "image",
+            "observation_date",
             "created_at",
             "updated_at",
         )
