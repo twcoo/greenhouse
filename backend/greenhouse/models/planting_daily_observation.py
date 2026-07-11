@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from .planting import Planting
 from .planting_growth_stage import PlantingGrowthStage
@@ -64,5 +65,9 @@ class PlantingDailyObservation(models.Model):
 
     notes = models.TextField(blank=True)
     image = models.ImageField(upload_to="observations/", null=True, blank=True)
+    observation_date = models.DateField(
+        default=timezone.localdate,
+        help_text="The date this observation was recorded.",
+    )
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now=True)
