@@ -125,6 +125,7 @@ const handleDelete = async (): Promise<void> => {
 }
 
 const toObservationForm = (obs: {
+  observationDate: string
   healthStatus: string
   pestPressure: string
   diseaseSymptoms: boolean
@@ -139,6 +140,7 @@ const toObservationForm = (obs: {
   ecMsCm: string | null
   notes: string
 }): PlantingDailyObservationForm => ({
+  observationDate: obs.observationDate,
   healthStatus: obs.healthStatus as HealthStatus,
   pestPressure: obs.pestPressure as "NONE" | "LOW" | "MEDIUM" | "HIGH",
   diseaseSymptoms: obs.diseaseSymptoms,
@@ -198,7 +200,7 @@ const hasObservations = computed(() => (observations.value?.results?.length ?? 0
             No observations logged yet.
           </TableEmpty>
           <TableRow v-for="obs in observations?.results" :key="obs.id">
-            <TableCell>{{ formatDate(obs.createdAt) }}</TableCell>
+            <TableCell>{{ formatDate(obs.observationDate) }}</TableCell>
             <TableCell>
               <Badge :variant="HEALTH_BADGE_VARIANT[obs.healthStatus]">
                 {{ HEALTH_LABEL[obs.healthStatus] }}
