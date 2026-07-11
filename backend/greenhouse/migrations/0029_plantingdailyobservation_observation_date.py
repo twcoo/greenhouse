@@ -7,13 +7,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('greenhouse', '0028_alter_planting_created_at'),
+        ("greenhouse", "0028_alter_planting_created_at"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='plantingdailyobservation',
-            name='observation_date',
-            field=models.DateField(default=django.utils.timezone.localdate, help_text='The date this observation was recorded.'),
+            model_name="plantingdailyobservation",
+            name="observation_date",
+            field=models.DateField(
+                default=django.utils.timezone.localdate,
+                help_text="The date this observation was recorded.",
+            ),
         ),
     ]
