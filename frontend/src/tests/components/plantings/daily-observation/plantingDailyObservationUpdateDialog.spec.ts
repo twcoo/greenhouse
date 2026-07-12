@@ -43,9 +43,16 @@ const stubs = {
   },
   IconLoader2: { template: "<span />" },
   IconX: { template: "<span />" },
+  DatePicker: {
+    template:
+      '<input data-stub="date-picker" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+    props: ["modelValue"],
+    emits: ["update:modelValue"],
+  },
 }
 
 const baseInitialState: PlantingDailyObservationForm = {
+  observationDate: "2024-03-10",
   healthStatus: "FAIR",
   pestPressure: "LOW",
   diseaseSymptoms: false,
@@ -81,6 +88,13 @@ beforeEach(() => {
 
 describe("PlantingDailyObservationUpdateDialog.vue", () => {
   describe("form pre-population", () => {
+    it("pre-populates observationDate from observationFormInitialState", () => {
+      const wrapper = mountComponent()
+
+      const datePicker = wrapper.find('[data-stub="date-picker"]').element as HTMLInputElement
+      expect(datePicker.value).toBe("2024-03-10")
+    })
+
     it("pre-populates healthStatus from observationFormInitialState", () => {
       const wrapper = mountComponent()
 
@@ -145,7 +159,21 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
       expect(emitted).toBeDefined()
       expect(emitted![0][0]).toBe(42)
       const payload = emitted![0][1] as Record<string, unknown>
-      expect(payload).toMatchObject({ healthStatus: "FAIR", pestPressure: "LOW" })
+      expect(payload).toMatchObject({
+        observationDate: "2024-03-10",
+        healthStatus: "FAIR",
+        pestPressure: "LOW",
+      })
+    })
+
+    it("emits submit with updated observationDate when changed", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.find('[data-stub="date-picker"]').setValue("2024-01-01")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
+      expect(payload.observationDate).toBe("2024-01-01")
     })
 
     it("emits submit with diseaseSymptoms = true when toggled on", async () => {

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { plantingDailyObservationSchema } from "@/schemas/plantingDailyObservation.schemas"
 
 const validBase = {
+  observationDate: "2024-03-15",
   healthStatus: "GOOD" as const,
   pestPressure: "NONE" as const,
   diseaseSymptoms: false,
@@ -135,6 +136,45 @@ describe("plantingDailyObservationSchema", () => {
           pestPressure: pressure,
         })
         expect(result.success).toBe(true)
+      }
+    })
+  })
+
+  describe("observationDate validation", () => {
+    it("fails when observationDate is missing", () => {
+      const { observationDate: _, ...withoutDate } = validBase
+      const result = plantingDailyObservationSchema.safeParse(withoutDate)
+
+      expect(result.success).toBe(false)
+    })
+
+    it("fails when observationDate has wrong format", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        observationDate: "not-a-date",
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it("fails when observationDate uses slashes instead of dashes", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        observationDate: "2024/03/15",
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it("passes with a valid ISO date string", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        observationDate: "2024-01-01",
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.observationDate).toBe("2024-01-01")
       }
     })
   })

@@ -103,6 +103,9 @@ class PlantingDailyObservationFactory(DjangoModelFactory):
     watered = False
     notes = ""
     image = None
+    observation_date = factory.LazyFunction(
+        lambda: __import__("datetime").date.today()
+    )
 
 
 class PlantingLocationAssignmentFactory(DjangoModelFactory):

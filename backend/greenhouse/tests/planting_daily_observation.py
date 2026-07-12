@@ -1,4 +1,5 @@
 import tempfile
+from datetime import date, timedelta
 
 from django.test import override_settings
 from django.urls import reverse
@@ -59,14 +60,39 @@ class PlantingDailyObservationListApiViewTests(
         self.assertEqual(data["count"], 2)
         self.assertIsNone(message)
 
-    def test_list_returns_most_recent_first(self):
+    def test_list_ordered_by_observation_date_desc(self):
         self.authenticate()
 
+        today = date.today()
+        older = PlantingDailyObservationFactory(
+            planting=self.planting,
+            health_status="GOOD",
+            observation_date=today - timedelta(days=2),
+        )
+        newer = PlantingDailyObservationFactory(
+            planting=self.planting,
+            health_status="FAIR",
+            observation_date=today,
+        )
+
+        response = self.client.get(self.url)
+
+        _, _, entries, _ = self.get_response_data_many(response)
+
+        self.assertEqual(entries[0]["id"], newer.id)
+        self.assertEqual(entries[1]["id"], older.id)
+
+    def test_list_same_date_ordered_by_pk_desc(self):
+        self.authenticate()
+
+        today = date.today()
         first = PlantingDailyObservationFactory(
-            planting=self.planting, health_status="GOOD"
+            planting=self.planting,
+            observation_date=today,
         )
         second = PlantingDailyObservationFactory(
-            planting=self.planting, health_status="FAIR"
+            planting=self.planting,
+            observation_date=today,
         )
 
         response = self.client.get(self.url)
@@ -263,6 +289,47 @@ class PlantingDailyObservationCreateApiViewTests(
             {"image": ["File too large. Size should not exceed 2.0MB."]},
         )
 
+    def test_create_observation_defaults_observation_date_to_today(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response_data["observation_date"], date.today().isoformat()
+        )
+
+    def test_create_observation_with_past_date(self):
+        self.authenticate()
+
+        past_date = (date.today() - timedelta(days=3)).isoformat()
+        data = {"health_status": "GOOD", "observation_date": past_date}
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_data["observation_date"], past_date)
+
+    def test_create_observation_invalid_observation_date(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD", "observation_date": "not-a-date"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            {"observation_date": ["Date has wrong format. Use one of these"
+                                  " formats instead: YYYY-MM-DD."]},
+        )
+
     def test_create_observation_other_user_planting_returns_404(self):
         self.authenticate()
 
@@ -316,6 +383,34 @@ class PlantingDailyObservationDetailApiViewTests(
         self.assertEqual(response_data["notes"], "Updated notes.")
         self.assertEqual(response_data["watered"], True)
         self.assertIsNone(message)
+
+    def test_update_observation_date(self):
+        self.authenticate()
+
+        past_date = (date.today() - timedelta(days=5)).isoformat()
+        data = {
+            "health_status": "GOOD",
+            "observation_date": past_date,
+        }
+        response = self.client.put(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["observation_date"], past_date)
+
+    def test_partial_update_observation_date(self):
+        self.authenticate()
+
+        past_date = (date.today() - timedelta(days=2)).isoformat()
+        data = {"observation_date": past_date}
+        response = self.client.patch(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["observation_date"], past_date)
+        self.assertEqual(response_data["health_status"], "GOOD")
 
     def test_update_observation_invalid_health_status(self):
         self.authenticate()

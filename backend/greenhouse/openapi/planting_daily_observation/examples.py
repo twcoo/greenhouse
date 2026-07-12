@@ -23,6 +23,7 @@ PLANTING_DAILY_OBSERVATION_SERIALIZER_EXAMPLE = OpenApiExample(
         "watered": False,
         "notes": "Looking healthy. New leaves forming.",
         "image": None,
+        "observation_date": "2024-03-01",
         "created_at": "2024-03-01T08:00:00Z",
         "updated_at": "2024-03-01T08:00:00Z",
     },
@@ -36,6 +37,7 @@ CREATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE = OpenApiExample(
         "for a planting."
     ),
     value={
+        "observation_date": "2024-03-01",
         "health_status": "GOOD",
         "height_cm": "12.50",
         "leaf_count": 8,
@@ -72,6 +74,7 @@ CREATE_PLANTING_DAILY_OBSERVATION_RESPONSE_EXAMPLE = OpenApiExample(
             "watered": False,
             "notes": "Looking healthy. New leaves forming.",
             "image": None,
+            "observation_date": "2024-03-01",
             "created_at": "2024-03-01T08:00:00Z",
             "updated_at": "2024-03-01T08:00:00Z",
         },
@@ -84,6 +87,7 @@ UPDATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE = OpenApiExample(
     summary="Update a daily observation",
     description=("Example request payload for updating a daily observation."),
     value={
+        "observation_date": "2024-03-01",
         "health_status": "FAIR",
         "height_cm": "14.00",
         "leaf_count": 10,
@@ -134,6 +138,7 @@ UPDATE_PLANTING_DAILY_OBSERVATION_RESPONSE_EXAMPLE = OpenApiExample(
             "watered": False,
             "notes": "Slight yellowing on lower leaves.",
             "image": None,
+            "observation_date": "2024-03-01",
             "created_at": "2024-03-01T08:00:00Z",
             "updated_at": "2024-03-02T09:00:00Z",
         },

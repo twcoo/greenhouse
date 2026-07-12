@@ -4,6 +4,7 @@ const optionalDecimal = () =>
   z.preprocess((v) => (v === "" ? undefined : v), z.coerce.number().optional())
 
 export const plantingDailyObservationSchema = z.object({
+  observationDate: z.string().date(),
   healthStatus: z.enum(["GOOD", "FAIR", "POOR"], {
     error: "Health status is required",
   }),

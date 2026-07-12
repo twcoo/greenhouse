@@ -79,7 +79,7 @@ class PlantingDailyObservationListApiView(
     def get_queryset(self):
         return PlantingDailyObservation.objects.filter(
             planting=self._get_planting()
-        ).order_by("-pk")
+        ).order_by("-observation_date", "-pk")
 
     def perform_create(self, serializer):
         serializer.save(planting=self._get_planting())

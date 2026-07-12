@@ -37,7 +37,7 @@ const closePreview = (): void => {
       <DialogHeader>
         <DialogTitle>Observation Details</DialogTitle>
         <DialogDescription v-if="observation">
-          Logged on {{ formatDate(observation.createdAt) }}
+          Logged on {{ formatDate(observation.observationDate) }}
         </DialogDescription>
       </DialogHeader>
 

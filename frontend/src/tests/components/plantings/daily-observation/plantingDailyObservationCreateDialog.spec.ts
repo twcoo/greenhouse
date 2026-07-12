@@ -42,6 +42,12 @@ const stubs = {
   },
   IconLoader2: { template: "<span />" },
   IconX: { template: "<span />" },
+  DatePicker: {
+    template:
+      '<input data-stub="date-picker" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+    props: ["modelValue"],
+    emits: ["update:modelValue"],
+  },
 }
 
 const mountComponent = (props = {}) =>
@@ -61,6 +67,12 @@ beforeEach(() => {
 
 describe("PlantingDailyObservationCreateDialog.vue", () => {
   describe("rendering", () => {
+    it("renders the observation date picker", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find('[data-stub="date-picker"]').exists()).toBe(true)
+    })
+
     it("renders health status and pest pressure selects", () => {
       const wrapper = mountComponent()
 
@@ -100,6 +112,14 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
   })
 
   describe("default form state", () => {
+    it("defaults observationDate to today's date", () => {
+      const today = new Date().toISOString().split("T")[0]
+      const wrapper = mountComponent()
+
+      const datePicker = wrapper.find('[data-stub="date-picker"]').element as HTMLInputElement
+      expect(datePicker.value).toBe(today)
+    })
+
     it("defaults healthStatus select to GOOD", () => {
       const wrapper = mountComponent()
 
@@ -131,6 +151,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
   describe("submission", () => {
     it("emits submit with default payload when form is valid", async () => {
+      const today = new Date().toISOString().split("T")[0]
       const wrapper = mountComponent()
 
       await wrapper.find("form").trigger("submit.prevent")
@@ -139,11 +160,22 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(emitted).toBeDefined()
       const payload = emitted![0][0] as Record<string, unknown>
       expect(payload).toMatchObject({
+        observationDate: today,
         healthStatus: "GOOD",
         pestPressure: "NONE",
         diseaseSymptoms: false,
         watered: false,
       })
+    })
+
+    it("emits submit with updated observationDate when date picker changes", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.find('[data-stub="date-picker"]').setValue("2024-01-15")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.observationDate).toBe("2024-01-15")
     })
 
     it("emits submit with updated healthStatus when changed", async () => {
@@ -348,6 +380,20 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
   })
 
   describe("form reset", () => {
+    it("resets observationDate to today when dialog is closed and reopened", async () => {
+      const today = new Date().toISOString().split("T")[0]
+      const wrapper = mountComponent()
+
+      await wrapper.find('[data-stub="date-picker"]').setValue("2020-01-01")
+      await wrapper.setProps({ open: false })
+      await wrapper.vm.$nextTick()
+      await wrapper.setProps({ open: true })
+      await wrapper.vm.$nextTick()
+
+      const datePicker = wrapper.find('[data-stub="date-picker"]').element as HTMLInputElement
+      expect(datePicker.value).toBe(today)
+    })
+
     it("resets notes when dialog is closed", async () => {
       const wrapper = mountComponent()
 

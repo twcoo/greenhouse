@@ -30,6 +30,8 @@ import type { APIErrorResponse } from "@/types/api"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
 import { AxiosError } from "axios"
 import { HEALTH_STATUS_OPTIONS, PEST_PRESSURE_OPTIONS } from "./constants"
+import DatePicker from "@/components/DatePicker.vue"
+import { today, getLocalTimeZone } from "@internationalized/date"
 
 const open = defineModel<boolean>("open")
 const { isLoading, isCreateSuccess } = defineProps<{
@@ -42,6 +44,7 @@ const emit = defineEmits<{
 }>()
 
 const formInitialState: PlantingDailyObservationForm = {
+  observationDate: today(getLocalTimeZone()).toString(),
   healthStatus: "GOOD",
   pestPressure: "NONE",
   diseaseSymptoms: false,
@@ -127,6 +130,15 @@ watch(open, (isOpen) => {
         </DialogHeader>
 
         <FieldGroup>
+          <!-- Date -->
+          <Field>
+            <FieldLabel for="observationDate">Observation Date</FieldLabel>
+            <DatePicker id="observationDate" v-model="form.observationDate" />
+            <FieldError data-test="observationDateError" v-if="errors.observationDate">
+              {{ errors.observationDate }}
+            </FieldError>
+          </Field>
+
           <!-- Health -->
           <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide">Health</p>
           <Field>
