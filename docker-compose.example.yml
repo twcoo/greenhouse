@@ -7,7 +7,12 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - greenhouse-db-data:/var/lib/postgresql/data
-    restart: on-failure:5
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     image: "ghcr.io/twcoo/greenhouse-backend:latest"
@@ -17,8 +22,9 @@ services:
     volumes:
       - greenhouse-media:/backend/media
     depends_on:
-      - db
-    restart: on-failure:5
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
   frontend:
     image: "ghcr.io/twcoo/greenhouse-frontend:latest"
@@ -28,7 +34,7 @@ services:
       - "8080:8080"
     depends_on:
       - backend
-    restart: on-failure:5
+    restart: unless-stopped
 
 volumes:
   greenhouse-db-data:
