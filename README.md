@@ -219,38 +219,22 @@ window.appConfig // { apiUrl: "http://localhost:8000/api/v1" }
 
 ## Docker Compose (self-hosted)
 
-Use the pre-built GHCR images to run Greenhouse on any machine with Docker — no build step required.
+Use the pre-built GHCR images to run Greenhouse on any machine with Docker — no build step required. The `latest` tag always tracks the most recent release.
 
-**1. Download the example compose file:**
+**1. Download the compose file and env template:**
 
 ```bash
 curl -O https://raw.githubusercontent.com/twcoo/greenhouse/main/docker-compose.example.yml
+curl -O https://raw.githubusercontent.com/twcoo/greenhouse/main/.env.self-hosted.example
 ```
 
-**2. Create a `.env` file in the same directory:**
+**2. Create a `.env` file from the template:**
 
-```env
-DEBUG=True
-SECRET_KEY=change-me-use-a-long-random-string
-
-ALLOWED_HOSTS=localhost
-
-DB_HOST=db
-DB_USER=greenhouse
-DB_PASSWORD=change-me-db-password
-DB_NAME=greenhouse
-
-SUPERUSER_USERNAME=admin
-SUPERUSER_EMAIL=admin@example.com
-SUPERUSER_PASSWORD=change-me-superuser-password
-
-CORS_ALLOWED_ORIGINS=http://localhost:8080
-CSRF_COOKIE_SECURE=False
-CSRF_TRUSTED_ORIGINS=http://localhost:8080
-
-# Must be the URL the browser can reach — not a docker-internal hostname
-API_URL=http://localhost:8000/api/v1
+```bash
+cp .env.self-hosted.example .env
 ```
+
+Edit `.env` and replace all `change-me-*` values with your own. At minimum set `SECRET_KEY`, `DB_PASSWORD`, `SUPERUSER_PASSWORD`, and `SUPERUSER_EMAIL`. If deploying to a custom domain or IP, update `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, `CSRF_TRUSTED_ORIGINS`, and `API_URL` accordingly.
 
 **3. Start:**
 
@@ -259,6 +243,8 @@ docker compose -f docker-compose.example.yml up -d
 ```
 
 The backend runs on port `8000` and the frontend on port `8080`. Visit `http://localhost:8080`.
+
+On first launch the app redirects to `/setup` to create the admin account — this is separate from the `SUPERUSER_*` credentials (which are for Django admin access).
 
 ---
 
