@@ -33,6 +33,7 @@ export function usePlantingLocationAssignments(
     onSuccess: (): void => {
       queryClient.invalidateQueries({ queryKey: ["planting-location-assignments", plantingId] })
       queryClient.invalidateQueries({ queryKey: ["plantings"] })
+      queryClient.invalidateQueries({ queryKey: ["planting-locations"] })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err
@@ -50,6 +51,7 @@ export function usePlantingLocationAssignments(
     onSuccess: (): void => {
       queryClient.invalidateQueries({ queryKey: ["planting-location-assignments", plantingId] })
       queryClient.invalidateQueries({ queryKey: ["plantings"] })
+      queryClient.invalidateQueries({ queryKey: ["planting-locations"] })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err
@@ -62,6 +64,7 @@ export function usePlantingLocationAssignments(
     onSuccess: (): void => {
       queryClient.invalidateQueries({ queryKey: ["planting-location-assignments", plantingId] })
       queryClient.invalidateQueries({ queryKey: ["plantings"] })
+      queryClient.invalidateQueries({ queryKey: ["planting-locations"] })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err
