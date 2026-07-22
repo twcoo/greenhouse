@@ -20,7 +20,7 @@ body:
         2. Click on '...'
         3. See error
     validations:
-      required: true
+      required: false
 
   - type: checkboxes
     id: area
@@ -30,11 +30,3 @@ body:
         - label: Frontend
         - label: Backend
         - label: Helm/Infra
-
-  - type: textarea
-    id: context
-    attributes:
-      label: Additional context
-      description: Screenshots, logs, or anything else relevant.
-    validations:
-      required: false
