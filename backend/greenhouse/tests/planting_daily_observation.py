@@ -326,8 +326,12 @@ class PlantingDailyObservationCreateApiViewTests(
         self.assertEqual(response_status, "error")
         self.assertEqual(
             message,
-            {"observation_date": ["Date has wrong format. Use one of these"
-                                  " formats instead: YYYY-MM-DD."]},
+            {
+                "observation_date": [
+                    "Date has wrong format. Use one of these"
+                    " formats instead: YYYY-MM-DD."
+                ]
+            },
         )
 
     def test_create_observation_other_user_planting_returns_404(self):
