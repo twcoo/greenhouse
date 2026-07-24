@@ -69,4 +69,18 @@ describe("apiToFormErrors", () => {
 
     expect(result).toEqual({})
   })
+
+  it("handles string array error as general (first item)", () => {
+    const result = apiToFormErrors(["Cannot delete a planting location that is currently in use."])
+
+    expect(result).toEqual({
+      general: "Cannot delete a planting location that is currently in use.",
+    })
+  })
+
+  it("handles empty string array as empty general", () => {
+    const result = apiToFormErrors([])
+
+    expect(result).toEqual({ general: "" })
+  })
 })

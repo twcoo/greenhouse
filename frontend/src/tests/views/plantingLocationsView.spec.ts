@@ -1,6 +1,7 @@
 import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { ref } from "vue"
+import { toast } from "vue-sonner"
 import PlantingLocationsView from "@/views/planting-locations/index.vue"
 import PlantingLocationTable from "@/components/planting-locations/PlantingLocationTable.vue"
 import PlantingLocationCreateDialog from "@/components/planting-locations/PlantingLocationCreateDialog.vue"
@@ -8,6 +9,10 @@ import PlantingLocationUpdateDialog from "@/components/planting-locations/Planti
 import PlantingLocationStatusSheet from "@/components/planting-locations/status/PlantingLocationStatusSheet.vue"
 import { createTestingPinia } from "@pinia/testing"
 import type { PlantingLocation } from "@/types/plantingLocation"
+
+vi.mock("vue-sonner", () => ({
+  toast: { error: vi.fn() },
+}))
 
 const mockLocations: PlantingLocation[] = [
   { id: 1, name: "Garden Pot", locationType: "POT", width: 30, height: 40 },
@@ -101,6 +106,36 @@ describe("PlantingLocationsView", () => {
     await wrapper.findComponent(PlantingLocationTable).vm.$emit("delete", 1)
 
     expect(mockDeleteLocation).toHaveBeenCalledWith(1)
+  })
+
+  it("shows a toast error when deleteLocation fails with a string array message", async () => {
+    mockDeleteLocation.mockRejectedValueOnce({
+      response: {
+        data: {
+          message: ["Cannot delete a planting location that is currently in use."],
+        },
+      },
+    })
+
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent(PlantingLocationTable).vm.$emit("delete", 1)
+    await wrapper.vm.$nextTick()
+
+    expect(toast.error).toHaveBeenCalledWith(
+      "Cannot delete a planting location that is currently in use.",
+    )
+  })
+
+  it("shows a fallback toast error when deleteLocation fails without a message", async () => {
+    mockDeleteLocation.mockRejectedValueOnce({ response: { data: {} } })
+
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent(PlantingLocationTable).vm.$emit("delete", 1)
+    await wrapper.vm.$nextTick()
+
+    expect(toast.error).toHaveBeenCalledWith("Failed to delete. Please try again.")
   })
 
   it("opens update dialog with correct id and form state on update event from table", async () => {
