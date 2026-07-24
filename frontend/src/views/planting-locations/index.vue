@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { watchDebounced } from "@vueuse/core"
+import { AxiosError } from "axios"
+import { toast } from "vue-sonner"
 import AppLayout from "@/layouts/AppLayout.vue"
 import PlantingLocationTable from "@/components/planting-locations/PlantingLocationTable.vue"
 import PlantingLocationCreateDialog from "@/components/planting-locations/PlantingLocationCreateDialog.vue"
@@ -11,6 +13,7 @@ import { IconLoader2, IconPlus } from "@tabler/icons-vue"
 import type { PlantingLocationPayload } from "@/types/plantingLocation"
 import type { PlantingLocationForm } from "@/schemas/plantingLocation.schemas"
 import type { PlantingLocationStatus } from "@/types/plantingLocationStatus"
+import type { APIErrorResponse } from "@/types/api"
 import Button from "@/components/ui/button/Button.vue"
 
 // Search Refs
@@ -78,8 +81,17 @@ const handleUpdateLocation = async (
 }
 
 const handleDeleteLocation = async (id: number): Promise<void> => {
-  await deleteLocation(id)
-  pagination.value = { ...pagination.value, pageIndex: 0 }
+  try {
+    await deleteLocation(id)
+    pagination.value = { ...pagination.value, pageIndex: 0 }
+  } catch (err) {
+    const axiosError = err as AxiosError<APIErrorResponse>
+    const msg = axiosError.response?.data?.message
+    let errorText = "Failed to delete. Please try again."
+    if (typeof msg === "string") errorText = msg
+    else if (Array.isArray(msg) && msg.length > 0) errorText = msg[0] ?? errorText
+    toast.error(errorText)
+  }
 }
 
 const handleTableAction = (name: string, id: number): void => {
