@@ -1,9 +1,12 @@
+import datetime
+
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from ..models import PlantingLocation, PlantingLocationStatus
-from .commons.factories import PlantingLocationFactory, UserFactory
+from .commons.factories import (PlantingLocationAssignmentFactory,
+                                PlantingLocationFactory, UserFactory)
 from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixin
 
 
@@ -586,3 +589,52 @@ class PlantingLocationDeleteApiViewTests(
         self.assertEqual(response_status, "error")
         self.assertIsNone(data)
         self.assertEqual(message, "Resource not found.")
+
+    def test_delete_in_use_planting_location(self):
+        self.authenticate()
+
+        PlantingLocationAssignmentFactory(
+            planting_location=self.location,
+            end_date=None,
+        )
+
+        response = self.client.delete(self.url)
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertEqual(
+            message,
+            ["Cannot delete a planting location that is " "currently in use."],
+        )
+        self.assertTrue(
+            PlantingLocation.objects.filter(id=self.location.id).exists()
+        )
+
+    def test_delete_planting_location_with_historical_assignments(self):
+        self.authenticate()
+
+        PlantingLocationAssignmentFactory(
+            planting_location=self.location,
+            end_date=datetime.date.today(),
+        )
+
+        response = self.client.delete(self.url)
+
+        response_status, data, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertEqual(
+            message,
+            [
+                "Cannot delete this planting location as it has "
+                "historical planting assignment records."
+            ],
+        )
+        self.assertTrue(
+            PlantingLocation.objects.filter(id=self.location.id).exists()
+        )
