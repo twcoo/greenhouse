@@ -7,6 +7,8 @@ from .examples import (
     CREATE_GROUND_PLANTING_LOCATION_RESPONSE_EXAMPLE,
     CREATE_POT_PLANTING_LOCATION_RESPONSE_EXAMPLE,
     GROUND_LOCATION_HEIGHT_VALIDATION_ERROR_EXAMPLE,
+    PLANTING_LOCATION_DELETE_HISTORICAL_RECORDS_RESPONSE_EXAMPLE,
+    PLANTING_LOCATION_DELETE_IN_USE_RESPONSE_EXAMPLE,
     PLANTING_LOCATION_GROUND_LENGTH_REQUIRED_VALIDATION_RESPONSE_EXAMPLE,
     PLANTING_LOCATION_NOT_FOUND_RESPONSE_EXAMPLE,
     PLANTING_LOCATION_POT_HEIGHT_REQUIRED_VALIDATION_RESPONSE_EXAMPLE,
@@ -86,4 +88,17 @@ PLANTING_LOCATION_DELETE_RESPONSE = OpenApiResponse(
     description="Planting location deleted successfully.",
     response=CustomOpenAPIResponseSchema().get_schema(),
     examples=[NO_DATA_RESPONSE_EXAMPLE],
+)
+
+PLANTING_LOCATION_DELETE_IN_USE_RESPONSE = OpenApiResponse(
+    description=(
+        "Cannot delete the planting location because it is "
+        "currently in use or has historical planting assignment "
+        "records."
+    ),
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[
+        PLANTING_LOCATION_DELETE_IN_USE_RESPONSE_EXAMPLE,
+        PLANTING_LOCATION_DELETE_HISTORICAL_RECORDS_RESPONSE_EXAMPLE,
+    ],
 )
