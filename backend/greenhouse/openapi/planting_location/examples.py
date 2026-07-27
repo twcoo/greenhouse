@@ -281,3 +281,40 @@ POT_LOCATION_LENGTH_VALIDATION_ERROR_EXAMPLE = OpenApiExample(
         },
     },
 )
+
+PLANTING_LOCATION_DELETE_IN_USE_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Planting location in use",
+    summary="Cannot delete a planting location that is in use",
+    description=(
+        "Example response returned when attempting to delete a "
+        "planting location that is currently assigned to an "
+        "active planting."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": [
+            "Cannot delete a planting location that is " "currently in use."
+        ],
+    },
+)
+
+PLANTING_LOCATION_DELETE_HISTORICAL_RECORDS_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Planting location has historical records",
+    summary="Cannot delete a planting location with historical assignments",
+    description=(
+        "Example response returned when attempting to delete a "
+        "planting location that has historical planting "
+        "assignment records."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": [
+            "Cannot delete this planting location as it has "
+            "historical planting assignment records."
+        ],
+    },
+)

@@ -7,7 +7,7 @@ export interface APIResponse<T> {
 export interface APIErrorResponse {
   status: "error"
   data: null
-  message: Record<string, string[]> | string
+  message: Record<string, string[]> | string[] | string
 }
 
 export type PaginatedResponse<T> = {

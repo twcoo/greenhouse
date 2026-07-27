@@ -12,12 +12,17 @@ export function zodToFormErrors(error: ZodError): Record<string, string> {
 }
 
 export function apiToFormErrors(
-  apiErrors: Record<string, string[]> | string,
+  apiErrors: Record<string, string[]> | string[] | string,
 ): Record<string, string> {
   const errors: Record<string, string> = {}
 
-  if (typeof apiErrors == "string") {
+  if (typeof apiErrors === "string") {
     errors.general = apiErrors
+    return errors
+  }
+
+  if (Array.isArray(apiErrors)) {
+    errors.general = apiErrors[0] ?? ""
     return errors
   }
 

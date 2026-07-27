@@ -1,8 +1,10 @@
 from typing import Any
 
 from django.db import transaction
+from django.db.models import ProtectedError
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -17,8 +19,10 @@ from ..openapi.planting_location.examples import (
 from ..openapi.planting_location.parameters import PLANTING_LOCATION_ID_PARAM
 from ..openapi.planting_location.responses import (
     PLANTING_LOCATION_CREATE_VALIDATION_RESPONSE,
-    PLANTING_LOCATION_CREATED_RESPONSE, PLANTING_LOCATION_DELETE_RESPONSE,
-    PLANTING_LOCATION_LIST_RESPONSE, PLANTING_LOCATION_NOT_FOUND_RESPONSE,
+    PLANTING_LOCATION_CREATED_RESPONSE,
+    PLANTING_LOCATION_DELETE_IN_USE_RESPONSE,
+    PLANTING_LOCATION_DELETE_RESPONSE, PLANTING_LOCATION_LIST_RESPONSE,
+    PLANTING_LOCATION_NOT_FOUND_RESPONSE,
     PLANTING_LOCATION_PARTIAL_UPDATE_VALIDATION_RESPONSE,
     PLANTING_LOCATION_RETRIEVE_RESPONSE, PLANTING_LOCATION_UPDATE_RESPONSE,
     PLANTING_LOCATION_UPDATE_VALIDATION_RESPONSE)
@@ -124,11 +128,12 @@ class PlantingLocationListApiView(
     ),
     delete=extend_schema(
         tags=["Planting Location"],
-        summary="Delete a crop",
+        summary="Delete a planting location",
         description="Deletes an existing planting location record by ID.",
         parameters=PLANTING_LOCATION_ID_PARAM,
         responses={
             204: PLANTING_LOCATION_DELETE_RESPONSE,
+            400: PLANTING_LOCATION_DELETE_IN_USE_RESPONSE,
             404: PLANTING_LOCATION_NOT_FOUND_RESPONSE,
         },
     ),
@@ -155,6 +160,21 @@ class PlantingLocationDetailAPIView(
 
     def patch(self, request: Request, *args: Any, **kwargs: Any):
         return self.partial_update(request, *args, **kwargs)
+
+    def perform_destroy(self, instance: PlantingLocation) -> None:
+        if instance.plantinglocationassignment_set.filter(
+            end_date__isnull=True
+        ).exists():
+            raise ValidationError(
+                "Cannot delete a planting location that is " "currently in use."
+            )
+        try:
+            instance.delete()
+        except ProtectedError:
+            raise ValidationError(
+                "Cannot delete this planting location as it has "
+                "historical planting assignment records."
+            )
 
     def delete(self, request: Request, *args: Any, **kwargs: Any):
         return self.destroy(request, *args, **kwargs)
