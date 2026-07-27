@@ -105,30 +105,33 @@ describe("usePlantingLocationAssignments", () => {
     expect(plantingLocationAssignmentService.delete).toHaveBeenCalledWith(5, 3)
   })
 
-  it("createAssignment invalidates the plantings query", async () => {
+  it("createAssignment invalidates the plantings and planting-locations queries", async () => {
     const { result, queryClient } = mountComposable(ref(5))
     const invalidate = vi.spyOn(queryClient, "invalidateQueries")
 
     await result.createAssignment(payload)
 
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ["plantings"] })
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["planting-locations"] })
   })
 
-  it("updateAssignment invalidates the plantings query", async () => {
+  it("updateAssignment invalidates the plantings and planting-locations queries", async () => {
     const { result, queryClient } = mountComposable(ref(5))
     const invalidate = vi.spyOn(queryClient, "invalidateQueries")
 
     await result.updateAssignment({ id: 3, payload })
 
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ["plantings"] })
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["planting-locations"] })
   })
 
-  it("deleteAssignment invalidates the plantings query", async () => {
+  it("deleteAssignment invalidates the plantings and planting-locations queries", async () => {
     const { result, queryClient } = mountComposable(ref(5))
     const invalidate = vi.spyOn(queryClient, "invalidateQueries")
 
     await result.deleteAssignment(3)
 
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ["plantings"] })
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["planting-locations"] })
   })
 })
