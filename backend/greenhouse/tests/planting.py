@@ -1,11 +1,11 @@
-from datetime import date, datetime, timezone
+from datetime import date
 
 from dateutil.parser import parse
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ..models import Planting, PlantingDailyObservation
+from ..models import Planting
 from .commons.factories import (CropFactory, PlantingDailyObservationFactory,
                                 PlantingFactory,
                                 PlantingLocationAssignmentFactory,
@@ -738,9 +738,9 @@ class PlantingHasDailyObservationTests(ResponseUtilsMixin, APITestCase):
         planting = PlantingFactory(
             user=self.user, crop=self.crop, variety=self.variety
         )
-        obs = PlantingDailyObservationFactory(planting=planting)
-        PlantingDailyObservation.objects.filter(pk=obs.pk).update(
-            created_at=datetime(2024, 1, 1, tzinfo=timezone.utc)
+        PlantingDailyObservationFactory(
+            planting=planting,
+            observation_date=date(2024, 1, 1),
         )
 
         response = self.client.get(self.list_url)
