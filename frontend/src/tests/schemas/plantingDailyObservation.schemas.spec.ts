@@ -19,22 +19,13 @@ describe("plantingDailyObservationSchema", () => {
     it("parses a fully populated form", () => {
       const result = plantingDailyObservationSchema.safeParse({
         ...validBase,
-        heightCm: 15.5,
-        leafCount: 3,
-        temperatureC: 22.5,
-        humidityPercent: 65.0,
-        lightHours: 8.0,
-        soilMoisturePercent: 40.0,
-        soilPh: 6.5,
-        ecMsCm: 1.2,
+        rained: true,
         notes: "Healthy plant",
       })
 
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.heightCm).toBe(15.5)
-        expect(result.data.leafCount).toBe(3)
-        expect(result.data.ecMsCm).toBe(1.2)
+        expect(result.data.rained).toBe(true)
       }
     })
 
@@ -49,53 +40,39 @@ describe("plantingDailyObservationSchema", () => {
         expect(result.data.diseaseSymptoms).toBe(true)
       }
     })
-
-    it("coerces string number to number for decimal fields", () => {
-      const result = plantingDailyObservationSchema.safeParse({
-        ...validBase,
-        heightCm: "12.5",
-        temperatureC: "22.0",
-      })
-
-      expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.heightCm).toBe(12.5)
-        expect(result.data.temperatureC).toBe(22.0)
-      }
-    })
   })
 
-  describe("empty string coercion", () => {
-    it("coerces empty string to undefined for decimal fields", () => {
-      const result = plantingDailyObservationSchema.safeParse({
-        ...validBase,
-        heightCm: "",
-        temperatureC: "",
-        humidityPercent: "",
-        lightHours: "",
-        soilMoisturePercent: "",
-        soilPh: "",
-        ecMsCm: "",
-      })
+  describe("rained field", () => {
+    it("defaults rained to false when omitted", () => {
+      const result = plantingDailyObservationSchema.safeParse(validBase)
 
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.heightCm).toBeUndefined()
-        expect(result.data.temperatureC).toBeUndefined()
-        expect(result.data.humidityPercent).toBeUndefined()
-        expect(result.data.soilPh).toBeUndefined()
+        expect(result.data.rained).toBe(false)
       }
     })
 
-    it("coerces empty string to undefined for leafCount", () => {
+    it("defaults rained to false when null", () => {
       const result = plantingDailyObservationSchema.safeParse({
         ...validBase,
-        leafCount: "",
+        rained: null,
       })
 
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.leafCount).toBeUndefined()
+        expect(result.data.rained).toBe(false)
+      }
+    })
+
+    it("passes rained = true correctly", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        rained: true,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.rained).toBe(true)
       }
     })
   })
@@ -175,38 +152,6 @@ describe("plantingDailyObservationSchema", () => {
       expect(result.success).toBe(true)
       if (result.success) {
         expect(result.data.observationDate).toBe("2024-01-01")
-      }
-    })
-  })
-
-  describe("leafCount validation", () => {
-    it("fails for a negative leafCount", () => {
-      const result = plantingDailyObservationSchema.safeParse({
-        ...validBase,
-        leafCount: -1,
-      })
-
-      expect(result.success).toBe(false)
-    })
-
-    it("fails for a non-integer leafCount", () => {
-      const result = plantingDailyObservationSchema.safeParse({
-        ...validBase,
-        leafCount: 2.5,
-      })
-
-      expect(result.success).toBe(false)
-    })
-
-    it("accepts zero leafCount", () => {
-      const result = plantingDailyObservationSchema.safeParse({
-        ...validBase,
-        leafCount: 0,
-      })
-
-      expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.leafCount).toBe(0)
       }
     })
   })
