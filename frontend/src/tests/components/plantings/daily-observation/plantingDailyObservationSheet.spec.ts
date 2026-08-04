@@ -24,14 +24,7 @@ const defaultObservations = {
       pestPressure: "NONE",
       diseaseSymptoms: false,
       watered: false,
-      heightCm: "15.50",
-      leafCount: 3,
-      temperatureC: null,
-      humidityPercent: null,
-      lightHours: null,
-      soilMoisturePercent: null,
-      soilPh: null,
-      ecMsCm: null,
+      rained: false,
       notes: "Healthy growth",
       image: null,
       observationDate: "2024-03-01",
@@ -46,14 +39,7 @@ const defaultObservations = {
       pestPressure: "HIGH",
       diseaseSymptoms: true,
       watered: false,
-      heightCm: null,
-      leafCount: null,
-      temperatureC: null,
-      humidityPercent: null,
-      lightHours: null,
-      soilMoisturePercent: null,
-      soilPh: null,
-      ecMsCm: null,
+      rained: false,
       notes: "",
       image: null,
       observationDate: "2024-03-02",
@@ -168,7 +154,7 @@ describe("PlantingDailyObservationSheet.vue", () => {
       expect(wrapper.text()).toMatch(/Mar.*2024|2024.*Mar/)
     })
 
-    it("renders — when heightCm is null", () => {
+    it("renders — when notes is empty", () => {
       const wrapper = mountComponent()
 
       expect(wrapper.text()).toContain("—")

@@ -24,66 +24,6 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
         help_text="Display name of the associated growth stage.",
     )
 
-    # Growth
-    height_cm = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        required=False,
-        allow_null=True,
-        help_text="Plant height in centimetres.",
-    )
-    leaf_count = serializers.IntegerField(
-        required=False,
-        allow_null=True,
-        help_text="Number of leaves counted.",
-    )
-
-    # Environment
-    temperature_c = serializers.DecimalField(
-        max_digits=4,
-        decimal_places=1,
-        required=False,
-        allow_null=True,
-        help_text="Ambient temperature in degrees Celsius.",
-    )
-    humidity_percent = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        required=False,
-        allow_null=True,
-        help_text="Relative humidity percentage.",
-    )
-    light_hours = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        required=False,
-        allow_null=True,
-        help_text="Hours of light received.",
-    )
-
-    # Soil
-    soil_moisture_percent = serializers.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        required=False,
-        allow_null=True,
-        help_text="Soil moisture percentage.",
-    )
-    soil_ph = serializers.DecimalField(
-        max_digits=3,
-        decimal_places=1,
-        required=False,
-        allow_null=True,
-        help_text="Soil pH value.",
-    )
-    ec_ms_cm = serializers.DecimalField(
-        max_digits=4,
-        decimal_places=2,
-        required=False,
-        allow_null=True,
-        help_text="Electrical conductivity in mS/cm.",
-    )
-
     # Health
     health_status = serializers.ChoiceField(
         choices=PlantingDailyObservation.HEALTH_STATUS_CHOICES,
@@ -102,6 +42,10 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
     watered = serializers.BooleanField(
         default=False,
         help_text=("Whether the planting was watered during this observation."),
+    )
+    rained = serializers.BooleanField(
+        default=False,
+        help_text="Whether watering was skipped because it rained.",
     )
 
     notes = serializers.CharField(
@@ -154,18 +98,11 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
             "id",
             "stage",
             "stage_name",
-            "height_cm",
-            "leaf_count",
-            "temperature_c",
-            "humidity_percent",
-            "light_hours",
-            "soil_moisture_percent",
-            "soil_ph",
-            "ec_ms_cm",
             "health_status",
             "pest_pressure",
             "disease_symptoms",
             "watered",
+            "rained",
             "notes",
             "image",
             "observation_date",

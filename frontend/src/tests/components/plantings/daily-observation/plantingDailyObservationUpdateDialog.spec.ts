@@ -57,14 +57,7 @@ const baseInitialState: PlantingDailyObservationForm = {
   pestPressure: "LOW",
   diseaseSymptoms: false,
   watered: false,
-  heightCm: 20,
-  leafCount: 5,
-  temperatureC: undefined,
-  humidityPercent: undefined,
-  lightHours: undefined,
-  soilMoisturePercent: undefined,
-  soilPh: undefined,
-  ecMsCm: undefined,
+  rained: false,
   notes: "Original notes",
   image: undefined,
 }
@@ -141,6 +134,22 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
       expect(checkbox.checked).toBe(true)
     })
 
+    it("reflects rained = false from observationFormInitialState", () => {
+      const wrapper = mountComponent()
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[2].element as HTMLInputElement
+      expect(checkbox.checked).toBe(false)
+    })
+
+    it("reflects rained = true from observationFormInitialState", () => {
+      const wrapper = mountComponent({
+        observationFormInitialState: { ...baseInitialState, rained: true },
+      })
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[2].element as HTMLInputElement
+      expect(checkbox.checked).toBe(true)
+    })
+
     it("pre-populates notes from observationFormInitialState", () => {
       const wrapper = mountComponent()
 
@@ -194,6 +203,16 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
 
       const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
       expect(payload.watered).toBe(true)
+    })
+
+    it("emits submit with rained = true when toggled on", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[2].setValue(true)
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
+      expect(payload.rained).toBe(true)
     })
 
     it("emits submit with updated notes", async () => {

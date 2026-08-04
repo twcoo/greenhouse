@@ -130,14 +130,7 @@ const toObservationForm = (obs: {
   pestPressure: string
   diseaseSymptoms: boolean
   watered: boolean
-  heightCm: string | null
-  leafCount: number | null
-  temperatureC: string | null
-  humidityPercent: string | null
-  lightHours: string | null
-  soilMoisturePercent: string | null
-  soilPh: string | null
-  ecMsCm: string | null
+  rained: boolean
   notes: string
 }): PlantingDailyObservationForm => ({
   observationDate: obs.observationDate,
@@ -145,15 +138,7 @@ const toObservationForm = (obs: {
   pestPressure: obs.pestPressure as "NONE" | "LOW" | "MEDIUM" | "HIGH",
   diseaseSymptoms: obs.diseaseSymptoms,
   watered: obs.watered,
-  heightCm: obs.heightCm !== null ? Number(obs.heightCm) : undefined,
-  leafCount: obs.leafCount ?? undefined,
-  temperatureC: obs.temperatureC !== null ? Number(obs.temperatureC) : undefined,
-  humidityPercent: obs.humidityPercent !== null ? Number(obs.humidityPercent) : undefined,
-  lightHours: obs.lightHours !== null ? Number(obs.lightHours) : undefined,
-  soilMoisturePercent:
-    obs.soilMoisturePercent !== null ? Number(obs.soilMoisturePercent) : undefined,
-  soilPh: obs.soilPh !== null ? Number(obs.soilPh) : undefined,
-  ecMsCm: obs.ecMsCm !== null ? Number(obs.ecMsCm) : undefined,
+  rained: obs.rained,
   notes: obs.notes ?? "",
   image: undefined,
 })
@@ -190,13 +175,12 @@ const hasObservations = computed(() => (observations.value?.results?.length ?? 0
           <TableRow>
             <TableHead>Date</TableHead>
             <TableHead>Health</TableHead>
-            <TableHead>Height (cm)</TableHead>
             <TableHead>Notes</TableHead>
             <TableHead class="w-[80px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableEmpty v-if="!hasObservations" :colspan="6">
+          <TableEmpty v-if="!hasObservations" :colspan="4">
             No observations logged yet.
           </TableEmpty>
           <TableRow v-for="obs in observations?.results" :key="obs.id">
@@ -206,7 +190,6 @@ const hasObservations = computed(() => (observations.value?.results?.length ?? 0
                 {{ HEALTH_LABEL[obs.healthStatus] }}
               </Badge>
             </TableCell>
-            <TableCell>{{ obs.heightCm ?? "—" }}</TableCell>
             <TableCell class="max-w-[120px] truncate">{{ obs.notes || "—" }}</TableCell>
             <TableCell>
               <div class="flex items-center gap-1">

@@ -19,16 +19,11 @@ const mockObservation = {
   healthStatus: "GOOD",
   pestPressure: "NONE",
   diseaseSymptoms: false,
-  heightCm: "15.50",
-  leafCount: 3,
-  temperatureC: null,
-  humidityPercent: null,
-  lightHours: null,
-  soilMoisturePercent: null,
-  soilPh: null,
-  ecMsCm: null,
+  watered: false,
+  rained: false,
   notes: "Looking healthy",
   image: null,
+  observationDate: "2024-03-01",
   createdAt: "2024-03-01T00:00:00Z",
   updatedAt: "2024-03-01T00:00:00Z",
 }
@@ -99,36 +94,19 @@ describe("plantingDailyObservationService", () => {
       expect(formData.get("disease_symptoms")).toBe("true")
     })
 
-    it("appends optional numeric fields when provided", async () => {
+    it("appends rained to FormData", async () => {
       vi.mocked(apiClient.post).mockResolvedValue({ data: { data: mockObservation } })
 
       await plantingDailyObservationService.create(5, {
         healthStatus: "GOOD",
         pestPressure: "NONE",
         diseaseSymptoms: false,
-        heightCm: 15.5,
-        leafCount: 3,
-        temperatureC: 22.0,
+        watered: false,
+        rained: true,
       })
 
       const formData = vi.mocked(apiClient.post).mock.calls[0][1] as FormData
-      expect(formData.get("height_cm")).toBe("15.5")
-      expect(formData.get("leaf_count")).toBe("3")
-      expect(formData.get("temperature_c")).toBe("22")
-    })
-
-    it("does not append optional fields when absent", async () => {
-      vi.mocked(apiClient.post).mockResolvedValue({ data: { data: mockObservation } })
-
-      await plantingDailyObservationService.create(5, {
-        healthStatus: "GOOD",
-        pestPressure: "NONE",
-        diseaseSymptoms: false,
-      })
-
-      const formData = vi.mocked(apiClient.post).mock.calls[0][1] as FormData
-      expect(formData.get("height_cm")).toBeNull()
-      expect(formData.get("leaf_count")).toBeNull()
+      expect(formData.get("rained")).toBe("true")
     })
 
     it("appends image when provided", async () => {

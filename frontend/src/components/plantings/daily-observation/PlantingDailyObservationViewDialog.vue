@@ -73,42 +73,12 @@ const closePreview = (): void => {
             class="bg-blue-500 text-white dark:bg-blue-600"
             >Watered
           </Badge>
-        </div>
-
-        <!-- Detail grid -->
-        <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-          <div>
-            <span class="text-muted-foreground">Height (cm)</span>
-            <p class="font-medium">{{ observation.heightCm ?? "—" }}</p>
-          </div>
-          <div>
-            <span class="text-muted-foreground">Leaf count</span>
-            <p class="font-medium">{{ observation.leafCount ?? "—" }}</p>
-          </div>
-          <div>
-            <span class="text-muted-foreground">Temperature (°C)</span>
-            <p class="font-medium">{{ observation.temperatureC ?? "—" }}</p>
-          </div>
-          <div>
-            <span class="text-muted-foreground">Humidity (%)</span>
-            <p class="font-medium">{{ observation.humidityPercent ?? "—" }}</p>
-          </div>
-          <div>
-            <span class="text-muted-foreground">Light hours</span>
-            <p class="font-medium">{{ observation.lightHours ?? "—" }}</p>
-          </div>
-          <div>
-            <span class="text-muted-foreground">Soil moisture (%)</span>
-            <p class="font-medium">{{ observation.soilMoisturePercent ?? "—" }}</p>
-          </div>
-          <div>
-            <span class="text-muted-foreground">Soil pH</span>
-            <p class="font-medium">{{ observation.soilPh ?? "—" }}</p>
-          </div>
-          <div>
-            <span class="text-muted-foreground">EC (mS/cm)</span>
-            <p class="font-medium">{{ observation.ecMsCm ?? "—" }}</p>
-          </div>
+          <Badge
+            v-if="observation.rained"
+            variant="secondary"
+            class="bg-sky-500 text-white dark:bg-sky-600"
+            >Rained
+          </Badge>
         </div>
 
         <!-- Notes -->
