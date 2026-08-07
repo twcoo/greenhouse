@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
@@ -37,6 +38,12 @@ class PlantingSerializer(serializers.ModelSerializer):
             "recorded for today."
         ),
     )
+    age_in_days = serializers.SerializerMethodField(
+        help_text="Number of days since planting.",
+    )
+
+    def get_age_in_days(self, obj: Planting) -> int:
+        return int((timezone.localdate() - obj.created_at.date()).days)
 
     def get_crop_name(self, obj: Planting) -> str:
         return str(obj.crop.name)
@@ -83,5 +90,6 @@ class PlantingSerializer(serializers.ModelSerializer):
             "status",
             "current_location",
             "has_daily_observation",
+            "age_in_days",
             "created_at",
         )
