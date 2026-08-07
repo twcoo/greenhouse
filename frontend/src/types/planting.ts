@@ -9,6 +9,7 @@ export interface Planting {
   status: PlantingStatus
   currentLocation: string | null
   hasDailyObservation: boolean
+  ageInDays: number
   createdAt: string
 }
 
