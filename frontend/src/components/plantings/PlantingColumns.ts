@@ -28,6 +28,13 @@ export const columns: ColumnDef<Planting>[] = [
     enableSorting: true,
   },
   {
+    id: "ageInDays",
+    accessorKey: "ageInDays",
+    header: "Age (days)",
+    cell: ({ row }) => h("div", String(row.getValue<number>("ageInDays"))),
+    enableSorting: false,
+  },
+  {
     id: "currentLocation",
     accessorKey: "currentLocation",
     header: "Location",
