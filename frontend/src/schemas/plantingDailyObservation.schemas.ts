@@ -1,8 +1,5 @@
 import { z } from "zod"
 
-const optionalDecimal = () =>
-  z.preprocess((v) => (v === "" ? undefined : v), z.coerce.number().optional())
-
 export const plantingDailyObservationSchema = z.object({
   observationDate: z.string().date(),
   healthStatus: z.enum(["GOOD", "FAIR", "POOR"], {
@@ -13,17 +10,7 @@ export const plantingDailyObservationSchema = z.object({
   }),
   diseaseSymptoms: z.boolean(),
   watered: z.preprocess((v) => v ?? false, z.boolean()),
-  heightCm: optionalDecimal(),
-  leafCount: z.preprocess(
-    (v) => (v === "" ? undefined : v),
-    z.coerce.number().int().nonnegative().optional(),
-  ),
-  temperatureC: optionalDecimal(),
-  humidityPercent: optionalDecimal(),
-  lightHours: optionalDecimal(),
-  soilMoisturePercent: optionalDecimal(),
-  soilPh: optionalDecimal(),
-  ecMsCm: optionalDecimal(),
+  rained: z.preprocess((v) => v ?? false, z.boolean()),
   notes: z.string().optional(),
   image: z.instanceof(File).nullable().optional(),
 })

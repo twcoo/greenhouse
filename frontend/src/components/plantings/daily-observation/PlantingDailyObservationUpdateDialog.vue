@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
 import { FieldGroup, Field, FieldLabel, FieldError } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
 import { IconLoader2, IconX } from "@tabler/icons-vue"
@@ -196,97 +195,12 @@ watch(
               <FieldLabel for="watered" class="mb-0">Watered</FieldLabel>
             </div>
           </Field>
-
-          <!-- Growth -->
-          <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">
-            Growth
-          </p>
-          <div class="grid grid-cols-2 gap-3">
-            <Field>
-              <FieldLabel for="heightCm">Height (cm)</FieldLabel>
-              <Input id="heightCm" v-model="form.heightCm" type="number" step="0.01" min="0" />
-              <FieldError data-test="heightCmError" v-if="errors.heightCm">
-                {{ errors.heightCm }}
-              </FieldError>
-            </Field>
-            <Field>
-              <FieldLabel for="leafCount">Leaf Count</FieldLabel>
-              <Input id="leafCount" v-model="form.leafCount" type="number" min="0" />
-              <FieldError data-test="leafCountError" v-if="errors.leafCount">
-                {{ errors.leafCount }}
-              </FieldError>
-            </Field>
-          </div>
-
-          <!-- Environment -->
-          <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">
-            Environment
-          </p>
-          <div class="grid grid-cols-3 gap-3">
-            <Field>
-              <FieldLabel for="temperatureC">Temp (°C)</FieldLabel>
-              <Input id="temperatureC" v-model="form.temperatureC" type="number" step="0.1" />
-              <FieldError data-test="temperatureCError" v-if="errors.temperatureC">
-                {{ errors.temperatureC }}
-              </FieldError>
-            </Field>
-            <Field>
-              <FieldLabel for="humidityPercent">Humidity (%)</FieldLabel>
-              <Input
-                id="humidityPercent"
-                v-model="form.humidityPercent"
-                type="number"
-                step="0.01"
-                min="0"
-                max="100"
-              />
-              <FieldError data-test="humidityPercentError" v-if="errors.humidityPercent">
-                {{ errors.humidityPercent }}
-              </FieldError>
-            </Field>
-            <Field>
-              <FieldLabel for="lightHours">Light (hrs)</FieldLabel>
-              <Input id="lightHours" v-model="form.lightHours" type="number" step="0.01" min="0" />
-              <FieldError data-test="lightHoursError" v-if="errors.lightHours">
-                {{ errors.lightHours }}
-              </FieldError>
-            </Field>
-          </div>
-
-          <!-- Soil -->
-          <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">
-            Soil
-          </p>
-          <div class="grid grid-cols-3 gap-3">
-            <Field>
-              <FieldLabel for="soilMoisturePercent">Moisture (%)</FieldLabel>
-              <Input
-                id="soilMoisturePercent"
-                v-model="form.soilMoisturePercent"
-                type="number"
-                step="0.01"
-                min="0"
-                max="100"
-              />
-              <FieldError data-test="soilMoisturePercentError" v-if="errors.soilMoisturePercent">
-                {{ errors.soilMoisturePercent }}
-              </FieldError>
-            </Field>
-            <Field>
-              <FieldLabel for="soilPh">pH</FieldLabel>
-              <Input id="soilPh" v-model="form.soilPh" type="number" step="0.1" min="0" max="14" />
-              <FieldError data-test="soilPhError" v-if="errors.soilPh">
-                {{ errors.soilPh }}
-              </FieldError>
-            </Field>
-            <Field>
-              <FieldLabel for="ecMsCm">EC (mS/cm)</FieldLabel>
-              <Input id="ecMsCm" v-model="form.ecMsCm" type="number" step="0.01" min="0" />
-              <FieldError data-test="ecMsCmError" v-if="errors.ecMsCm">
-                {{ errors.ecMsCm }}
-              </FieldError>
-            </Field>
-          </div>
+          <Field>
+            <div class="flex items-center gap-2">
+              <Checkbox id="rained" v-model="form.rained" />
+              <FieldLabel for="rained" class="mb-0">It rained (skipped watering)</FieldLabel>
+            </div>
+          </Field>
 
           <!-- Notes & Image -->
           <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">

@@ -25,34 +25,6 @@ class PlantingDailyObservation(models.Model):
         PlantingGrowthStage, null=True, blank=True, on_delete=models.SET_NULL
     )
 
-    # Growth
-    height_cm = models.DecimalField(
-        max_digits=5, decimal_places=2, null=True, blank=True
-    )
-    leaf_count = models.PositiveIntegerField(null=True, blank=True)
-
-    # Environment
-    temperature_c = models.DecimalField(
-        max_digits=4, decimal_places=1, null=True, blank=True
-    )
-    humidity_percent = models.DecimalField(
-        max_digits=5, decimal_places=2, null=True, blank=True
-    )
-    light_hours = models.DecimalField(
-        max_digits=5, decimal_places=2, null=True, blank=True
-    )
-
-    # Soil
-    soil_moisture_percent = models.DecimalField(
-        max_digits=5, decimal_places=2, null=True, blank=True
-    )
-    soil_ph = models.DecimalField(
-        max_digits=3, decimal_places=1, null=True, blank=True
-    )
-    ec_ms_cm = models.DecimalField(
-        max_digits=4, decimal_places=2, null=True, blank=True
-    )
-
     # Health
     health_status = models.CharField(
         max_length=20, choices=HEALTH_STATUS_CHOICES, default="GOOD"
@@ -62,6 +34,7 @@ class PlantingDailyObservation(models.Model):
     )
     disease_symptoms = models.BooleanField(default=False)
     watered = models.BooleanField(default=False)
+    rained = models.BooleanField(default=False)
 
     notes = models.TextField(blank=True)
     image = models.ImageField(upload_to="observations/", null=True, blank=True)

@@ -192,14 +192,7 @@ class PlantingDailyObservationCreateApiViewTests(
             "pest_pressure": "LOW",
             "disease_symptoms": False,
             "watered": True,
-            "height_cm": "15.50",
-            "leaf_count": 10,
-            "temperature_c": "22.5",
-            "humidity_percent": "70.00",
-            "light_hours": "12.00",
-            "soil_moisture_percent": "60.00",
-            "soil_ph": "6.8",
-            "ec_ms_cm": "1.50",
+            "rained": True,
             "notes": "Some notes.",
         }
         response = self.client.post(self.url, data, format="multipart")
@@ -211,9 +204,24 @@ class PlantingDailyObservationCreateApiViewTests(
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response_status, "success")
         self.assertEqual(response_data["health_status"], "FAIR")
-        self.assertEqual(response_data["leaf_count"], 10)
         self.assertEqual(response_data["notes"], "Some notes.")
         self.assertEqual(response_data["watered"], True)
+        self.assertEqual(response_data["rained"], True)
+        self.assertIsNone(message)
+
+    def test_create_observation_rained_defaults_to_false(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        response_status, response_data, message = self.get_response_data(
+            response
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_status, "success")
+        self.assertFalse(response_data["rained"])
         self.assertIsNone(message)
 
     def test_create_observation_watered_defaults_to_false(self):

@@ -20,14 +20,7 @@ const baseObservation: PlantingDailyObservation = {
   pestPressure: "LOW",
   diseaseSymptoms: false,
   watered: false,
-  heightCm: "15.50",
-  leafCount: 3,
-  temperatureC: "22.0",
-  humidityPercent: "65.0",
-  lightHours: "8.0",
-  soilMoisturePercent: "40.0",
-  soilPh: "6.5",
-  ecMsCm: "1.2",
+  rained: false,
   notes: "Healthy today",
   image: null,
   observationDate: "2024-03-01",
@@ -91,42 +84,18 @@ describe("PlantingDailyObservationViewDialog.vue", () => {
     })
   })
 
-  describe("measurement fields", () => {
-    it("displays heightCm value", () => {
-      const wrapper = mountComponent()
+  describe("rained", () => {
+    it("shows Rained badge when rained is true", () => {
+      const wrapper = mountComponent({ ...baseObservation, rained: true })
 
-      expect(wrapper.text()).toContain("15.50")
+      expect(wrapper.text()).toContain("Rained")
     })
 
-    it("displays — when heightCm is null", () => {
-      const wrapper = mountComponent({ ...baseObservation, heightCm: null })
+    it("hides Rained badge when rained is false", () => {
+      const wrapper = mountComponent({ ...baseObservation, rained: false })
 
-      expect(wrapper.text()).toContain("—")
-    })
-
-    it("displays leafCount value", () => {
-      const wrapper = mountComponent()
-
-      expect(wrapper.text()).toContain("3")
-    })
-
-    it("displays — when leafCount is null", () => {
-      const wrapper = mountComponent({ ...baseObservation, leafCount: null })
-
-      const text = wrapper.text()
-      expect(text).toContain("—")
-    })
-
-    it("displays temperatureC value", () => {
-      const wrapper = mountComponent()
-
-      expect(wrapper.text()).toContain("22.0")
-    })
-
-    it("displays — when temperatureC is null", () => {
-      const wrapper = mountComponent({ ...baseObservation, temperatureC: null })
-
-      expect(wrapper.text()).toContain("—")
+      const badges = wrapper.findAll('[data-test="badge"]')
+      expect(badges.every((b) => b.text() !== "Rained")).toBe(true)
     })
   })
 
