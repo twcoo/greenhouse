@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 
 from dateutil.parser import parse
 from django.urls import reverse
@@ -190,6 +190,7 @@ class PlantingCreateApiViewTests(
         self.assertEqual(data["status"], "ACTIVE")
         self.assertIsNone(data["current_location"])
         self.assertIsNotNone(data["created_at"])
+        self.assertEqual(data["age_in_days"], 0)
         self.assertTrue(
             Planting.objects.filter(
                 crop=self.crop, variety=self.variety, user=self.user
@@ -343,6 +344,7 @@ class PlantingGetApiViewTests(
         self.assertEqual(data["status"], self.planting.status)
         self.assertIsNone(data["current_location"])
         self.assertIsNotNone(data["created_at"])
+        self.assertEqual(data["age_in_days"], 0)
         self.assertIsNone(message)
 
     def test_get_planting_not_owned(self):
@@ -765,3 +767,59 @@ class PlantingHasDailyObservationTests(ResponseUtilsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(data["has_daily_observation"])
+
+
+class PlantingAgeInDaysTests(ResponseUtilsMixin, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = UserFactory()
+        self.list_url = reverse("planting-list-create")
+        self.crop = CropFactory(user=self.user)
+        self.variety = VarietyFactory(crop=self.crop)
+
+    def authenticate(self):
+        self.client.force_authenticate(user=self.user)
+
+    def test_age_in_days_is_zero_when_created_today(self):
+        self.authenticate()
+
+        PlantingFactory(user=self.user, crop=self.crop, variety=self.variety)
+
+        response = self.client.get(self.list_url)
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(plantings[0]["age_in_days"], 0)
+
+    def test_age_in_days_reflects_days_since_planting(self):
+        self.authenticate()
+
+        planting = PlantingFactory(
+            user=self.user, crop=self.crop, variety=self.variety
+        )
+        days_ago = 10
+        past_date = datetime.now(tz=timezone.utc) - timedelta(days=days_ago)
+        Planting.objects.filter(pk=planting.pk).update(created_at=past_date)
+
+        response = self.client.get(self.list_url)
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(plantings[0]["age_in_days"], days_ago)
+
+    def test_detail_view_returns_age_in_days(self):
+        self.authenticate()
+
+        planting = PlantingFactory(
+            user=self.user, crop=self.crop, variety=self.variety
+        )
+
+        url = reverse("planting-detail", args=[planting.id])
+        response = self.client.get(url)
+
+        _, data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data["age_in_days"], 0)

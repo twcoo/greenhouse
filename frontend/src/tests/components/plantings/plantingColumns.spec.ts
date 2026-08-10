@@ -14,6 +14,7 @@ const mockPlanting: Planting = {
   status: "ACTIVE",
   currentLocation: "Greenhouse A",
   hasDailyObservation: true,
+  ageInDays: 18,
   // Use a midday UTC date to avoid timezone edge cases in formatted output
   createdAt: "2024-06-15T12:00:00Z",
 }
@@ -92,6 +93,10 @@ describe("PlantingColumns", () => {
     mockPlanting.hasDailyObservation = false
     expect(renderCell("hasDailyObservation").text()).toBe("Pending")
     mockPlanting.hasDailyObservation = original
+  })
+
+  it("ageInDays column renders the age in days as a string", () => {
+    expect(renderCell("ageInDays").text()).toBe("18")
   })
 
   it("actions column cell type is PlantingTableActions", () => {
