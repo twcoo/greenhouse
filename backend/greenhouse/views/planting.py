@@ -76,7 +76,7 @@ class PlantingListApiView(
                 has_daily_observation=Exists(
                     PlantingDailyObservation.objects.filter(
                         planting=OuterRef("pk"),
-                        created_at__date=date.today(),
+                        observation_date=date.today(),
                     )
                 ),
             )
@@ -158,7 +158,7 @@ class PlantingDetailApiView(
                 has_daily_observation=Exists(
                     PlantingDailyObservation.objects.filter(
                         planting=OuterRef("pk"),
-                        created_at__date=date.today(),
+                        observation_date=date.today(),
                     )
                 )
             )
