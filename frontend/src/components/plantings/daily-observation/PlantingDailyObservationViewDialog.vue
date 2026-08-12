@@ -79,6 +79,12 @@ const closePreview = (): void => {
             class="bg-sky-500 text-white dark:bg-sky-600"
             >Rained
           </Badge>
+          <Badge
+            v-if="observation.pruned"
+            variant="secondary"
+            class="bg-amber-500 text-white dark:bg-amber-600"
+            >Pruned
+          </Badge>
         </div>
 
         <!-- Notes -->

@@ -201,6 +201,12 @@ watch(
               <FieldLabel for="rained" class="mb-0">It rained (skipped watering)</FieldLabel>
             </div>
           </Field>
+          <Field>
+            <div class="flex items-center gap-2">
+              <Checkbox id="pruned" v-model="form.pruned" />
+              <FieldLabel for="pruned" class="mb-0">Pruned</FieldLabel>
+            </div>
+          </Field>
 
           <!-- Notes & Image -->
           <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">

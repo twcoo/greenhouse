@@ -49,6 +49,7 @@ const formInitialState: PlantingDailyObservationForm = {
   diseaseSymptoms: false,
   watered: false,
   rained: false,
+  pruned: false,
   notes: "",
   image: undefined,
 }
@@ -189,6 +190,12 @@ watch(open, (isOpen) => {
             <div class="flex items-center gap-2">
               <Checkbox id="rained" v-model="form.rained" />
               <FieldLabel for="rained" class="mb-0">It rained (skipped watering)</FieldLabel>
+            </div>
+          </Field>
+          <Field>
+            <div class="flex items-center gap-2">
+              <Checkbox id="pruned" v-model="form.pruned" />
+              <FieldLabel for="pruned" class="mb-0">Pruned</FieldLabel>
             </div>
           </Field>
 
