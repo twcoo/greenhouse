@@ -47,6 +47,10 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
         default=False,
         help_text="Whether watering was skipped because it rained.",
     )
+    pruned = serializers.BooleanField(
+        default=False,
+        help_text="Whether the planting was pruned during this observation.",
+    )
 
     notes = serializers.CharField(
         required=False,
@@ -103,6 +107,7 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
             "disease_symptoms",
             "watered",
             "rained",
+            "pruned",
             "notes",
             "image",
             "observation_date",
