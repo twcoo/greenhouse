@@ -35,6 +35,7 @@ class PlantingDailyObservation(models.Model):
     disease_symptoms = models.BooleanField(default=False)
     watered = models.BooleanField(default=False)
     rained = models.BooleanField(default=False)
+    pruned = models.BooleanField(default=False)
 
     notes = models.TextField(blank=True)
     image = models.ImageField(upload_to="observations/", null=True, blank=True)
