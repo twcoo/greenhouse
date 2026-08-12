@@ -86,10 +86,10 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(wrapper.find('input[type="checkbox"]').exists()).toBe(true)
     })
 
-    it("renders the watered and rained checkboxes", () => {
+    it("renders the watered, rained, and pruned checkboxes", () => {
       const wrapper = mountComponent()
 
-      expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(3)
+      expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(4)
     })
 
     it("renders the notes textarea", () => {
@@ -166,6 +166,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
         diseaseSymptoms: false,
         watered: false,
         rained: false,
+        pruned: false,
       })
     })
 
@@ -218,6 +219,16 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
       const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
       expect(payload.rained).toBe(true)
+    })
+
+    it("emits submit with pruned = true when pruned checkbox is checked", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.pruned).toBe(true)
     })
 
     it("emits submit with notes when provided", async () => {

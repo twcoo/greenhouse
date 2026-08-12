@@ -58,6 +58,7 @@ const baseInitialState: PlantingDailyObservationForm = {
   diseaseSymptoms: false,
   watered: false,
   rained: false,
+  pruned: false,
   notes: "Original notes",
   image: undefined,
 }

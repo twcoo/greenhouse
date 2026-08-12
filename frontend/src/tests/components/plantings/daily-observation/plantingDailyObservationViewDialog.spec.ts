@@ -21,6 +21,7 @@ const baseObservation: PlantingDailyObservation = {
   diseaseSymptoms: false,
   watered: false,
   rained: false,
+  pruned: false,
   notes: "Healthy today",
   image: null,
   observationDate: "2024-03-01",
@@ -96,6 +97,21 @@ describe("PlantingDailyObservationViewDialog.vue", () => {
 
       const badges = wrapper.findAll('[data-test="badge"]')
       expect(badges.every((b) => b.text() !== "Rained")).toBe(true)
+    })
+  })
+
+  describe("pruned", () => {
+    it("shows Pruned badge when pruned is true", () => {
+      const wrapper = mountComponent({ ...baseObservation, pruned: true })
+
+      expect(wrapper.text()).toContain("Pruned")
+    })
+
+    it("hides Pruned badge when pruned is false", () => {
+      const wrapper = mountComponent({ ...baseObservation, pruned: false })
+
+      const badges = wrapper.findAll('[data-test="badge"]')
+      expect(badges.every((b) => b.text() !== "Pruned")).toBe(true)
     })
   })
 

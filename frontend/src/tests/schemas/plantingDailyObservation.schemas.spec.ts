@@ -42,6 +42,41 @@ describe("plantingDailyObservationSchema", () => {
     })
   })
 
+  describe("pruned field", () => {
+    it("defaults pruned to false when omitted", () => {
+      const result = plantingDailyObservationSchema.safeParse(validBase)
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruned).toBe(false)
+      }
+    })
+
+    it("defaults pruned to false when null", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        pruned: null,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruned).toBe(false)
+      }
+    })
+
+    it("passes pruned = true correctly", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        pruned: true,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruned).toBe(true)
+      }
+    })
+  })
+
   describe("rained field", () => {
     it("defaults rained to false when omitted", () => {
       const result = plantingDailyObservationSchema.safeParse(validBase)
