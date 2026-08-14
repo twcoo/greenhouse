@@ -11,6 +11,7 @@ export interface PlantingDailyObservation {
   watered: boolean
   rained: boolean
   pruned: boolean
+  pruningDetail: string
   notes: string
   image: string | null
   observationDate: string
@@ -25,6 +26,7 @@ export interface PlantingDailyObservationPayload {
   watered: boolean
   rained: boolean
   pruned: boolean
+  pruningDetail?: string
   notes?: string
   image?: File | null
   observationDate?: string
