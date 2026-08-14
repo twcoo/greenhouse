@@ -36,6 +36,7 @@ class PlantingDailyObservation(models.Model):
     watered = models.BooleanField(default=False)
     rained = models.BooleanField(default=False)
     pruned = models.BooleanField(default=False)
+    pruning_detail = models.CharField(max_length=200, blank=True, default="")
 
     notes = models.TextField(blank=True)
     image = models.ImageField(upload_to="observations/", null=True, blank=True)
