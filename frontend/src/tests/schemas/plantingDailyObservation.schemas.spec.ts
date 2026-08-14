@@ -117,6 +117,56 @@ describe("plantingDailyObservationSchema", () => {
     })
   })
 
+  describe("fertilizerType field", () => {
+    it("defaults fertilizerType to NONE when omitted", () => {
+      const result = plantingDailyObservationSchema.safeParse(validBase)
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.fertilizerType).toBe("NONE")
+      }
+    })
+
+    it("accepts ORGANIC as fertilizerType", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        fertilizerType: "ORGANIC",
+      })
+
+      expect(result.success).toBe(true)
+    })
+
+    it("accepts SYNTHETIC as fertilizerType", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        fertilizerType: "SYNTHETIC",
+      })
+
+      expect(result.success).toBe(true)
+    })
+
+    it("rejects invalid fertilizerType", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        fertilizerType: "COMPOST",
+      })
+
+      expect(result.success).toBe(false)
+    })
+
+    it("fertilizerDetail is optional", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        fertilizerType: "ORGANIC",
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.fertilizerDetail).toBeUndefined()
+      }
+    })
+  })
+
   describe("observationDate validation", () => {
     it("fails when observationDate is missing", () => {
       const { observationDate: _, ...withoutDate } = validBase

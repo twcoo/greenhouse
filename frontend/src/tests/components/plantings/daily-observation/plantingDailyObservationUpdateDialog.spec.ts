@@ -58,6 +58,8 @@ const baseInitialState: PlantingDailyObservationForm = {
   diseaseSymptoms: false,
   watered: false,
   rained: false,
+  fertilizerType: "NONE",
+  fertilizerDetail: "",
   notes: "Original notes",
   image: undefined,
 }
@@ -156,6 +158,42 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
       const notes = wrapper.find("#notes").element as HTMLTextAreaElement
       expect(notes.value).toBe("Original notes")
     })
+
+    it("does not render fertilizerDetail input when fertilizerType is NONE", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find("#fertilizerDetail").exists()).toBe(false)
+    })
+
+    it("renders fertilizerDetail input when fertilizerType is not NONE", () => {
+      const wrapper = mountComponent({
+        observationFormInitialState: { ...baseInitialState, fertilizerType: "ORGANIC" },
+      })
+
+      expect(wrapper.find("#fertilizerDetail").exists()).toBe(true)
+    })
+
+    it("pre-populates fertilizerType from observationFormInitialState", () => {
+      const wrapper = mountComponent({
+        observationFormInitialState: { ...baseInitialState, fertilizerType: "ORGANIC" },
+      })
+
+      const selects = wrapper.findAll('[data-stub="select"]')
+      expect((selects[2].element as HTMLInputElement).value).toBe("ORGANIC")
+    })
+
+    it("pre-populates fertilizerDetail when fertilizerType is ORGANIC", () => {
+      const wrapper = mountComponent({
+        observationFormInitialState: {
+          ...baseInitialState,
+          fertilizerType: "ORGANIC",
+          fertilizerDetail: "worm castings",
+        },
+      })
+
+      const input = wrapper.find("#fertilizerDetail").element as HTMLInputElement
+      expect(input.value).toBe("worm castings")
+    })
   })
 
   describe("submission", () => {
@@ -223,6 +261,16 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
 
       const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
       expect(payload.notes).toBe("Updated observation notes")
+    })
+
+    it("emits submit with fertilizerType SYNTHETIC when changed", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('[data-stub="select"]')[2].setValue("SYNTHETIC")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
+      expect(payload.fertilizerType).toBe("SYNTHETIC")
     })
 
     it("does not emit submit when healthStatus is invalid", async () => {

@@ -21,6 +21,8 @@ const baseObservation: PlantingDailyObservation = {
   diseaseSymptoms: false,
   watered: false,
   rained: false,
+  fertilizerType: "NONE",
+  fertilizerDetail: "",
   notes: "Healthy today",
   image: null,
   observationDate: "2024-03-01",
@@ -129,6 +131,47 @@ describe("PlantingDailyObservationViewDialog.vue", () => {
       const wrapper = mountComponent({ ...baseObservation, image: null })
 
       expect(wrapper.find('img[alt="Observation image"]').exists()).toBe(false)
+    })
+  })
+
+  describe("fertilization", () => {
+    it("shows Organic badge when fertilizerType is ORGANIC", () => {
+      const wrapper = mountComponent({ ...baseObservation, fertilizerType: "ORGANIC" })
+
+      expect(wrapper.text()).toContain("Organic")
+    })
+
+    it("shows Synthetic badge when fertilizerType is SYNTHETIC", () => {
+      const wrapper = mountComponent({ ...baseObservation, fertilizerType: "SYNTHETIC" })
+
+      expect(wrapper.text()).toContain("Synthetic")
+    })
+
+    it("does not show fertilizer badge when fertilizerType is NONE", () => {
+      const wrapper = mountComponent({ ...baseObservation, fertilizerType: "NONE" })
+
+      const badges = wrapper.findAll('[data-test="badge"]')
+      expect(badges.every((b) => b.text() !== "Organic" && b.text() !== "Synthetic")).toBe(true)
+    })
+
+    it("shows fertilizer detail when type is not NONE and detail is present", () => {
+      const wrapper = mountComponent({
+        ...baseObservation,
+        fertilizerType: "ORGANIC",
+        fertilizerDetail: "fermented swamp fertilizer",
+      })
+
+      expect(wrapper.text()).toContain("fermented swamp fertilizer")
+    })
+
+    it("hides fertilizer detail section when fertilizerType is NONE", () => {
+      const wrapper = mountComponent({
+        ...baseObservation,
+        fertilizerType: "NONE",
+        fertilizerDetail: "",
+      })
+
+      expect(wrapper.text()).not.toContain("Fertilizer detail")
     })
   })
 
