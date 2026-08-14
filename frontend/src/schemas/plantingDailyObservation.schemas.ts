@@ -11,6 +11,8 @@ export const plantingDailyObservationSchema = z.object({
   diseaseSymptoms: z.boolean(),
   watered: z.preprocess((v) => v ?? false, z.boolean()),
   rained: z.preprocess((v) => v ?? false, z.boolean()),
+  fertilizerType: z.enum(["NONE", "ORGANIC", "SYNTHETIC"]).default("NONE"),
+  fertilizerDetail: z.string().optional(),
   notes: z.string().optional(),
   image: z.instanceof(File).nullable().optional(),
 })
