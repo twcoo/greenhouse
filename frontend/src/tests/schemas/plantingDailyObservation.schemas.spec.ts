@@ -75,6 +75,31 @@ describe("plantingDailyObservationSchema", () => {
         expect(result.data.pruned).toBe(true)
       }
     })
+
+    it("pruningDetail is optional", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        pruned: true,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruningDetail).toBeUndefined()
+      }
+    })
+
+    it("passes pruningDetail when provided", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        pruned: true,
+        pruningDetail: "removed lower leaves",
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruningDetail).toBe("removed lower leaves")
+      }
+    })
   })
 
   describe("rained field", () => {

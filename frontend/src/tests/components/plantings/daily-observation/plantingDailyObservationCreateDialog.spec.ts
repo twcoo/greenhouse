@@ -147,6 +147,20 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       const checkbox = wrapper.findAll('input[type="checkbox"]')[1].element as HTMLInputElement
       expect(checkbox.checked).toBe(false)
     })
+
+    it("does not render pruningDetail input when pruned is unchecked", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find("#pruningDetail").exists()).toBe(false)
+    })
+
+    it("renders pruningDetail input when pruned checkbox is checked", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+
+      expect(wrapper.find("#pruningDetail").exists()).toBe(true)
+    })
   })
 
   describe("submission", () => {
@@ -239,6 +253,18 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
       const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
       expect(payload.notes).toBe("Looking great today")
+    })
+
+    it("emits submit with pruningDetail when pruned and detail provided", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+      await wrapper.find("#pruningDetail").setValue("removed lower leaves")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.pruned).toBe(true)
+      expect(payload.pruningDetail).toBe("removed lower leaves")
     })
 
     it("emits submit with image when a file is selected", async () => {
