@@ -342,6 +342,75 @@ class PlantingDailyObservationCreateApiViewTests(
             },
         )
 
+    def test_create_observation_fertilizer_type_defaults_to_none(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_data["fertilizer_type"], "NONE")
+
+    def test_create_observation_fertilizer_detail_defaults_to_empty(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_data["fertilizer_detail"], "")
+
+    def test_create_observation_with_organic_fertilizer(self):
+        self.authenticate()
+
+        data = {
+            "health_status": "GOOD",
+            "fertilizer_type": "ORGANIC",
+            "fertilizer_detail": "fermented swamp fertilizer",
+        }
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_data["fertilizer_type"], "ORGANIC")
+        self.assertEqual(
+            response_data["fertilizer_detail"], "fermented swamp fertilizer"
+        )
+
+    def test_create_observation_with_synthetic_fertilizer(self):
+        self.authenticate()
+
+        data = {
+            "health_status": "GOOD",
+            "fertilizer_type": "SYNTHETIC",
+        }
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_data["fertilizer_type"], "SYNTHETIC")
+
+    def test_create_observation_invalid_fertilizer_type(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD", "fertilizer_type": "BANANA"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            {"fertilizer_type": ['"BANANA" is not a valid choice.']},
+        )
+
     def test_create_observation_other_user_planting_returns_404(self):
         self.authenticate()
 
@@ -423,6 +492,22 @@ class PlantingDailyObservationDetailApiViewTests(
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["observation_date"], past_date)
         self.assertEqual(response_data["health_status"], "GOOD")
+
+    def test_update_observation_fertilizer_type_and_detail(self):
+        self.authenticate()
+
+        data = {
+            "health_status": "GOOD",
+            "fertilizer_type": "ORGANIC",
+            "fertilizer_detail": "worm castings",
+        }
+        response = self.client.put(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["fertilizer_type"], "ORGANIC")
+        self.assertEqual(response_data["fertilizer_detail"], "worm castings")
 
     def test_update_observation_invalid_health_status(self):
         self.authenticate()

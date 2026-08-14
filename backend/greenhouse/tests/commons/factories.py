@@ -101,6 +101,8 @@ class PlantingDailyObservationFactory(DjangoModelFactory):
     pest_pressure = "NONE"
     disease_symptoms = False
     watered = False
+    fertilizer_type = "NONE"
+    fertilizer_detail = ""
     notes = ""
     image = None
     observation_date = factory.LazyFunction(
