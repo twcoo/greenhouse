@@ -48,6 +48,20 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
         help_text="Whether watering was skipped because it rained.",
     )
 
+    fertilizer_type = serializers.ChoiceField(
+        choices=PlantingDailyObservation.FERTILIZER_TYPE_CHOICES,
+        default="NONE",
+        help_text="Whether the plant was fertilized and with what category.",
+    )
+    fertilizer_detail = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text=(
+            "Optional detail, e.g. 'fermented swamp fertilizer',"
+            " 'fish emulsion'."
+        ),
+    )
+
     notes = serializers.CharField(
         required=False,
         allow_blank=True,
@@ -103,6 +117,8 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
             "disease_symptoms",
             "watered",
             "rained",
+            "fertilizer_type",
+            "fertilizer_detail",
             "notes",
             "image",
             "observation_date",
