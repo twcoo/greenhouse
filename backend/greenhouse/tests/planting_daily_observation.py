@@ -256,6 +256,35 @@ class PlantingDailyObservationCreateApiViewTests(
         self.assertFalse(response_data["pruned"])
         self.assertIsNone(message)
 
+    def test_create_observation_pruning_detail_defaults_to_empty(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_data["pruning_detail"], "")
+
+    def test_create_observation_with_pruning_detail(self):
+        self.authenticate()
+
+        data = {
+            "health_status": "GOOD",
+            "pruned": True,
+            "pruning_detail": "removed lower leaves",
+        }
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response_data["pruned"])
+        self.assertEqual(
+            response_data["pruning_detail"], "removed lower leaves"
+        )
+
     def test_create_observation_invalid_health_status(self):
         self.authenticate()
 
@@ -452,6 +481,21 @@ class PlantingDailyObservationDetailApiViewTests(
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(response_data["pruned"])
         self.assertEqual(response_data["health_status"], "GOOD")
+
+    def test_update_observation_pruning_detail(self):
+        self.authenticate()
+
+        data = {
+            "health_status": "GOOD",
+            "pruned": True,
+            "pruning_detail": "topped the plant",
+        }
+        response = self.client.put(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["pruning_detail"], "topped the plant")
 
     def test_update_observation_invalid_health_status(self):
         self.authenticate()
