@@ -132,6 +132,7 @@ const toObservationForm = (obs: {
   watered: boolean
   rained: boolean
   pruned: boolean
+  pruningDetail: string
   notes: string
 }): PlantingDailyObservationForm => ({
   observationDate: obs.observationDate,
@@ -141,6 +142,7 @@ const toObservationForm = (obs: {
   watered: obs.watered,
   rained: obs.rained,
   pruned: obs.pruned,
+  pruningDetail: obs.pruningDetail ?? "",
   notes: obs.notes ?? "",
   image: undefined,
 })

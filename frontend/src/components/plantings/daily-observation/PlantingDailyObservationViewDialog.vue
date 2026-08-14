@@ -87,6 +87,12 @@ const closePreview = (): void => {
           </Badge>
         </div>
 
+        <!-- Pruning detail -->
+        <div v-if="observation.pruned && observation.pruningDetail">
+          <span class="text-sm text-muted-foreground">Pruning detail</span>
+          <p class="text-sm mt-1">{{ observation.pruningDetail }}</p>
+        </div>
+
         <!-- Notes -->
         <div v-if="observation.notes">
           <span class="text-sm text-muted-foreground">Notes</span>
