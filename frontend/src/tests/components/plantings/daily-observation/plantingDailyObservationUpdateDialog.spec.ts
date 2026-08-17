@@ -195,6 +195,8 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
 
       const input = wrapper.find("#fertilizerDetail").element as HTMLInputElement
       expect(input.value).toBe("worm castings")
+    })
+
     it("does not render pruningDetail input when pruned is false", () => {
       const wrapper = mountComponent()
 
@@ -291,6 +293,8 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
 
       const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
       expect(payload.fertilizerType).toBe("SYNTHETIC")
+    })
+
     it("emits submit with pruningDetail when pruned and detail provided", async () => {
       const wrapper = mountComponent({
         observationFormInitialState: {

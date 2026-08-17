@@ -30,7 +30,6 @@ import type { APIErrorResponse } from "@/types/api"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
 import { AxiosError } from "axios"
 import { FERTILIZER_TYPE_OPTIONS, HEALTH_STATUS_OPTIONS, PEST_PRESSURE_OPTIONS } from "./constants"
-import { Input } from "@/components/ui/input"
 import DatePicker from "@/components/DatePicker.vue"
 import { today, getLocalTimeZone } from "@internationalized/date"
 

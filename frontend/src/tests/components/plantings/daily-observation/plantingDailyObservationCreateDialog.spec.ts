@@ -167,6 +167,8 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       await wrapper.findAll('[data-stub="select"]')[2].setValue("ORGANIC")
 
       expect(wrapper.find("#fertilizerDetail").exists()).toBe(true)
+    })
+
     it("does not render pruningDetail input when pruned is unchecked", () => {
       const wrapper = mountComponent()
 
