@@ -10,6 +10,8 @@ export interface PlantingDailyObservation {
   diseaseSymptoms: boolean
   watered: boolean
   rained: boolean
+  pruned: boolean
+  pruningDetail: string
   notes: string
   image: string | null
   observationDate: string
@@ -23,6 +25,8 @@ export interface PlantingDailyObservationPayload {
   diseaseSymptoms: boolean
   watered: boolean
   rained: boolean
+  pruned: boolean
+  pruningDetail?: string
   notes?: string
   image?: File | null
   observationDate?: string

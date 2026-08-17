@@ -86,10 +86,10 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(wrapper.find('input[type="checkbox"]').exists()).toBe(true)
     })
 
-    it("renders the watered and rained checkboxes", () => {
+    it("renders the watered, rained, and pruned checkboxes", () => {
       const wrapper = mountComponent()
 
-      expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(3)
+      expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(4)
     })
 
     it("renders the notes textarea", () => {
@@ -147,6 +147,20 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       const checkbox = wrapper.findAll('input[type="checkbox"]')[1].element as HTMLInputElement
       expect(checkbox.checked).toBe(false)
     })
+
+    it("does not render pruningDetail input when pruned is unchecked", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find("#pruningDetail").exists()).toBe(false)
+    })
+
+    it("renders pruningDetail input when pruned checkbox is checked", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+
+      expect(wrapper.find("#pruningDetail").exists()).toBe(true)
+    })
   })
 
   describe("submission", () => {
@@ -166,6 +180,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
         diseaseSymptoms: false,
         watered: false,
         rained: false,
+        pruned: false,
       })
     })
 
@@ -220,6 +235,16 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(payload.rained).toBe(true)
     })
 
+    it("emits submit with pruned = true when pruned checkbox is checked", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.pruned).toBe(true)
+    })
+
     it("emits submit with notes when provided", async () => {
       const wrapper = mountComponent()
 
@@ -228,6 +253,18 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
       const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
       expect(payload.notes).toBe("Looking great today")
+    })
+
+    it("emits submit with pruningDetail when pruned and detail provided", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+      await wrapper.find("#pruningDetail").setValue("removed lower leaves")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.pruned).toBe(true)
+      expect(payload.pruningDetail).toBe("removed lower leaves")
     })
 
     it("emits submit with image when a file is selected", async () => {

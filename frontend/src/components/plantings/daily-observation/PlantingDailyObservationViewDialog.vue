@@ -79,6 +79,18 @@ const closePreview = (): void => {
             class="bg-sky-500 text-white dark:bg-sky-600"
             >Rained
           </Badge>
+          <Badge
+            v-if="observation.pruned"
+            variant="secondary"
+            class="bg-amber-500 text-white dark:bg-amber-600"
+            >Pruned
+          </Badge>
+        </div>
+
+        <!-- Pruning detail -->
+        <div v-if="observation.pruned && observation.pruningDetail">
+          <span class="text-sm text-muted-foreground">Pruning detail</span>
+          <p class="text-sm mt-1">{{ observation.pruningDetail }}</p>
         </div>
 
         <!-- Notes -->

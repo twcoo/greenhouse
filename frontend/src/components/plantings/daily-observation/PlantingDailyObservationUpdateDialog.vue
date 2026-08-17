@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select"
 import { FieldGroup, Field, FieldLabel, FieldError } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 import { IconLoader2, IconX } from "@tabler/icons-vue"
 import {
   plantingDailyObservationSchema,
@@ -200,6 +201,27 @@ watch(
               <Checkbox id="rained" v-model="form.rained" />
               <FieldLabel for="rained" class="mb-0">It rained (skipped watering)</FieldLabel>
             </div>
+          </Field>
+          <!-- Pruning -->
+          <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">
+            Pruning
+          </p>
+          <Field>
+            <div class="flex items-center gap-2">
+              <Checkbox id="pruned" v-model="form.pruned" />
+              <FieldLabel for="pruned" class="mb-0">Pruned</FieldLabel>
+            </div>
+          </Field>
+          <Field v-if="form.pruned">
+            <FieldLabel for="pruningDetail">Pruning Detail</FieldLabel>
+            <Input
+              id="pruningDetail"
+              v-model="form.pruningDetail"
+              placeholder="e.g. removed lower leaves, topped the plant"
+            />
+            <FieldError data-test="pruningDetailError" v-if="errors.pruningDetail">
+              {{ errors.pruningDetail }}
+            </FieldError>
           </Field>
 
           <!-- Notes & Image -->
