@@ -540,6 +540,21 @@ class PlantingDailyObservationDetailApiViewTests(
         self.assertEqual(response_data["health_status"], "GOOD")
 
     def test_update_observation_fertilizer_type_and_detail(self):
+        self.authenticate()
+
+        data = {
+            "health_status": "GOOD",
+            "fertilizer_type": "ORGANIC",
+            "fertilizer_detail": "fish emulsion",
+        }
+        response = self.client.put(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["fertilizer_type"], "ORGANIC")
+        self.assertEqual(response_data["fertilizer_detail"], "fish emulsion")
+
     def test_partial_update_pruned(self):
         self.authenticate()
 
