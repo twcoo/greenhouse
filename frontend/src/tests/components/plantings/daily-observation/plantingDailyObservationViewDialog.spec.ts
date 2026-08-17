@@ -23,6 +23,8 @@ const baseObservation: PlantingDailyObservation = {
   rained: false,
   fertilizerType: "NONE",
   fertilizerDetail: "",
+  pruned: false,
+  pruningDetail: "",
   notes: "Healthy today",
   image: null,
   observationDate: "2024-03-01",
@@ -98,6 +100,51 @@ describe("PlantingDailyObservationViewDialog.vue", () => {
 
       const badges = wrapper.findAll('[data-test="badge"]')
       expect(badges.every((b) => b.text() !== "Rained")).toBe(true)
+    })
+  })
+
+  describe("pruned", () => {
+    it("shows Pruned badge when pruned is true", () => {
+      const wrapper = mountComponent({ ...baseObservation, pruned: true })
+
+      expect(wrapper.text()).toContain("Pruned")
+    })
+
+    it("hides Pruned badge when pruned is false", () => {
+      const wrapper = mountComponent({ ...baseObservation, pruned: false })
+
+      const badges = wrapper.findAll('[data-test="badge"]')
+      expect(badges.every((b) => b.text() !== "Pruned")).toBe(true)
+    })
+
+    it("shows pruning detail when pruned is true and detail is present", () => {
+      const wrapper = mountComponent({
+        ...baseObservation,
+        pruned: true,
+        pruningDetail: "removed lower leaves",
+      })
+
+      expect(wrapper.text()).toContain("removed lower leaves")
+    })
+
+    it("hides pruning detail section when pruned is false", () => {
+      const wrapper = mountComponent({
+        ...baseObservation,
+        pruned: false,
+        pruningDetail: "removed lower leaves",
+      })
+
+      expect(wrapper.text()).not.toContain("Pruning detail")
+    })
+
+    it("hides pruning detail section when pruned is true but detail is empty", () => {
+      const wrapper = mountComponent({
+        ...baseObservation,
+        pruned: true,
+        pruningDetail: "",
+      })
+
+      expect(wrapper.text()).not.toContain("Pruning detail")
     })
   })
 

@@ -42,6 +42,66 @@ describe("plantingDailyObservationSchema", () => {
     })
   })
 
+  describe("pruned field", () => {
+    it("defaults pruned to false when omitted", () => {
+      const result = plantingDailyObservationSchema.safeParse(validBase)
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruned).toBe(false)
+      }
+    })
+
+    it("defaults pruned to false when null", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        pruned: null,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruned).toBe(false)
+      }
+    })
+
+    it("passes pruned = true correctly", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        pruned: true,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruned).toBe(true)
+      }
+    })
+
+    it("pruningDetail is optional", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        pruned: true,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruningDetail).toBeUndefined()
+      }
+    })
+
+    it("passes pruningDetail when provided", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        pruned: true,
+        pruningDetail: "removed lower leaves",
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.pruningDetail).toBe("removed lower leaves")
+      }
+    })
+  })
+
   describe("rained field", () => {
     it("defaults rained to false when omitted", () => {
       const result = plantingDailyObservationSchema.safeParse(validBase)

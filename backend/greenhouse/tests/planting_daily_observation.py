@@ -193,6 +193,7 @@ class PlantingDailyObservationCreateApiViewTests(
             "disease_symptoms": False,
             "watered": True,
             "rained": True,
+            "pruned": True,
             "notes": "Some notes.",
         }
         response = self.client.post(self.url, data, format="multipart")
@@ -207,6 +208,7 @@ class PlantingDailyObservationCreateApiViewTests(
         self.assertEqual(response_data["notes"], "Some notes.")
         self.assertEqual(response_data["watered"], True)
         self.assertEqual(response_data["rained"], True)
+        self.assertEqual(response_data["pruned"], True)
         self.assertIsNone(message)
 
     def test_create_observation_rained_defaults_to_false(self):
@@ -238,6 +240,50 @@ class PlantingDailyObservationCreateApiViewTests(
         self.assertEqual(response_status, "success")
         self.assertFalse(response_data["watered"])
         self.assertIsNone(message)
+
+    def test_create_observation_pruned_defaults_to_false(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        response_status, response_data, message = self.get_response_data(
+            response
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_status, "success")
+        self.assertFalse(response_data["pruned"])
+        self.assertIsNone(message)
+
+    def test_create_observation_pruning_detail_defaults_to_empty(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_data["pruning_detail"], "")
+
+    def test_create_observation_with_pruning_detail(self):
+        self.authenticate()
+
+        data = {
+            "health_status": "GOOD",
+            "pruned": True,
+            "pruning_detail": "removed lower leaves",
+        }
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response_data["pruned"])
+        self.assertEqual(
+            response_data["pruning_detail"], "removed lower leaves"
+        )
 
     def test_create_observation_invalid_health_status(self):
         self.authenticate()
@@ -494,12 +540,27 @@ class PlantingDailyObservationDetailApiViewTests(
         self.assertEqual(response_data["health_status"], "GOOD")
 
     def test_update_observation_fertilizer_type_and_detail(self):
+    def test_partial_update_pruned(self):
+        self.authenticate()
+
+        data = {"pruned": True}
+        response = self.client.patch(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response_data["pruned"])
+        self.assertEqual(response_data["health_status"], "GOOD")
+
+    def test_update_observation_pruning_detail(self):
         self.authenticate()
 
         data = {
             "health_status": "GOOD",
             "fertilizer_type": "ORGANIC",
             "fertilizer_detail": "worm castings",
+            "pruned": True,
+            "pruning_detail": "topped the plant",
         }
         response = self.client.put(self.url, data, format="multipart")
 
@@ -508,6 +569,7 @@ class PlantingDailyObservationDetailApiViewTests(
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["fertilizer_type"], "ORGANIC")
         self.assertEqual(response_data["fertilizer_detail"], "worm castings")
+        self.assertEqual(response_data["pruning_detail"], "topped the plant")
 
     def test_update_observation_invalid_health_status(self):
         self.authenticate()

@@ -60,6 +60,8 @@ const baseInitialState: PlantingDailyObservationForm = {
   rained: false,
   fertilizerType: "NONE",
   fertilizerDetail: "",
+  pruned: false,
+  pruningDetail: "",
   notes: "Original notes",
   image: undefined,
 }
@@ -193,6 +195,24 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
 
       const input = wrapper.find("#fertilizerDetail").element as HTMLInputElement
       expect(input.value).toBe("worm castings")
+    it("does not render pruningDetail input when pruned is false", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find("#pruningDetail").exists()).toBe(false)
+    })
+
+    it("renders pruningDetail input when pruned is true in initial state", () => {
+      const wrapper = mountComponent({
+        observationFormInitialState: {
+          ...baseInitialState,
+          pruned: true,
+          pruningDetail: "topped the plant",
+        },
+      })
+
+      expect(wrapper.find("#pruningDetail").exists()).toBe(true)
+      const input = wrapper.find("#pruningDetail").element as HTMLInputElement
+      expect(input.value).toBe("topped the plant")
     })
   })
 
@@ -271,6 +291,20 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
 
       const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
       expect(payload.fertilizerType).toBe("SYNTHETIC")
+    it("emits submit with pruningDetail when pruned and detail provided", async () => {
+      const wrapper = mountComponent({
+        observationFormInitialState: {
+          ...baseInitialState,
+          pruned: true,
+          pruningDetail: "topped the plant",
+        },
+      })
+
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
+      expect(payload.pruned).toBe(true)
+      expect(payload.pruningDetail).toBe("topped the plant")
     })
 
     it("does not emit submit when healthStatus is invalid", async () => {

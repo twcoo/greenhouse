@@ -13,6 +13,8 @@ export interface PlantingDailyObservation {
   rained: boolean
   fertilizerType: FertilizerType
   fertilizerDetail: string
+  pruned: boolean
+  pruningDetail: string
   notes: string
   image: string | null
   observationDate: string
@@ -28,6 +30,8 @@ export interface PlantingDailyObservationPayload {
   rained: boolean
   fertilizerType?: FertilizerType
   fertilizerDetail?: string
+  pruned: boolean
+  pruningDetail?: string
   notes?: string
   image?: File | null
   observationDate?: string

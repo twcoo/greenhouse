@@ -102,6 +102,17 @@ const closePreview = (): void => {
         <div v-if="observation.fertilizerType !== 'NONE' && observation.fertilizerDetail">
           <span class="text-sm text-muted-foreground">Fertilizer detail</span>
           <p class="text-sm mt-1">{{ observation.fertilizerDetail }}</p>
+            v-if="observation.pruned"
+            variant="secondary"
+            class="bg-amber-500 text-white dark:bg-amber-600"
+            >Pruned
+          </Badge>
+        </div>
+
+        <!-- Pruning detail -->
+        <div v-if="observation.pruned && observation.pruningDetail">
+          <span class="text-sm text-muted-foreground">Pruning detail</span>
+          <p class="text-sm mt-1">{{ observation.pruningDetail }}</p>
         </div>
 
         <!-- Notes -->

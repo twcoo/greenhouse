@@ -103,6 +103,8 @@ class PlantingDailyObservationFactory(DjangoModelFactory):
     watered = False
     fertilizer_type = "NONE"
     fertilizer_detail = ""
+    pruned = False
+    pruning_detail = ""
     notes = ""
     image = None
     observation_date = factory.LazyFunction(
