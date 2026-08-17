@@ -17,6 +17,11 @@ class PlantingDailyObservation(models.Model):
         ("MEDIUM", "Medium"),
         ("HIGH", "High"),
     ]
+    FERTILIZER_TYPE_CHOICES = [
+        ("NONE", "None"),
+        ("ORGANIC", "Organic"),
+        ("SYNTHETIC", "Synthetic"),
+    ]
 
     planting = models.ForeignKey(
         Planting, related_name="daily_observations", on_delete=models.CASCADE
@@ -37,6 +42,13 @@ class PlantingDailyObservation(models.Model):
     rained = models.BooleanField(default=False)
     pruned = models.BooleanField(default=False)
     pruning_detail = models.CharField(max_length=200, blank=True, default="")
+
+    fertilizer_type = models.CharField(
+        max_length=20,
+        choices=FERTILIZER_TYPE_CHOICES,
+        default="NONE",
+    )
+    fertilizer_detail = models.CharField(max_length=200, blank=True, default="")
 
     notes = models.TextField(blank=True)
     image = models.ImageField(upload_to="observations/", null=True, blank=True)

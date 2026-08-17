@@ -29,7 +29,7 @@ import {
 import type { APIErrorResponse } from "@/types/api"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
 import { AxiosError } from "axios"
-import { HEALTH_STATUS_OPTIONS, PEST_PRESSURE_OPTIONS } from "./constants"
+import { FERTILIZER_TYPE_OPTIONS, HEALTH_STATUS_OPTIONS, PEST_PRESSURE_OPTIONS } from "./constants"
 import DatePicker from "@/components/DatePicker.vue"
 import { today, getLocalTimeZone } from "@internationalized/date"
 
@@ -50,6 +50,8 @@ const formInitialState: PlantingDailyObservationForm = {
   diseaseSymptoms: false,
   watered: false,
   rained: false,
+  fertilizerType: "NONE",
+  fertilizerDetail: "",
   pruned: false,
   notes: "",
   image: undefined,
@@ -212,6 +214,42 @@ watch(open, (isOpen) => {
             />
             <FieldError data-test="pruningDetailError" v-if="errors.pruningDetail">
               {{ errors.pruningDetail }}
+            </FieldError>
+          </Field>
+
+          <!-- Fertilization -->
+          <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">
+            Fertilization
+          </p>
+          <Field>
+            <FieldLabel for="fertilizerType">Fertilizer Type</FieldLabel>
+            <Select id="fertilizerType" v-model="form.fertilizerType">
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Select fertilizer type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="opt in FERTILIZER_TYPE_OPTIONS"
+                  :key="opt.value"
+                  :value="opt.value"
+                >
+                  {{ opt.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <FieldError data-test="fertilizerTypeError" v-if="errors.fertilizerType">
+              {{ errors.fertilizerType }}
+            </FieldError>
+          </Field>
+          <Field v-if="form.fertilizerType !== 'NONE'">
+            <FieldLabel for="fertilizerDetail">Fertilizer Detail</FieldLabel>
+            <Input
+              id="fertilizerDetail"
+              v-model="form.fertilizerDetail"
+              placeholder="e.g. fermented swamp fertilizer"
+            />
+            <FieldError data-test="fertilizerDetailError" v-if="errors.fertilizerDetail">
+              {{ errors.fertilizerDetail }}
             </FieldError>
           </Field>
 

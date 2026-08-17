@@ -1,5 +1,6 @@
 export type HealthStatus = "GOOD" | "FAIR" | "POOR"
 export type PestPressure = "NONE" | "LOW" | "MEDIUM" | "HIGH"
+export type FertilizerType = "NONE" | "ORGANIC" | "SYNTHETIC"
 
 export interface PlantingDailyObservation {
   id: number
@@ -10,6 +11,8 @@ export interface PlantingDailyObservation {
   diseaseSymptoms: boolean
   watered: boolean
   rained: boolean
+  fertilizerType: FertilizerType
+  fertilizerDetail: string
   pruned: boolean
   pruningDetail: string
   notes: string
@@ -25,6 +28,8 @@ export interface PlantingDailyObservationPayload {
   diseaseSymptoms: boolean
   watered: boolean
   rained: boolean
+  fertilizerType?: FertilizerType
+  fertilizerDetail?: string
   pruned: boolean
   pruningDetail?: string
   notes?: string

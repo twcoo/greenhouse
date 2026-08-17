@@ -73,11 +73,11 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(wrapper.find('[data-stub="date-picker"]').exists()).toBe(true)
     })
 
-    it("renders health status and pest pressure selects", () => {
+    it("renders health status, pest pressure, and fertilizer type selects", () => {
       const wrapper = mountComponent()
 
       const selects = wrapper.findAll('[data-stub="select"]')
-      expect(selects).toHaveLength(2)
+      expect(selects).toHaveLength(3)
     })
 
     it("renders the disease symptoms checkbox", () => {
@@ -148,6 +148,27 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(checkbox.checked).toBe(false)
     })
 
+    it("defaults fertilizerType select to NONE", () => {
+      const wrapper = mountComponent()
+
+      const selects = wrapper.findAll('[data-stub="select"]')
+      expect((selects[2].element as HTMLInputElement).value).toBe("NONE")
+    })
+
+    it("does not render fertilizerDetail input when fertilizerType is NONE", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.find("#fertilizerDetail").exists()).toBe(false)
+    })
+
+    it("renders fertilizerDetail input when fertilizerType is changed to ORGANIC", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('[data-stub="select"]')[2].setValue("ORGANIC")
+
+      expect(wrapper.find("#fertilizerDetail").exists()).toBe(true)
+    })
+
     it("does not render pruningDetail input when pruned is unchecked", () => {
       const wrapper = mountComponent()
 
@@ -180,6 +201,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
         diseaseSymptoms: false,
         watered: false,
         rained: false,
+        fertilizerType: "NONE",
         pruned: false,
       })
     })
@@ -278,6 +300,27 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
       const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
       expect(payload.image).toBe(file)
+    })
+
+    it("emits submit with fertilizerType ORGANIC when changed", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('[data-stub="select"]')[2].setValue("ORGANIC")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.fertilizerType).toBe("ORGANIC")
+    })
+
+    it("emits submit with fertilizerDetail when provided", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('[data-stub="select"]')[2].setValue("ORGANIC")
+      await wrapper.find("#fertilizerDetail").setValue("fermented swamp fertilizer")
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.fertilizerDetail).toBe("fermented swamp fertilizer")
     })
 
     it("does not emit submit when healthStatus is invalid", async () => {

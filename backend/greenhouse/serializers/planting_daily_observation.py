@@ -57,6 +57,20 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
         help_text="Optional detail about what was pruned.",
     )
 
+    fertilizer_type = serializers.ChoiceField(
+        choices=PlantingDailyObservation.FERTILIZER_TYPE_CHOICES,
+        default="NONE",
+        help_text="Whether the plant was fertilized and with what category.",
+    )
+    fertilizer_detail = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text=(
+            "Optional detail, e.g. 'fermented swamp fertilizer',"
+            " 'fish emulsion'."
+        ),
+    )
+
     notes = serializers.CharField(
         required=False,
         allow_blank=True,
@@ -112,6 +126,8 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
             "disease_symptoms",
             "watered",
             "rained",
+            "fertilizer_type",
+            "fertilizer_detail",
             "pruned",
             "pruning_detail",
             "notes",

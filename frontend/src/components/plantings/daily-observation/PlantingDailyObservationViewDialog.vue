@@ -10,7 +10,12 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/utils/formatting"
 import type { PlantingDailyObservation } from "@/types/plantingDailyObservation"
-import { HEALTH_BADGE_VARIANT, HEALTH_LABEL, PEST_PRESSURE_LABEL } from "./constants"
+import {
+  FERTILIZER_TYPE_LABEL,
+  HEALTH_BADGE_VARIANT,
+  HEALTH_LABEL,
+  PEST_PRESSURE_LABEL,
+} from "./constants"
 
 const open = defineModel<boolean>("open")
 const { observation } = defineProps<{ observation: PlantingDailyObservation | null }>()
@@ -80,12 +85,31 @@ const closePreview = (): void => {
             >Rained
           </Badge>
           <Badge
-            v-if="observation.pruned"
+            v-if="observation.fertilizerType === 'ORGANIC'"
+            variant="secondary"
+            class="bg-green-600 text-white dark:bg-green-700"
+            >{{ FERTILIZER_TYPE_LABEL["ORGANIC"] }}
+          </Badge>
+          <Badge
+            v-if="observation.fertilizerType === 'SYNTHETIC'"
             variant="secondary"
             class="bg-amber-500 text-white dark:bg-amber-600"
-            >Pruned
+            >{{ FERTILIZER_TYPE_LABEL["SYNTHETIC"] }}
           </Badge>
         </div>
+
+        <!-- Fertilizer detail -->
+        <div v-if="observation.fertilizerType !== 'NONE' && observation.fertilizerDetail">
+          <span class="text-sm text-muted-foreground">Fertilizer detail</span>
+          <p class="text-sm mt-1">{{ observation.fertilizerDetail }}</p>
+        </div>
+
+        <Badge
+          v-if="observation.pruned"
+          variant="secondary"
+          class="bg-amber-500 text-white dark:bg-amber-600"
+          >Pruned
+        </Badge>
 
         <!-- Pruning detail -->
         <div v-if="observation.pruned && observation.pruningDetail">
