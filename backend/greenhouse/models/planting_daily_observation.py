@@ -23,10 +23,9 @@ class PlantingDailyObservation(models.Model):
         ("SYNTHETIC", "Synthetic"),
     ]
     WATERING_EVENT_CHOICES = [
-        ("NONE", "None"),
         ("WATERED", "Watered"),
-        ("RAINED", "Rained"),
-        ("SKIPPED_WET", "Soil still wet"),
+        ("RAINED", "Rained (skipped watering)"),
+        ("SKIPPED_WET", "Soil still wet (skipped watering)"),
     ]
 
     planting = models.ForeignKey(
@@ -47,7 +46,6 @@ class PlantingDailyObservation(models.Model):
     watering_event = models.CharField(
         max_length=20,
         choices=WATERING_EVENT_CHOICES,
-        default="NONE",
     )
     pruned = models.BooleanField(default=False)
     pruning_detail = models.CharField(max_length=200, blank=True, default="")
