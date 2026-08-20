@@ -22,6 +22,12 @@ class PlantingDailyObservation(models.Model):
         ("ORGANIC", "Organic"),
         ("SYNTHETIC", "Synthetic"),
     ]
+    WATERING_EVENT_CHOICES = [
+        ("NONE", "None"),
+        ("WATERED", "Watered"),
+        ("RAINED", "Rained"),
+        ("SKIPPED_WET", "Soil still wet"),
+    ]
 
     planting = models.ForeignKey(
         Planting, related_name="daily_observations", on_delete=models.CASCADE
@@ -38,8 +44,11 @@ class PlantingDailyObservation(models.Model):
         max_length=20, choices=PEST_PRESSURE_CHOICES, default="NONE"
     )
     disease_symptoms = models.BooleanField(default=False)
-    watered = models.BooleanField(default=False)
-    rained = models.BooleanField(default=False)
+    watering_event = models.CharField(
+        max_length=20,
+        choices=WATERING_EVENT_CHOICES,
+        default="NONE",
+    )
     pruned = models.BooleanField(default=False)
     pruning_detail = models.CharField(max_length=200, blank=True, default="")
 
