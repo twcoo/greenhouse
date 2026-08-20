@@ -1,4 +1,9 @@
-import type { FertilizerType, HealthStatus, PestPressure } from "@/types/plantingDailyObservation"
+import type {
+  FertilizerType,
+  HealthStatus,
+  PestPressure,
+  WateringEvent,
+} from "@/types/plantingDailyObservation"
 
 export const HEALTH_STATUS_OPTIONS: { value: HealthStatus; label: string }[] = [
   { value: "GOOD", label: "Good" },
@@ -33,6 +38,18 @@ export const PEST_PRESSURE_LABEL: Record<PestPressure, string> = {
   LOW: "Low",
   MEDIUM: "Medium",
   HIGH: "High",
+}
+
+export const WATERING_EVENT_OPTIONS: { value: WateringEvent; label: string }[] = [
+  { value: "WATERED", label: "Watered" },
+  { value: "RAINED", label: "Rained (skipped watering)" },
+  { value: "SKIPPED_WET", label: "Soil still wet (skipped watering)" },
+]
+
+export const WATERING_EVENT_LABEL: Record<WateringEvent, string> = {
+  WATERED: "Watered",
+  RAINED: "Rained (skipped watering)",
+  SKIPPED_WET: "Soil still wet (skipped watering)",
 }
 
 export const FERTILIZER_TYPE_OPTIONS: { value: FertilizerType; label: string }[] = [

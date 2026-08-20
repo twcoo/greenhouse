@@ -19,13 +19,22 @@ describe("plantingDailyObservationSchema", () => {
     it("parses a fully populated form", () => {
       const result = plantingDailyObservationSchema.safeParse({
         ...validBase,
-        rained: true,
+        wateringEvent: "RAINED",
         notes: "Healthy plant",
       })
 
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.rained).toBe(true)
+        expect(result.data.wateringEvent).toBe("RAINED")
+      }
+    })
+
+    it("parses with wateringEvent omitted", () => {
+      const result = plantingDailyObservationSchema.safeParse(validBase)
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.wateringEvent).toBeUndefined()
       }
     })
 
@@ -102,38 +111,62 @@ describe("plantingDailyObservationSchema", () => {
     })
   })
 
-  describe("rained field", () => {
-    it("defaults rained to false when omitted", () => {
-      const result = plantingDailyObservationSchema.safeParse(validBase)
-
-      expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.rained).toBe(false)
-      }
-    })
-
-    it("defaults rained to false when null", () => {
+  describe("wateringEvent field", () => {
+    it("accepts null as wateringEvent", () => {
       const result = plantingDailyObservationSchema.safeParse({
         ...validBase,
-        rained: null,
+        wateringEvent: null,
       })
 
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.rained).toBe(false)
+        expect(result.data.wateringEvent).toBeNull()
       }
     })
 
-    it("passes rained = true correctly", () => {
+    it("accepts WATERED as wateringEvent", () => {
       const result = plantingDailyObservationSchema.safeParse({
         ...validBase,
-        rained: true,
+        wateringEvent: "WATERED",
       })
 
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.rained).toBe(true)
+        expect(result.data.wateringEvent).toBe("WATERED")
       }
+    })
+
+    it("accepts RAINED as wateringEvent", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        wateringEvent: "RAINED",
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.wateringEvent).toBe("RAINED")
+      }
+    })
+
+    it("accepts SKIPPED_WET as wateringEvent", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        wateringEvent: "SKIPPED_WET",
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.wateringEvent).toBe("SKIPPED_WET")
+      }
+    })
+
+    it("rejects invalid wateringEvent", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        wateringEvent: "SPRINKLER",
+      })
+
+      expect(result.success).toBe(false)
     })
   })
 

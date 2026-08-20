@@ -56,8 +56,7 @@ const baseInitialState: PlantingDailyObservationForm = {
   healthStatus: "FAIR",
   pestPressure: "LOW",
   diseaseSymptoms: false,
-  watered: false,
-  rained: false,
+  wateringEvent: null,
   fertilizerType: "NONE",
   fertilizerDetail: "",
   pruned: false,
@@ -122,36 +121,22 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
       expect(checkbox.checked).toBe(true)
     })
 
-    it("reflects watered = false from observationFormInitialState", () => {
-      const wrapper = mountComponent()
-
-      const checkbox = wrapper.findAll('input[type="checkbox"]')[1].element as HTMLInputElement
-      expect(checkbox.checked).toBe(false)
-    })
-
-    it("reflects watered = true from observationFormInitialState", () => {
+    it("pre-populates wateringEvent from observationFormInitialState", () => {
       const wrapper = mountComponent({
-        observationFormInitialState: { ...baseInitialState, watered: true },
+        observationFormInitialState: { ...baseInitialState, wateringEvent: "RAINED" as const },
       })
 
-      const checkbox = wrapper.findAll('input[type="checkbox"]')[1].element as HTMLInputElement
-      expect(checkbox.checked).toBe(true)
+      const selects = wrapper.findAll('[data-stub="select"]')
+      expect((selects[2].element as HTMLInputElement).value).toBe("RAINED")
     })
 
-    it("reflects rained = false from observationFormInitialState", () => {
-      const wrapper = mountComponent()
-
-      const checkbox = wrapper.findAll('input[type="checkbox"]')[2].element as HTMLInputElement
-      expect(checkbox.checked).toBe(false)
-    })
-
-    it("reflects rained = true from observationFormInitialState", () => {
+    it("shows empty wateringEvent select when wateringEvent is null", () => {
       const wrapper = mountComponent({
-        observationFormInitialState: { ...baseInitialState, rained: true },
+        observationFormInitialState: { ...baseInitialState, wateringEvent: null },
       })
 
-      const checkbox = wrapper.findAll('input[type="checkbox"]')[2].element as HTMLInputElement
-      expect(checkbox.checked).toBe(true)
+      const selects = wrapper.findAll('[data-stub="select"]')
+      expect((selects[2].element as HTMLInputElement).value).toBe("")
     })
 
     it("pre-populates notes from observationFormInitialState", () => {
@@ -181,7 +166,7 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
       })
 
       const selects = wrapper.findAll('[data-stub="select"]')
-      expect((selects[2].element as HTMLInputElement).value).toBe("ORGANIC")
+      expect((selects[3].element as HTMLInputElement).value).toBe("ORGANIC")
     })
 
     it("pre-populates fertilizerDetail when fertilizerType is ORGANIC", () => {
@@ -255,24 +240,14 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
       expect(payload.diseaseSymptoms).toBe(true)
     })
 
-    it("emits submit with watered = true when toggled on", async () => {
+    it("emits submit with wateringEvent WATERED when changed", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.findAll('input[type="checkbox"]')[1].setValue(true)
+      await wrapper.findAll('[data-stub="select"]')[2].setValue("WATERED")
       await wrapper.find("form").trigger("submit.prevent")
 
       const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
-      expect(payload.watered).toBe(true)
-    })
-
-    it("emits submit with rained = true when toggled on", async () => {
-      const wrapper = mountComponent()
-
-      await wrapper.findAll('input[type="checkbox"]')[2].setValue(true)
-      await wrapper.find("form").trigger("submit.prevent")
-
-      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
-      expect(payload.rained).toBe(true)
+      expect(payload.wateringEvent).toBe("WATERED")
     })
 
     it("emits submit with updated notes", async () => {
@@ -288,7 +263,7 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
     it("emits submit with fertilizerType SYNTHETIC when changed", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.findAll('[data-stub="select"]')[2].setValue("SYNTHETIC")
+      await wrapper.findAll('[data-stub="select"]')[3].setValue("SYNTHETIC")
       await wrapper.find("form").trigger("submit.prevent")
 
       const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>

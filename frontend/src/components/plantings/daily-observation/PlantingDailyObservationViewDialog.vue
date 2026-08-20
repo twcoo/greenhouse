@@ -15,6 +15,7 @@ import {
   HEALTH_BADGE_VARIANT,
   HEALTH_LABEL,
   PEST_PRESSURE_LABEL,
+  WATERING_EVENT_LABEL,
 } from "./constants"
 
 const open = defineModel<boolean>("open")
@@ -73,16 +74,11 @@ const closePreview = (): void => {
             · Disease symptoms present
           </span>
           <Badge
-            v-if="observation.watered"
+            v-if="observation.wateringEvent"
             variant="secondary"
             class="bg-blue-500 text-white dark:bg-blue-600"
-            >Watered
-          </Badge>
-          <Badge
-            v-if="observation.rained"
-            variant="secondary"
-            class="bg-sky-500 text-white dark:bg-sky-600"
-            >Rained
+          >
+            {{ WATERING_EVENT_LABEL[observation.wateringEvent] }}
           </Badge>
           <Badge
             v-if="observation.fertilizerType === 'ORGANIC'"
