@@ -39,13 +39,10 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
         default=False,
         help_text="Whether disease symptoms are present.",
     )
-    watered = serializers.BooleanField(
-        default=False,
-        help_text=("Whether the planting was watered during this observation."),
-    )
-    rained = serializers.BooleanField(
-        default=False,
-        help_text="Whether watering was skipped because it rained.",
+    watering_event = serializers.ChoiceField(
+        choices=PlantingDailyObservation.WATERING_EVENT_CHOICES,
+        default="NONE",
+        help_text="Watering event for this observation.",
     )
     pruned = serializers.BooleanField(
         default=False,
@@ -124,8 +121,7 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
             "health_status",
             "pest_pressure",
             "disease_symptoms",
-            "watered",
-            "rained",
+            "watering_event",
             "fertilizer_type",
             "fertilizer_detail",
             "pruned",
