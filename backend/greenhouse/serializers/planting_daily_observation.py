@@ -41,7 +41,6 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
     )
     watering_event = serializers.ChoiceField(
         choices=PlantingDailyObservation.WATERING_EVENT_CHOICES,
-        default="NONE",
         help_text="Watering event for this observation.",
     )
     pruned = serializers.BooleanField(
