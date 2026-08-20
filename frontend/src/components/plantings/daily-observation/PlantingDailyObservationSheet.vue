@@ -129,8 +129,7 @@ const toObservationForm = (obs: {
   healthStatus: string
   pestPressure: string
   diseaseSymptoms: boolean
-  watered: boolean
-  rained: boolean
+  wateringEvent: string | null
   fertilizerType: string
   fertilizerDetail: string
   pruned: boolean
@@ -141,8 +140,7 @@ const toObservationForm = (obs: {
   healthStatus: obs.healthStatus as HealthStatus,
   pestPressure: obs.pestPressure as "NONE" | "LOW" | "MEDIUM" | "HIGH",
   diseaseSymptoms: obs.diseaseSymptoms,
-  watered: obs.watered,
-  rained: obs.rained,
+  wateringEvent: (obs.wateringEvent as "WATERED" | "RAINED" | "SKIPPED_WET") ?? null,
   fertilizerType: obs.fertilizerType as "NONE" | "ORGANIC" | "SYNTHETIC",
   fertilizerDetail: obs.fertilizerDetail ?? "",
   pruned: obs.pruned,
