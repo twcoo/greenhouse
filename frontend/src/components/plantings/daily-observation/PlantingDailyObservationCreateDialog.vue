@@ -29,7 +29,12 @@ import {
 import type { APIErrorResponse } from "@/types/api"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
 import { AxiosError } from "axios"
-import { FERTILIZER_TYPE_OPTIONS, HEALTH_STATUS_OPTIONS, PEST_PRESSURE_OPTIONS } from "./constants"
+import {
+  FERTILIZER_TYPE_OPTIONS,
+  HEALTH_STATUS_OPTIONS,
+  PEST_PRESSURE_OPTIONS,
+  WATERING_EVENT_OPTIONS,
+} from "./constants"
 import DatePicker from "@/components/DatePicker.vue"
 import { today, getLocalTimeZone } from "@internationalized/date"
 
@@ -48,8 +53,7 @@ const formInitialState: PlantingDailyObservationForm = {
   healthStatus: "GOOD",
   pestPressure: "NONE",
   diseaseSymptoms: false,
-  watered: false,
-  rained: false,
+  wateringEvent: null,
   fertilizerType: "NONE",
   fertilizerDetail: "",
   pruned: false,
@@ -183,18 +187,32 @@ watch(open, (isOpen) => {
               <FieldLabel for="diseaseSymptoms" class="mb-0">Disease symptoms present</FieldLabel>
             </div>
           </Field>
+
+          <!-- Watering -->
+          <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">
+            Watering
+          </p>
           <Field>
-            <div class="flex items-center gap-2">
-              <Checkbox id="watered" v-model="form.watered" />
-              <FieldLabel for="watered" class="mb-0">Watered</FieldLabel>
-            </div>
+            <FieldLabel for="wateringEvent">Watering Event</FieldLabel>
+            <Select id="wateringEvent" v-model="form.wateringEvent">
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Select watering event" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="opt in WATERING_EVENT_OPTIONS"
+                  :key="opt.value"
+                  :value="opt.value"
+                >
+                  {{ opt.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <FieldError data-test="wateringEventError" v-if="errors.wateringEvent">
+              {{ errors.wateringEvent }}
+            </FieldError>
           </Field>
-          <Field>
-            <div class="flex items-center gap-2">
-              <Checkbox id="rained" v-model="form.rained" />
-              <FieldLabel for="rained" class="mb-0">It rained (skipped watering)</FieldLabel>
-            </div>
-          </Field>
+
           <!-- Pruning -->
           <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">
             Pruning

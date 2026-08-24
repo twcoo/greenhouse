@@ -19,8 +19,7 @@ const mockObservation = {
   healthStatus: "GOOD",
   pestPressure: "NONE",
   diseaseSymptoms: false,
-  watered: false,
-  rained: false,
+  wateringEvent: null,
   notes: "Looking healthy",
   image: null,
   observationDate: "2024-03-01",
@@ -94,19 +93,18 @@ describe("plantingDailyObservationService", () => {
       expect(formData.get("disease_symptoms")).toBe("true")
     })
 
-    it("appends rained to FormData", async () => {
+    it("appends wateringEvent to FormData", async () => {
       vi.mocked(apiClient.post).mockResolvedValue({ data: { data: mockObservation } })
 
       await plantingDailyObservationService.create(5, {
         healthStatus: "GOOD",
         pestPressure: "NONE",
         diseaseSymptoms: false,
-        watered: false,
-        rained: true,
+        wateringEvent: "RAINED",
       })
 
       const formData = vi.mocked(apiClient.post).mock.calls[0][1] as FormData
-      expect(formData.get("rained")).toBe("true")
+      expect(formData.get("watering_event")).toBe("RAINED")
     })
 
     it("appends image when provided", async () => {

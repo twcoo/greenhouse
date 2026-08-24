@@ -19,8 +19,7 @@ const baseObservation: PlantingDailyObservation = {
   healthStatus: "GOOD",
   pestPressure: "LOW",
   diseaseSymptoms: false,
-  watered: false,
-  rained: false,
+  wateringEvent: null,
   fertilizerType: "NONE",
   fertilizerDetail: "",
   pruned: false,
@@ -73,33 +72,31 @@ describe("PlantingDailyObservationViewDialog.vue", () => {
     })
   })
 
-  describe("watered", () => {
-    it("shows Watered badge when watered is true", () => {
-      const wrapper = mountComponent({ ...baseObservation, watered: true })
+  describe("wateringEvent", () => {
+    it("shows Watered badge when wateringEvent is WATERED", () => {
+      const wrapper = mountComponent({ ...baseObservation, wateringEvent: "WATERED" })
 
       expect(wrapper.text()).toContain("Watered")
     })
 
-    it("hides Watered badge when watered is false", () => {
-      const wrapper = mountComponent({ ...baseObservation, watered: false })
+    it("shows Rained badge when wateringEvent is RAINED", () => {
+      const wrapper = mountComponent({ ...baseObservation, wateringEvent: "RAINED" })
 
-      const badges = wrapper.findAll('[data-test="badge"]')
-      expect(badges.every((b) => b.text() !== "Watered")).toBe(true)
-    })
-  })
-
-  describe("rained", () => {
-    it("shows Rained badge when rained is true", () => {
-      const wrapper = mountComponent({ ...baseObservation, rained: true })
-
-      expect(wrapper.text()).toContain("Rained")
+      expect(wrapper.text()).toContain("Rained (skipped watering)")
     })
 
-    it("hides Rained badge when rained is false", () => {
-      const wrapper = mountComponent({ ...baseObservation, rained: false })
+    it("shows Soil still wet badge when wateringEvent is SKIPPED_WET", () => {
+      const wrapper = mountComponent({ ...baseObservation, wateringEvent: "SKIPPED_WET" })
+
+      expect(wrapper.text()).toContain("Soil still wet (skipped watering)")
+    })
+
+    it("hides watering badge when wateringEvent is null", () => {
+      const wrapper = mountComponent({ ...baseObservation, wateringEvent: null })
 
       const badges = wrapper.findAll('[data-test="badge"]')
-      expect(badges.every((b) => b.text() !== "Rained")).toBe(true)
+      const wateringTexts = ["Watered", "Rained", "Soil still wet"]
+      expect(badges.every((b) => wateringTexts.every((t) => !b.text().includes(t)))).toBe(true)
     })
   })
 

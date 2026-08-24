@@ -73,11 +73,11 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(wrapper.find('[data-stub="date-picker"]').exists()).toBe(true)
     })
 
-    it("renders health status, pest pressure, and fertilizer type selects", () => {
+    it("renders health status, pest pressure, watering event, and fertilizer type selects", () => {
       const wrapper = mountComponent()
 
       const selects = wrapper.findAll('[data-stub="select"]')
-      expect(selects).toHaveLength(3)
+      expect(selects).toHaveLength(4)
     })
 
     it("renders the disease symptoms checkbox", () => {
@@ -86,10 +86,10 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(wrapper.find('input[type="checkbox"]').exists()).toBe(true)
     })
 
-    it("renders the watered, rained, and pruned checkboxes", () => {
+    it("renders the disease symptoms and pruned checkboxes", () => {
       const wrapper = mountComponent()
 
-      expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(4)
+      expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(2)
     })
 
     it("renders the notes textarea", () => {
@@ -141,18 +141,18 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(checkbox.checked).toBe(false)
     })
 
-    it("defaults watered checkbox to unchecked", () => {
+    it("defaults wateringEvent select to empty", () => {
       const wrapper = mountComponent()
 
-      const checkbox = wrapper.findAll('input[type="checkbox"]')[1].element as HTMLInputElement
-      expect(checkbox.checked).toBe(false)
+      const selects = wrapper.findAll('[data-stub="select"]')
+      expect((selects[2].element as HTMLInputElement).value).toBe("")
     })
 
     it("defaults fertilizerType select to NONE", () => {
       const wrapper = mountComponent()
 
       const selects = wrapper.findAll('[data-stub="select"]')
-      expect((selects[2].element as HTMLInputElement).value).toBe("NONE")
+      expect((selects[3].element as HTMLInputElement).value).toBe("NONE")
     })
 
     it("does not render fertilizerDetail input when fertilizerType is NONE", () => {
@@ -164,7 +164,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
     it("renders fertilizerDetail input when fertilizerType is changed to ORGANIC", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.findAll('[data-stub="select"]')[2].setValue("ORGANIC")
+      await wrapper.findAll('[data-stub="select"]')[3].setValue("ORGANIC")
 
       expect(wrapper.find("#fertilizerDetail").exists()).toBe(true)
     })
@@ -178,7 +178,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
     it("renders pruningDetail input when pruned checkbox is checked", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+      await wrapper.findAll('input[type="checkbox"]')[1].setValue(true)
 
       expect(wrapper.find("#pruningDetail").exists()).toBe(true)
     })
@@ -199,11 +199,10 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
         healthStatus: "GOOD",
         pestPressure: "NONE",
         diseaseSymptoms: false,
-        watered: false,
-        rained: false,
         fertilizerType: "NONE",
         pruned: false,
       })
+      expect(payload.wateringEvent == null).toBe(true)
     })
 
     it("emits submit with updated observationDate when date picker changes", async () => {
@@ -237,30 +236,20 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
       expect(payload.diseaseSymptoms).toBe(true)
     })
 
-    it("emits submit with watered = true when watered checkbox is checked", async () => {
+    it("emits submit with wateringEvent WATERED when changed", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.findAll('input[type="checkbox"]')[1].setValue(true)
+      await wrapper.findAll('[data-stub="select"]')[2].setValue("WATERED")
       await wrapper.find("form").trigger("submit.prevent")
 
       const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
-      expect(payload.watered).toBe(true)
-    })
-
-    it("emits submit with rained = true when rained checkbox is checked", async () => {
-      const wrapper = mountComponent()
-
-      await wrapper.findAll('input[type="checkbox"]')[2].setValue(true)
-      await wrapper.find("form").trigger("submit.prevent")
-
-      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
-      expect(payload.rained).toBe(true)
+      expect(payload.wateringEvent).toBe("WATERED")
     })
 
     it("emits submit with pruned = true when pruned checkbox is checked", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+      await wrapper.findAll('input[type="checkbox"]')[1].setValue(true)
       await wrapper.find("form").trigger("submit.prevent")
 
       const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
@@ -280,7 +269,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
     it("emits submit with pruningDetail when pruned and detail provided", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+      await wrapper.findAll('input[type="checkbox"]')[1].setValue(true)
       await wrapper.find("#pruningDetail").setValue("removed lower leaves")
       await wrapper.find("form").trigger("submit.prevent")
 
@@ -305,7 +294,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
     it("emits submit with fertilizerType ORGANIC when changed", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.findAll('[data-stub="select"]')[2].setValue("ORGANIC")
+      await wrapper.findAll('[data-stub="select"]')[3].setValue("ORGANIC")
       await wrapper.find("form").trigger("submit.prevent")
 
       const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
@@ -315,7 +304,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
     it("emits submit with fertilizerDetail when provided", async () => {
       const wrapper = mountComponent()
 
-      await wrapper.findAll('[data-stub="select"]')[2].setValue("ORGANIC")
+      await wrapper.findAll('[data-stub="select"]')[3].setValue("ORGANIC")
       await wrapper.find("#fertilizerDetail").setValue("fermented swamp fertilizer")
       await wrapper.find("form").trigger("submit.prevent")
 

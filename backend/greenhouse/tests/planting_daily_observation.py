@@ -172,7 +172,7 @@ class PlantingDailyObservationCreateApiViewTests(
     def test_create_observation_minimal_fields(self):
         self.authenticate()
 
-        data = {"health_status": "GOOD"}
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
         response = self.client.post(self.url, data, format="multipart")
 
         response_status, response_data, message = self.get_response_data(
@@ -191,8 +191,7 @@ class PlantingDailyObservationCreateApiViewTests(
             "health_status": "FAIR",
             "pest_pressure": "LOW",
             "disease_symptoms": False,
-            "watered": True,
-            "rained": True,
+            "watering_event": "WATERED",
             "pruned": True,
             "notes": "Some notes.",
         }
@@ -206,45 +205,63 @@ class PlantingDailyObservationCreateApiViewTests(
         self.assertEqual(response_status, "success")
         self.assertEqual(response_data["health_status"], "FAIR")
         self.assertEqual(response_data["notes"], "Some notes.")
-        self.assertEqual(response_data["watered"], True)
-        self.assertEqual(response_data["rained"], True)
+        self.assertEqual(response_data["watering_event"], "WATERED")
         self.assertEqual(response_data["pruned"], True)
         self.assertIsNone(message)
 
-    def test_create_observation_rained_defaults_to_false(self):
+    def test_create_observation_without_watering_event_returns_400(self):
         self.authenticate()
 
         data = {"health_status": "GOOD"}
         response = self.client.post(self.url, data, format="multipart")
 
-        response_status, response_data, message = self.get_response_data(
-            response
-        )
+        response_status, _, message = self.get_response_data(response)
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response_status, "success")
-        self.assertFalse(response_data["rained"])
-        self.assertIsNone(message)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIn("watering_event", message)
 
-    def test_create_observation_watered_defaults_to_false(self):
+    def test_create_observation_with_watering_event_rained(self):
         self.authenticate()
 
-        data = {"health_status": "GOOD"}
+        data = {"health_status": "GOOD", "watering_event": "RAINED"}
         response = self.client.post(self.url, data, format="multipart")
 
-        response_status, response_data, message = self.get_response_data(
-            response
-        )
+        _, response_data, _ = self.get_response_data(response)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response_status, "success")
-        self.assertFalse(response_data["watered"])
-        self.assertIsNone(message)
+        self.assertEqual(response_data["watering_event"], "RAINED")
+
+    def test_create_observation_with_watering_event_skipped_wet(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_data["watering_event"], "SKIPPED_WET")
+
+    def test_create_observation_invalid_watering_event(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD", "watering_event": "SPRINKLER"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            {"watering_event": ['"SPRINKLER" is not a valid choice.']},
+        )
 
     def test_create_observation_pruned_defaults_to_false(self):
         self.authenticate()
 
-        data = {"health_status": "GOOD"}
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
         response = self.client.post(self.url, data, format="multipart")
 
         response_status, response_data, message = self.get_response_data(
@@ -259,7 +276,7 @@ class PlantingDailyObservationCreateApiViewTests(
     def test_create_observation_pruning_detail_defaults_to_empty(self):
         self.authenticate()
 
-        data = {"health_status": "GOOD"}
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
         response = self.client.post(self.url, data, format="multipart")
 
         _, response_data, _ = self.get_response_data(response)
@@ -272,6 +289,7 @@ class PlantingDailyObservationCreateApiViewTests(
 
         data = {
             "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
             "pruned": True,
             "pruning_detail": "removed lower leaves",
         }
@@ -288,7 +306,7 @@ class PlantingDailyObservationCreateApiViewTests(
     def test_create_observation_invalid_health_status(self):
         self.authenticate()
 
-        data = {"health_status": "UNKNOWN"}
+        data = {"health_status": "UNKNOWN", "watering_event": "SKIPPED_WET"}
         response = self.client.post(self.url, data, format="multipart")
 
         response_status, _, message = self.get_response_data(response)
@@ -306,7 +324,11 @@ class PlantingDailyObservationCreateApiViewTests(
         image = self.create_test_image(name="obs_gif", extension="gif")
         response = self.client.post(
             self.url,
-            {"health_status": "GOOD", "image": image},
+            {
+                "health_status": "GOOD",
+                "watering_event": "SKIPPED_WET",
+                "image": image,
+            },
             format="multipart",
         )
 
@@ -330,7 +352,11 @@ class PlantingDailyObservationCreateApiViewTests(
         image = self.create_test_image(name="obs_large", target_mb=3)
         response = self.client.post(
             self.url,
-            {"health_status": "GOOD", "image": image},
+            {
+                "health_status": "GOOD",
+                "watering_event": "SKIPPED_WET",
+                "image": image,
+            },
             format="multipart",
         )
 
@@ -346,7 +372,7 @@ class PlantingDailyObservationCreateApiViewTests(
     def test_create_observation_defaults_observation_date_to_today(self):
         self.authenticate()
 
-        data = {"health_status": "GOOD"}
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
         response = self.client.post(self.url, data, format="multipart")
 
         _, response_data, _ = self.get_response_data(response)
@@ -360,7 +386,11 @@ class PlantingDailyObservationCreateApiViewTests(
         self.authenticate()
 
         past_date = (date.today() - timedelta(days=3)).isoformat()
-        data = {"health_status": "GOOD", "observation_date": past_date}
+        data = {
+            "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
+            "observation_date": past_date,
+        }
         response = self.client.post(self.url, data, format="multipart")
 
         _, response_data, _ = self.get_response_data(response)
@@ -371,7 +401,11 @@ class PlantingDailyObservationCreateApiViewTests(
     def test_create_observation_invalid_observation_date(self):
         self.authenticate()
 
-        data = {"health_status": "GOOD", "observation_date": "not-a-date"}
+        data = {
+            "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
+            "observation_date": "not-a-date",
+        }
         response = self.client.post(self.url, data, format="multipart")
 
         response_status, _, message = self.get_response_data(response)
@@ -391,7 +425,7 @@ class PlantingDailyObservationCreateApiViewTests(
     def test_create_observation_fertilizer_type_defaults_to_none(self):
         self.authenticate()
 
-        data = {"health_status": "GOOD"}
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
         response = self.client.post(self.url, data, format="multipart")
 
         _, response_data, _ = self.get_response_data(response)
@@ -402,7 +436,7 @@ class PlantingDailyObservationCreateApiViewTests(
     def test_create_observation_fertilizer_detail_defaults_to_empty(self):
         self.authenticate()
 
-        data = {"health_status": "GOOD"}
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
         response = self.client.post(self.url, data, format="multipart")
 
         _, response_data, _ = self.get_response_data(response)
@@ -415,6 +449,7 @@ class PlantingDailyObservationCreateApiViewTests(
 
         data = {
             "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
             "fertilizer_type": "ORGANIC",
             "fertilizer_detail": "fermented swamp fertilizer",
         }
@@ -433,6 +468,7 @@ class PlantingDailyObservationCreateApiViewTests(
 
         data = {
             "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
             "fertilizer_type": "SYNTHETIC",
         }
         response = self.client.post(self.url, data, format="multipart")
@@ -445,7 +481,11 @@ class PlantingDailyObservationCreateApiViewTests(
     def test_create_observation_invalid_fertilizer_type(self):
         self.authenticate()
 
-        data = {"health_status": "GOOD", "fertilizer_type": "BANANA"}
+        data = {
+            "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
+            "fertilizer_type": "BANANA",
+        }
         response = self.client.post(self.url, data, format="multipart")
 
         response_status, _, message = self.get_response_data(response)
@@ -468,7 +508,9 @@ class PlantingDailyObservationCreateApiViewTests(
         )
 
         response = self.client.post(
-            url, {"health_status": "GOOD"}, format="multipart"
+            url,
+            {"health_status": "GOOD", "watering_event": "SKIPPED_WET"},
+            format="multipart",
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -496,7 +538,7 @@ class PlantingDailyObservationDetailApiViewTests(
         data = {
             "health_status": "FAIR",
             "notes": "Updated notes.",
-            "watered": True,
+            "watering_event": "WATERED",
         }
         response = self.client.put(self.url, data, format="multipart")
 
@@ -508,8 +550,42 @@ class PlantingDailyObservationDetailApiViewTests(
         self.assertEqual(response_status, "success")
         self.assertEqual(response_data["health_status"], "FAIR")
         self.assertEqual(response_data["notes"], "Updated notes.")
-        self.assertEqual(response_data["watered"], True)
+        self.assertEqual(response_data["watering_event"], "WATERED")
         self.assertIsNone(message)
+
+    def test_update_observation_watering_event_skipped_wet(self):
+        self.authenticate()
+
+        data = {
+            "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
+        }
+        response = self.client.put(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["watering_event"], "SKIPPED_WET")
+
+    def test_partial_update_watering_event(self):
+        self.authenticate()
+
+        data = {"watering_event": "RAINED"}
+        response = self.client.patch(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_data["watering_event"], "RAINED")
+        self.assertEqual(response_data["health_status"], "GOOD")
+
+    def test_update_observation_invalid_watering_event(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD", "watering_event": "SPRINKLER"}
+        response = self.client.put(self.url, data, format="multipart")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_observation_date(self):
         self.authenticate()
@@ -517,6 +593,7 @@ class PlantingDailyObservationDetailApiViewTests(
         past_date = (date.today() - timedelta(days=5)).isoformat()
         data = {
             "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
             "observation_date": past_date,
         }
         response = self.client.put(self.url, data, format="multipart")
@@ -544,6 +621,7 @@ class PlantingDailyObservationDetailApiViewTests(
 
         data = {
             "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
             "fertilizer_type": "ORGANIC",
             "fertilizer_detail": "fish emulsion",
         }
@@ -572,6 +650,7 @@ class PlantingDailyObservationDetailApiViewTests(
 
         data = {
             "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
             "fertilizer_type": "ORGANIC",
             "fertilizer_detail": "worm castings",
             "pruned": True,
@@ -757,7 +836,11 @@ class PlantingDailyObservationImageClearTests(
         image = self.create_test_image(name="obs_img")
         self.client.put(
             self.url,
-            {"health_status": "GOOD", "image": image},
+            {
+                "health_status": "GOOD",
+                "watering_event": "SKIPPED_WET",
+                "image": image,
+            },
             format="multipart",
         )
         self.observation.refresh_from_db()
@@ -768,7 +851,11 @@ class PlantingDailyObservationImageClearTests(
 
         response = self.client.put(
             self.url,
-            {"health_status": "GOOD", "image": ""},
+            {
+                "health_status": "GOOD",
+                "watering_event": "SKIPPED_WET",
+                "image": "",
+            },
             format="multipart",
         )
 
@@ -788,7 +875,11 @@ class PlantingDailyObservationImageClearTests(
 
         self.client.put(
             self.url,
-            {"health_status": "GOOD", "image": ""},
+            {
+                "health_status": "GOOD",
+                "watering_event": "SKIPPED_WET",
+                "image": "",
+            },
             format="multipart",
         )
 
@@ -800,7 +891,7 @@ class PlantingDailyObservationImageClearTests(
 
         self.client.put(
             self.url,
-            {"health_status": "FAIR"},
+            {"health_status": "FAIR", "watering_event": "SKIPPED_WET"},
             format="multipart",
         )
 
@@ -813,7 +904,11 @@ class PlantingDailyObservationImageClearTests(
 
         response = self.client.put(
             self.url,
-            {"health_status": "GOOD", "image": ""},
+            {
+                "health_status": "GOOD",
+                "watering_event": "SKIPPED_WET",
+                "image": "",
+            },
             format="multipart",
         )
 

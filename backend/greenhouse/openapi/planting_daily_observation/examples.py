@@ -12,8 +12,7 @@ PLANTING_DAILY_OBSERVATION_SERIALIZER_EXAMPLE = OpenApiExample(
         "health_status": "GOOD",
         "pest_pressure": "NONE",
         "disease_symptoms": False,
-        "watered": False,
-        "rained": False,
+        "watering_event": "SKIPPED_WET",
         "pruned": False,
         "notes": "Looking healthy. New leaves forming.",
         "image": None,
@@ -33,6 +32,7 @@ CREATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE = OpenApiExample(
     value={
         "observation_date": "2024-03-01",
         "health_status": "GOOD",
+        "watering_event": "SKIPPED_WET",
         "notes": "Looking healthy. New leaves forming.",
     },
     media_type="multipart/form-data",
@@ -55,8 +55,7 @@ CREATE_PLANTING_DAILY_OBSERVATION_RESPONSE_EXAMPLE = OpenApiExample(
             "health_status": "GOOD",
             "pest_pressure": "NONE",
             "disease_symptoms": False,
-            "watered": False,
-            "rained": False,
+            "watering_event": "SKIPPED_WET",
             "pruned": False,
             "notes": "Looking healthy. New leaves forming.",
             "image": None,
@@ -75,6 +74,7 @@ UPDATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE = OpenApiExample(
     value={
         "observation_date": "2024-03-01",
         "health_status": "FAIR",
+        "watering_event": "WATERED",
         "notes": "Slight yellowing on lower leaves.",
     },
     media_type="multipart/form-data",
@@ -111,8 +111,7 @@ UPDATE_PLANTING_DAILY_OBSERVATION_RESPONSE_EXAMPLE = OpenApiExample(
             "health_status": "FAIR",
             "pest_pressure": "NONE",
             "disease_symptoms": False,
-            "watered": False,
-            "rained": False,
+            "watering_event": "WATERED",
             "pruned": False,
             "notes": "Slight yellowing on lower leaves.",
             "image": None,
@@ -137,6 +136,23 @@ PLANTING_DAILY_OBSERVATION_INVALID_CHOICE_EXAMPLE = OpenApiExample(
         "data": None,
         "message": {
             "health_status": ['"UNKNOWN" is not a valid choice.'],
+        },
+    },
+)
+
+PLANTING_DAILY_OBSERVATION_INVALID_WATERING_EVENT_EXAMPLE = OpenApiExample(
+    name="Invalid watering event choice",
+    summary="Watering event value is not a valid choice",
+    description=(
+        "Example response returned when the watering_event value is not "
+        "one of the accepted choices."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "watering_event": ['"SPRINKLER" is not a valid choice.'],
         },
     },
 )
