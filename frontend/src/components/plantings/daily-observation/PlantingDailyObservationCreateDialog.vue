@@ -53,7 +53,7 @@ const formInitialState: PlantingDailyObservationForm = {
   healthStatus: "GOOD",
   pestPressure: "NONE",
   diseaseSymptoms: false,
-  wateringEvent: null,
+  wateringEvent: undefined,
   fertilizerType: "NONE",
   fertilizerDetail: "",
   pruned: false,
