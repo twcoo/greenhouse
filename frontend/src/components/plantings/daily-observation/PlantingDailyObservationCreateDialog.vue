@@ -57,6 +57,7 @@ const formInitialState: PlantingDailyObservationForm = {
   fertilizerType: "NONE",
   fertilizerDetail: "",
   pruned: false,
+  pruningDetail: "",
   notes: "",
   image: undefined,
 }
