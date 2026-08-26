@@ -502,5 +502,22 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
       expect(wrapper.find('[data-test="healthStatusError"]').exists()).toBe(false)
     })
+
+    it("resets pruningDetail when dialog is closed and reopened", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[1].setValue(true)
+      await wrapper.find("#pruningDetail").setValue("removed lower leaves")
+
+      await wrapper.setProps({ open: false })
+      await wrapper.vm.$nextTick()
+      await wrapper.setProps({ open: true })
+      await wrapper.vm.$nextTick()
+
+      // pruned resets to false — check it to reveal pruningDetail and confirm it's empty
+      await wrapper.findAll('input[type="checkbox"]')[1].setValue(true)
+      const pruningDetailInput = wrapper.find("#pruningDetail").element as HTMLInputElement
+      expect(pruningDetailInput.value).toBe("")
+    })
   })
 })
