@@ -202,7 +202,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
         fertilizerType: "NONE",
         pruned: false,
       })
-      expect(payload.wateringEvent == null).toBe(true)
+      expect(payload.wateringEvent).toBeUndefined()
     })
 
     it("emits submit with updated observationDate when date picker changes", async () => {
