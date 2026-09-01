@@ -47,18 +47,18 @@ const { locations } = usePlantingLocations(locationPagination)
 const isPotType = (location: PlantingLocation): boolean =>
   location.locationType === "NURSERYPOT" || location.locationType === "POT"
 
-const formInitialState: PlantingLocationAssignmentForm = {
+const getFormInitialState = (): PlantingLocationAssignmentForm => ({
   plantingLocation: 0,
-  startDate: "",
+  startDate: new Date().toISOString().slice(0, 10),
   endDate: undefined,
-}
+})
 
-const form = reactive<PlantingLocationAssignmentForm>({ ...formInitialState })
+const form = reactive<PlantingLocationAssignmentForm>(getFormInitialState())
 const selectedLocationId = ref<string>("")
 const errors = ref<Record<string, string>>({})
 
 const resetForm = (): void => {
-  Object.assign(form, formInitialState)
+  Object.assign(form, getFormInitialState())
   selectedLocationId.value = ""
   errors.value = {}
 }
