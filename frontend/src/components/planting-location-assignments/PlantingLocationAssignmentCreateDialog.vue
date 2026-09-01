@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue"
+import { today, getLocalTimeZone } from "@internationalized/date"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -49,7 +50,7 @@ const isPotType = (location: PlantingLocation): boolean =>
 
 const getFormInitialState = (): PlantingLocationAssignmentForm => ({
   plantingLocation: 0,
-  startDate: new Date().toISOString().slice(0, 10),
+  startDate: today(getLocalTimeZone()).toString(),
   endDate: undefined,
 })
 
