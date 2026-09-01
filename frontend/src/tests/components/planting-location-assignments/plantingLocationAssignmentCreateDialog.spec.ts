@@ -1,6 +1,7 @@
 import { ref } from "vue"
 import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
+import { today as getToday, getLocalTimeZone } from "@internationalized/date"
 import PlantingLocationAssignmentCreateDialog from "@/components/planting-location-assignments/PlantingLocationAssignmentCreateDialog.vue"
 import { createTestingPinia } from "@pinia/testing"
 
@@ -99,6 +100,28 @@ describe("PlantingLocationAssignmentCreateDialog.vue", () => {
     expect(wrapper.find('[placeholder="Pick an end date"]').exists()).toBe(true)
   })
 
+  it("pre-populates start date with today's date", () => {
+    const wrapper = mountComponent()
+
+    const startDateInput = wrapper.find('[placeholder="Pick a start date"]')
+      .element as HTMLInputElement
+    expect(startDateInput.value).toBe(getToday(getLocalTimeZone()).toString())
+  })
+
+  it("resets start date to today when dialog is closed and reopened", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.find('[placeholder="Pick a start date"]').setValue("2025-01-01")
+    await wrapper.setProps({ open: false })
+    await wrapper.vm.$nextTick()
+    await wrapper.setProps({ open: true })
+    await wrapper.vm.$nextTick()
+
+    const startDateInput = wrapper.find('[placeholder="Pick a start date"]')
+      .element as HTMLInputElement
+    expect(startDateInput.value).toBe(getToday(getLocalTimeZone()).toString())
+  })
+
   it("shows validation error when no location is selected on submit", async () => {
     const wrapper = mountComponent()
 
@@ -112,6 +135,7 @@ describe("PlantingLocationAssignmentCreateDialog.vue", () => {
     const wrapper = mountComponent()
 
     await wrapper.find('[data-stub="select"]').setValue("1")
+    await wrapper.find('[placeholder="Pick a start date"]').setValue("")
     await wrapper.find("form").trigger("submit.prevent")
 
     expect(wrapper.find('[data-test="startDateError"]').exists()).toBe(true)
