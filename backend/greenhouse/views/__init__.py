@@ -1,8 +1,9 @@
 from .auth import LoginView, LogoutView
 from .crops import CropDetailAPIView, CropListAPIView, CropUploadImageAPIView
 from .planting import PlantingDetailApiView, PlantingListApiView
-from .planting_daily_observation import (PlantingDailyObservationDetailApiView,
-                                         PlantingDailyObservationListApiView)
+from .planting_daily_observation import (
+    PlantingDailyObservationBulkCreateApiView,
+    PlantingDailyObservationDetailApiView, PlantingDailyObservationListApiView)
 from .planting_location import (PlantingLocationDetailAPIView,
                                 PlantingLocationListApiView)
 from .planting_location_assignment import (
@@ -30,5 +31,6 @@ __all__ = [
     "PlantingLocationAssignmentDetailApiView",
     "PlantingDailyObservationListApiView",
     "PlantingDailyObservationDetailApiView",
+    "PlantingDailyObservationBulkCreateApiView",
     "PlantingLocationStatusListApiView",
 ]
