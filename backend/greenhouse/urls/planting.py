@@ -1,8 +1,15 @@
 from django.urls import include, path
 
-from ..views import PlantingDetailApiView, PlantingListApiView
+from ..views import (PlantingDailyObservationBulkCreateApiView,
+                     PlantingDetailApiView, PlantingListApiView)
 
 urlpatterns = [
+    # Bulk daily observation create
+    path(
+        "observations/bulk/",
+        PlantingDailyObservationBulkCreateApiView.as_view(),
+        name="planting-daily-observation-bulk-create",
+    ),
     # List and create
     path(
         "",
