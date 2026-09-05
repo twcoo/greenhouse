@@ -203,4 +203,64 @@ describe("plantingDailyObservationService", () => {
       expect(apiClient.delete).toHaveBeenCalledWith("/plantings/5/observations/1")
     })
   })
+
+  describe("bulkCreate", () => {
+    it("calls POST /plantings/observations/bulk/ with planting_ids and payload fields", async () => {
+      vi.mocked(apiClient.post).mockResolvedValue({ data: { data: [mockObservation] } })
+
+      await plantingDailyObservationService.bulkCreate([1, 2], {
+        healthStatus: "GOOD",
+        pestPressure: "NONE",
+        diseaseSymptoms: false,
+      })
+
+      expect(apiClient.post).toHaveBeenCalledWith(
+        "/plantings/observations/bulk/",
+        expect.objectContaining({
+          planting_ids: [1, 2],
+          healthStatus: "GOOD",
+          pestPressure: "NONE",
+          diseaseSymptoms: false,
+        }),
+      )
+    })
+
+    it("sends planting_ids array in the request body", async () => {
+      vi.mocked(apiClient.post).mockResolvedValue({ data: { data: [mockObservation] } })
+
+      await plantingDailyObservationService.bulkCreate([3, 7, 12], {
+        healthStatus: "POOR",
+        pestPressure: "HIGH",
+        diseaseSymptoms: true,
+      })
+
+      const body = vi.mocked(apiClient.post).mock.calls[0][1] as Record<string, unknown>
+      expect(body.planting_ids).toEqual([3, 7, 12])
+    })
+
+    it("sends JSON body without multipart header", async () => {
+      vi.mocked(apiClient.post).mockResolvedValue({ data: { data: [mockObservation] } })
+
+      await plantingDailyObservationService.bulkCreate([1], {
+        healthStatus: "GOOD",
+        pestPressure: "NONE",
+        diseaseSymptoms: false,
+      })
+
+      expect(vi.mocked(apiClient.post).mock.calls[0]).toHaveLength(2)
+    })
+
+    it("returns the observations array from the response", async () => {
+      const twoObservations = [mockObservation, { ...mockObservation, id: 2 }]
+      vi.mocked(apiClient.post).mockResolvedValue({ data: { data: twoObservations } })
+
+      const result = await plantingDailyObservationService.bulkCreate([1, 2], {
+        healthStatus: "GOOD",
+        pestPressure: "NONE",
+        diseaseSymptoms: false,
+      })
+
+      expect(result).toEqual(twoObservations)
+    })
+  })
 })
