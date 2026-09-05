@@ -166,3 +166,86 @@ PLANTING_DAILY_OBSERVATION_NOT_FOUND_RESPONSE_EXAMPLE = OpenApiExample(
     ),
     value=RESOURCE_NOT_FOUND_RESPONSE,
 )
+
+BULK_CREATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE = OpenApiExample(
+    name="Bulk create daily observation payload",
+    summary="Log the same daily observation for multiple plantings",
+    description=(
+        "Example request payload for bulk logging a daily observation "
+        "across multiple plantings."
+    ),
+    value={
+        "planting_ids": [1, 2, 3],
+        "observation_date": "2024-03-01",
+        "health_status": "GOOD",
+        "watering_event": "SKIPPED_WET",
+        "notes": "All looking healthy.",
+    },
+    media_type="application/json",
+    request_only=True,
+)
+
+BULK_CREATE_PLANTING_DAILY_OBSERVATION_RESPONSE_EXAMPLE = OpenApiExample(
+    name="Bulk daily observations created",
+    summary="Successfully logged daily observations for multiple plantings",
+    description=(
+        "Example response returned after daily observations are "
+        "successfully created for multiple plantings."
+    ),
+    value={
+        "status": "success",
+        "data": [
+            {
+                "id": 1,
+                "stage": None,
+                "stage_name": None,
+                "health_status": "GOOD",
+                "pest_pressure": "NONE",
+                "disease_symptoms": False,
+                "watering_event": "SKIPPED_WET",
+                "pruned": False,
+                "notes": "All looking healthy.",
+                "image": None,
+                "observation_date": "2024-03-01",
+                "created_at": "2024-03-01T08:00:00Z",
+                "updated_at": "2024-03-01T08:00:00Z",
+            },
+            {
+                "id": 2,
+                "stage": None,
+                "stage_name": None,
+                "health_status": "GOOD",
+                "pest_pressure": "NONE",
+                "disease_symptoms": False,
+                "watering_event": "SKIPPED_WET",
+                "pruned": False,
+                "notes": "All looking healthy.",
+                "image": None,
+                "observation_date": "2024-03-01",
+                "created_at": "2024-03-01T08:00:00Z",
+                "updated_at": "2024-03-01T08:00:00Z",
+            },
+        ],
+        "message": None,
+    },
+)
+
+BULK_CREATE_INVALID_PLANTING_IDS_EXAMPLE = OpenApiExample(
+    name="Invalid planting IDs",
+    summary="One or more planting IDs are invalid",
+    description=(
+        "Example response returned when one or more planting IDs do not "
+        "exist or belong to another user."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "planting_ids": [
+                "One or more planting IDs are invalid or do not belong "
+                "to the current user."
+            ],
+        },
+    },
+)
