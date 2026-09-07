@@ -7,6 +7,7 @@ import PlantingCreateDialog from "@/components/plantings/PlantingCreateDialog.vu
 import PlantingUpdateDialog from "@/components/plantings/PlantingUpdateDialog.vue"
 import PlantingLocationAssignmentSheet from "@/components/planting-location-assignments/PlantingLocationAssignmentSheet.vue"
 import PlantingDailyObservationSheet from "@/components/plantings/daily-observation/PlantingDailyObservationSheet.vue"
+import PlantingDailyObservationBulkCreateDialog from "@/components/plantings/daily-observation/PlantingDailyObservationBulkCreateDialog.vue"
 import { createTestingPinia } from "@pinia/testing"
 import type { Planting } from "@/types/planting"
 
@@ -39,6 +40,7 @@ const mockCreatePlanting = vi.fn()
 const mockUpdatePlanting = vi.fn()
 const mockDeletePlanting = vi.fn()
 const mockFetchPlantings = vi.fn()
+const mockBulkCreate = vi.fn()
 
 vi.mock("@/composables/usePlantings", () => ({
   usePlantings: vi.fn(() => ({
@@ -53,12 +55,20 @@ vi.mock("@/composables/usePlantings", () => ({
   })),
 }))
 
+vi.mock("@/composables/useBulkCreateObservation", () => ({
+  useBulkCreateObservation: vi.fn(() => ({
+    bulkCreate: mockBulkCreate,
+    isPending: ref(false),
+    isSuccess: ref(false),
+  })),
+}))
+
 const stubs = {
   AppLayout: { template: "<div><slot /></div>" },
   [PlantingsTable.__name ?? "PlantingsTable"]: {
     template: "<div data-stub='plantings-table' />",
     props: ["data", "rowCount", "pagination", "searchTerm"],
-    emits: ["delete", "update", "pagination-change", "update:searchTerm"],
+    emits: ["delete", "update", "pagination-change", "update:searchTerm", "bulk-observe", "action"],
   },
   [PlantingCreateDialog.__name ?? "PlantingCreateDialog"]: {
     template: "<div data-stub='create-dialog' />",
@@ -80,6 +90,12 @@ const stubs = {
       "<div data-stub='observation-sheet' :data-open='open' :data-planting-id='plantingId' />",
     props: ["open", "plantingId"],
     emits: ["update:open"],
+  },
+  [PlantingDailyObservationBulkCreateDialog.__name ?? "PlantingDailyObservationBulkCreateDialog"]: {
+    template:
+      "<div data-stub='bulk-observation-dialog' :data-open='open' :data-count='selectedPlantings.length' />",
+    props: ["open", "isLoading", "isCreateSuccess", "selectedPlantings"],
+    emits: ["update:open", "submit"],
   },
   IconLoader2: { template: "<svg />" },
   IconPlus: { template: "<svg />" },
@@ -166,5 +182,52 @@ describe("PlantingsView", () => {
     expect(sheet.exists()).toBe(true)
     expect(sheet.attributes("data-open")).toBe("true")
     expect(sheet.attributes("data-planting-id")).toBe("1")
+  })
+
+  it("opens bulk observation dialog with the correct plantings on bulk-observe event", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent(PlantingsTable).vm.$emit("bulk-observe", [1, 2])
+    await wrapper.vm.$nextTick()
+
+    const dialog = wrapper.find('[data-stub="bulk-observation-dialog"]')
+    expect(dialog.exists()).toBe(true)
+    expect(dialog.attributes("data-open")).toBe("true")
+    expect(dialog.attributes("data-count")).toBe("2")
+  })
+
+  it("passes only the matching plantings to the bulk dialog", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent(PlantingsTable).vm.$emit("bulk-observe", [1])
+    await wrapper.vm.$nextTick()
+
+    const dialog = wrapper.find('[data-stub="bulk-observation-dialog"]')
+    expect(dialog.attributes("data-count")).toBe("1")
+  })
+
+  it("calls bulkCreate with the selected planting IDs on bulk dialog submit", async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent(PlantingsTable).vm.$emit("bulk-observe", [1, 2])
+    await wrapper.vm.$nextTick()
+
+    const payload = {
+      observationDate: "2024-03-01",
+      healthStatus: "GOOD" as const,
+      pestPressure: "NONE" as const,
+      diseaseSymptoms: false,
+      fertilizerType: "NONE" as const,
+      pruned: false,
+    }
+    const onError = vi.fn()
+    await wrapper
+      .findComponent(PlantingDailyObservationBulkCreateDialog)
+      .vm.$emit("submit", payload, onError)
+
+    expect(mockBulkCreate).toHaveBeenCalledWith({
+      plantingIds: [1, 2],
+      payload,
+    })
   })
 })

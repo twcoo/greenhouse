@@ -47,4 +47,15 @@ export const plantingDailyObservationService = {
   async delete(plantingId: number, id: number): Promise<void> {
     await apiClient.delete<APIResponse<null>>(`/plantings/${plantingId}/observations/${id}`)
   },
+
+  async bulkCreate(
+    plantingIds: number[],
+    payload: PlantingDailyObservationPayload,
+  ): Promise<PlantingDailyObservation[]> {
+    const response = await apiClient.post<APIResponse<PlantingDailyObservation[]>>(
+      "/plantings/observations/bulk/",
+      { planting_ids: plantingIds, ...payload },
+    )
+    return response.data.data
+  },
 }

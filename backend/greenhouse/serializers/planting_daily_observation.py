@@ -1,7 +1,8 @@
+from django.db import transaction
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
-from ..models import PlantingDailyObservation
+from ..models import Planting, PlantingDailyObservation
 from ..openapi.planting_daily_observation.examples import \
     PLANTING_DAILY_OBSERVATION_SERIALIZER_EXAMPLE
 from .utils import UploadableImageField, validate_image_file
@@ -131,3 +132,92 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
+
+
+class PlantingDailyObservationBulkCreateSerializer(serializers.Serializer):
+    planting_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        min_length=1,
+        help_text=(
+            "List of planting IDs to create observations for. "
+            "All IDs must belong to the authenticated user."
+        ),
+    )
+    health_status = serializers.ChoiceField(
+        choices=PlantingDailyObservation.HEALTH_STATUS_CHOICES,
+        default="GOOD",
+        help_text="Overall health status of the plant.",
+    )
+    pest_pressure = serializers.ChoiceField(
+        choices=PlantingDailyObservation.PEST_PRESSURE_CHOICES,
+        default="NONE",
+        help_text="Level of pest pressure observed.",
+    )
+    disease_symptoms = serializers.BooleanField(
+        default=False,
+        help_text="Whether disease symptoms are present.",
+    )
+    watering_event = serializers.ChoiceField(
+        choices=PlantingDailyObservation.WATERING_EVENT_CHOICES,
+        help_text="Watering event for this observation.",
+    )
+    pruned = serializers.BooleanField(
+        default=False,
+        help_text=("Whether the planting was pruned during this observation."),
+    )
+    pruning_detail = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text="Optional detail about what was pruned.",
+    )
+    fertilizer_type = serializers.ChoiceField(
+        choices=PlantingDailyObservation.FERTILIZER_TYPE_CHOICES,
+        default="NONE",
+        help_text=("Whether the plant was fertilized and with what category."),
+    )
+    fertilizer_detail = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text="Optional detail about the fertilizer used.",
+    )
+    notes = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text="Optional notes about this observation.",
+    )
+    observation_date = serializers.DateField(
+        required=False,
+        help_text=(
+            "The date this observation was recorded (defaults to today)."
+        ),
+    )
+
+    def validate_planting_ids(self, value):
+        user = self.context["request"].user
+        existing_ids = set(
+            Planting.objects.filter(id__in=value, user=user).values_list(
+                "id", flat=True
+            )
+        )
+        missing = set(value) - existing_ids
+        if missing:
+            raise serializers.ValidationError(
+                "One or more planting IDs are invalid or do not belong "
+                "to the current user."
+            )
+        return value
+
+    def create(self, validated_data):
+        planting_ids = validated_data.pop("planting_ids")
+        plantings = Planting.objects.filter(id__in=planting_ids)
+        observations = []
+
+        with transaction.atomic():
+            for planting in plantings:
+                obs = PlantingDailyObservation(
+                    planting=planting, **validated_data
+                )
+                obs.save()
+                observations.append(obs)
+
+        return observations

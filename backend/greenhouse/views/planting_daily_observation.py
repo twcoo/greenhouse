@@ -1,20 +1,24 @@
 from typing import Any, cast
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import mixins
+from rest_framework import mixins, status
 from rest_framework.generics import GenericAPIView, get_object_or_404
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
+from rest_framework.response import Response
 
 from ..models import Planting, PlantingDailyObservation
 from ..openapi.planting_daily_observation.examples import (
+    BULK_CREATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE,
     CREATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE,
     PARTIAL_UPDATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE,
     UPDATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE)
 from ..openapi.planting_daily_observation.parameters import (
     PLANTING_DAILY_OBSERVATION_ID_PARAM, PLANTING_PK_PARAM)
 from ..openapi.planting_daily_observation.responses import (
+    PLANTING_DAILY_OBSERVATION_BULK_CREATE_VALIDATION_RESPONSE,
+    PLANTING_DAILY_OBSERVATION_BULK_CREATED_RESPONSE,
     PLANTING_DAILY_OBSERVATION_CREATE_VALIDATION_RESPONSE,
     PLANTING_DAILY_OBSERVATION_CREATED_RESPONSE,
     PLANTING_DAILY_OBSERVATION_DELETE_RESPONSE,
@@ -24,7 +28,8 @@ from ..openapi.planting_daily_observation.responses import (
     PLANTING_DAILY_OBSERVATION_PARTIAL_UPDATE_VALIDATION_RESPONSE,
     PLANTING_DAILY_OBSERVATION_UPDATE_RESPONSE,
     PLANTING_DAILY_OBSERVATION_UPDATE_VALIDATION_RESPONSE)
-from ..serializers import PlantingDailyObservationSerializer
+from ..serializers import (PlantingDailyObservationBulkCreateSerializer,
+                           PlantingDailyObservationSerializer)
 from ..utils.api import CustomAuthentication
 
 
@@ -165,3 +170,32 @@ class PlantingDailyObservationDetailApiView(
 
     def delete(self, request: Request, *args: Any, **kwargs: Any):
         return self.destroy(request, *args, **kwargs)
+
+
+@extend_schema(
+    tags=["Planting Daily Observation"],
+    summary="Bulk log daily observations",
+    description=(
+        "Create the same daily observation for multiple plantings at once. "
+        "All planting IDs must belong to the authenticated user. "
+        "The operation is atomic — if any planting ID is invalid, "
+        "no observations are created."
+    ),
+    examples=[BULK_CREATE_PLANTING_DAILY_OBSERVATION_REQUEST_EXAMPLE],
+    responses={
+        201: PLANTING_DAILY_OBSERVATION_BULK_CREATED_RESPONSE,
+        400: PLANTING_DAILY_OBSERVATION_BULK_CREATE_VALIDATION_RESPONSE,
+    },
+)
+class PlantingDailyObservationBulkCreateApiView(GenericAPIView):
+    authentication_classes = [CustomAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = PlantingDailyObservationBulkCreateSerializer
+    parser_classes = [JSONParser]
+
+    def post(self, request: Request, *args: Any, **kwargs: Any):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        observations = serializer.save()
+        out = PlantingDailyObservationSerializer(observations, many=True)
+        return Response(out.data, status=status.HTTP_201_CREATED)

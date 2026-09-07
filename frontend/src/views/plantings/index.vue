@@ -7,10 +7,13 @@ import PlantingCreateDialog from "@/components/plantings/PlantingCreateDialog.vu
 import PlantingUpdateDialog from "@/components/plantings/PlantingUpdateDialog.vue"
 import PlantingLocationAssignmentSheet from "@/components/planting-location-assignments/PlantingLocationAssignmentSheet.vue"
 import PlantingDailyObservationSheet from "@/components/plantings/daily-observation/PlantingDailyObservationSheet.vue"
+import PlantingDailyObservationBulkCreateDialog from "@/components/plantings/daily-observation/PlantingDailyObservationBulkCreateDialog.vue"
 import { usePlantings } from "@/composables/usePlantings"
+import { useBulkCreateObservation } from "@/composables/useBulkCreateObservation"
 import { IconLoader2, IconPlus } from "@tabler/icons-vue"
-import type { PlantingPayload } from "@/types/planting"
+import type { PlantingPayload, Planting } from "@/types/planting"
 import type { plantingForm } from "@/schemas/planting.schemas"
+import type { PlantingDailyObservationForm } from "@/schemas/plantingDailyObservation.schemas"
 import Button from "@/components/ui/button/Button.vue"
 
 // Search Refs
@@ -35,6 +38,10 @@ const plantingIdForSheet = ref<number>(0)
 const openObservationSheet = ref<boolean>(false)
 const plantingIdForObservations = ref<number>(0)
 
+// Bulk Observation Dialog Refs
+const openBulkObservationDialog = ref<boolean>(false)
+const selectedPlantingsForBulk = ref<Planting[]>([])
+
 // Planting Composable
 const {
   plantings,
@@ -47,13 +54,19 @@ const {
   fetchPlantings,
 } = usePlantings(pagination, searchTerm)
 
+const {
+  bulkCreate,
+  isPending: isBulkPending,
+  isSuccess: isBulkCreateSuccess,
+} = useBulkCreateObservation()
+
 const handlePaginationChange = (newState: { pageIndex: number; pageSize: number }): void => {
   pagination.value = newState
 }
 
-const setUpdateDialog = async (id: number, planting: plantingForm): Promise<void> => {
+const setUpdateDialog = async (id: number, data: unknown): Promise<void> => {
   plantingIdToUpdate.value = id
-  plantingUpdateFormState.value = planting
+  plantingUpdateFormState.value = data as plantingForm
   openUpdateDialog.value = true
 }
 
@@ -93,6 +106,26 @@ const handleManageLocations = (id: number): void => {
 const handleDailyObservations = (id: number): void => {
   plantingIdForObservations.value = id
   openObservationSheet.value = true
+}
+
+const handleBulkObserve = (plantingIds: number[]): void => {
+  selectedPlantingsForBulk.value =
+    plantings.value?.results.filter((p) => plantingIds.includes(p.id)) ?? []
+  openBulkObservationDialog.value = true
+}
+
+const handleBulkCreateSubmit = async (
+  payload: PlantingDailyObservationForm,
+  onError: (err: unknown) => void,
+): Promise<void> => {
+  try {
+    await bulkCreate({
+      plantingIds: selectedPlantingsForBulk.value.map((p) => p.id),
+      payload,
+    })
+  } catch (err) {
+    onError(err)
+  }
 }
 
 watchDebounced(
@@ -149,6 +182,7 @@ watchDebounced(
       @pagination-change="handlePaginationChange"
       @delete="handleDeletePlanting"
       @update="setUpdateDialog"
+      @bulk-observe="handleBulkObserve"
       @action="
         (name: string, id: number) => {
           if (name === 'manage-locations') handleManageLocations(id)
@@ -169,6 +203,16 @@ watchDebounced(
       v-if="plantingIdForObservations"
       v-model:open="openObservationSheet"
       :plantingId="plantingIdForObservations"
+    />
+
+    <!-- Bulk Daily Observation Dialog -->
+    <PlantingDailyObservationBulkCreateDialog
+      v-if="selectedPlantingsForBulk.length"
+      v-model:open="openBulkObservationDialog"
+      :selectedPlantings="selectedPlantingsForBulk"
+      :isLoading="isBulkPending"
+      :isCreateSuccess="isBulkCreateSuccess"
+      @submit="handleBulkCreateSubmit"
     />
   </AppLayout>
 </template>

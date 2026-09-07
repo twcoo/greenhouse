@@ -5,6 +5,8 @@ from ...serializers.planting_daily_observation import \
 from ..shared.examples import NO_DATA_RESPONSE_EXAMPLE
 from ..shared.schemas import CustomOpenAPIResponseSchema
 from .examples import (
+    BULK_CREATE_INVALID_PLANTING_IDS_EXAMPLE,
+    BULK_CREATE_PLANTING_DAILY_OBSERVATION_RESPONSE_EXAMPLE,
     CREATE_PLANTING_DAILY_OBSERVATION_RESPONSE_EXAMPLE,
     PLANTING_DAILY_OBSERVATION_INVALID_CHOICE_EXAMPLE,
     PLANTING_DAILY_OBSERVATION_INVALID_WATERING_EVENT_EXAMPLE,
@@ -72,4 +74,20 @@ PLANTING_DAILY_OBSERVATION_NOT_FOUND_RESPONSE = OpenApiResponse(
     description="The requested planting or observation does not exist.",
     response=CustomOpenAPIResponseSchema().get_schema(),
     examples=[PLANTING_DAILY_OBSERVATION_NOT_FOUND_RESPONSE_EXAMPLE],
+)
+
+PLANTING_DAILY_OBSERVATION_BULK_CREATED_RESPONSE = OpenApiResponse(
+    description=("Daily observations created successfully for all plantings."),
+    response=PlantingDailyObservationSerializer(many=True),
+    examples=[BULK_CREATE_PLANTING_DAILY_OBSERVATION_RESPONSE_EXAMPLE],
+)
+
+PLANTING_DAILY_OBSERVATION_BULK_CREATE_VALIDATION_RESPONSE = OpenApiResponse(
+    description="Invalid request due to validation errors.",
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[
+        BULK_CREATE_INVALID_PLANTING_IDS_EXAMPLE,
+        PLANTING_DAILY_OBSERVATION_INVALID_CHOICE_EXAMPLE,
+        PLANTING_DAILY_OBSERVATION_INVALID_WATERING_EVENT_EXAMPLE,
+    ],
 )

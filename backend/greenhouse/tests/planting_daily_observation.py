@@ -6,6 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from ..models import PlantingDailyObservation
 from .commons.factories import (PlantingDailyObservationFactory,
                                 PlantingFactory, UserFactory)
 from .commons.mixins import RequiredAuthTestsMixin, ResponseUtilsMixin
@@ -915,3 +916,228 @@ class PlantingDailyObservationImageClearTests(
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         _, response_data, _ = self.get_response_data(response)
         self.assertIsNone(response_data["image"])
+
+
+class PlantingDailyObservationBulkCreateApiViewTests(
+    RequiredAuthTestsMixin,
+    ResponseUtilsMixin,
+    APITestCase,
+):
+    http_method = "POST"
+
+    def setUp(self):
+        super().setUp()
+        self.planting_a = PlantingFactory(user=self.user)
+        self.planting_b = PlantingFactory(user=self.user)
+        self.url = reverse("planting-daily-observation-bulk-create")
+
+    def _base_data(self, **overrides):
+        data = {
+            "planting_ids": [self.planting_a.id, self.planting_b.id],
+            "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
+        }
+        data.update(overrides)
+        return data
+
+    def _post(self, data):
+        return self.client.post(self.url, data, format="json")
+
+    def test_bulk_create_success(self):
+        self.authenticate()
+
+        data = self._base_data()
+        response = self._post(data)
+
+        response_status, response_data, message = self.get_response_data(
+            response
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_status, "success")
+        self.assertEqual(len(response_data), 2)
+        self.assertIsNone(message)
+        for obs in response_data:
+            self.assertEqual(obs["health_status"], data["health_status"])
+            self.assertEqual(obs["watering_event"], data["watering_event"])
+
+    def test_bulk_create_creates_correct_count_in_db(self):
+        self.authenticate()
+
+        self._post(self._base_data())
+
+        count = PlantingDailyObservation.objects.filter(
+            planting__in=[self.planting_a, self.planting_b]
+        ).count()
+        self.assertEqual(count, 2)
+
+    def test_bulk_create_single_planting_id(self):
+        self.authenticate()
+
+        data = self._base_data()
+        data["planting_ids"] = [self.planting_a.id]
+        response = self._post(data)
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(response_data), 1)
+        self.assertEqual(response_data[0]["health_status"], "GOOD")
+
+    def test_bulk_create_observation_fields_applied_to_all(self):
+        self.authenticate()
+
+        data = self._base_data(
+            pest_pressure="LOW",
+            disease_symptoms=True,
+            pruned=True,
+            pruning_detail="removed lower leaves",
+            fertilizer_type="ORGANIC",
+            fertilizer_detail="fish emulsion",
+            notes="Same note for all.",
+        )
+        response = self._post(data)
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        for obs in response_data:
+            self.assertEqual(obs["health_status"], data["health_status"])
+            self.assertEqual(obs["watering_event"], data["watering_event"])
+            self.assertEqual(obs["pest_pressure"], data["pest_pressure"])
+            self.assertTrue(obs["disease_symptoms"])
+            self.assertTrue(obs["pruned"])
+            self.assertEqual(obs["pruning_detail"], data["pruning_detail"])
+            self.assertEqual(obs["fertilizer_type"], data["fertilizer_type"])
+            self.assertEqual(
+                obs["fertilizer_detail"], data["fertilizer_detail"]
+            )
+            self.assertEqual(obs["notes"], data["notes"])
+
+    def test_bulk_create_invalid_planting_id_returns_400(self):
+        self.authenticate()
+
+        data = self._base_data()
+        data["planting_ids"] = [self.planting_a.id, 9999]
+        response = self._post(data)
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            {
+                "planting_ids": [
+                    "One or more planting IDs are invalid or do not "
+                    "belong to the current user."
+                ]
+            },
+        )
+
+    def test_bulk_create_invalid_planting_id_creates_no_records(self):
+        self.authenticate()
+
+        data = self._base_data()
+        data["planting_ids"] = [self.planting_a.id, 9999]
+        self._post(data)
+
+        count = PlantingDailyObservation.objects.filter(
+            planting=self.planting_a
+        ).count()
+        self.assertEqual(count, 0)
+
+    def test_bulk_create_other_user_planting_returns_400(self):
+        self.authenticate()
+
+        other_user = UserFactory(username="other_bulk_obs_user")
+        other_planting = PlantingFactory(user=other_user)
+        data = self._base_data()
+        data["planting_ids"] = [other_planting.id]
+        response = self._post(data)
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            {
+                "planting_ids": [
+                    "One or more planting IDs are invalid or do not "
+                    "belong to the current user."
+                ]
+            },
+        )
+
+    def test_bulk_create_mixed_ownership_returns_400(self):
+        self.authenticate()
+
+        other_user = UserFactory(username="other_bulk_mixed_user")
+        other_planting = PlantingFactory(user=other_user)
+        data = self._base_data()
+        data["planting_ids"] = [self.planting_a.id, other_planting.id]
+        response = self._post(data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_bulk_create_missing_planting_ids_returns_400(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
+        response = self._post(data)
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            {"planting_ids": ["This field is required."]},
+        )
+
+    def test_bulk_create_empty_planting_ids_returns_400(self):
+        self.authenticate()
+
+        data = {
+            "planting_ids": [],
+            "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
+        }
+        response = self._post(data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_bulk_create_missing_watering_event_returns_400(self):
+        self.authenticate()
+
+        data = {
+            "planting_ids": [self.planting_a.id],
+            "health_status": "GOOD",
+        }
+        response = self._post(data)
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            {"watering_event": ["This field is required."]},
+        )
+
+    def test_bulk_create_invalid_health_status_returns_400(self):
+        self.authenticate()
+
+        data = self._base_data()
+        data["health_status"] = "UNKNOWN"
+        response = self._post(data)
+
+        response_status, _, message = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertEqual(
+            message,
+            {"health_status": ['"UNKNOWN" is not a valid choice.']},
+        )
