@@ -117,6 +117,7 @@ const table = useVueTable({
   onPaginationChange: (updaterOrValue) => {
     const nextState =
       typeof updaterOrValue === "function" ? updaterOrValue(pagination) : updaterOrValue
+    rowSelection.value = {}
     emit("pagination-change", nextState)
   },
   onGlobalFilterChange: (updaterOrValue) => {
@@ -155,6 +156,12 @@ const emitBulkObserve = (): void => {
   const ids = table.getSelectedRowModel().rows.map((row) => row.original.id)
   emit("bulk-observe", ids)
 }
+
+defineExpose({
+  resetSelection: () => {
+    rowSelection.value = {}
+  },
+})
 </script>
 
 <template>
