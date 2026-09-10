@@ -37,6 +37,7 @@ const plantingIdForSheet = ref<number>(0)
 // Daily Observation Sheet Refs
 const openObservationSheet = ref<boolean>(false)
 const plantingIdForObservations = ref<number>(0)
+const plantingForObservations = ref<Planting | null>(null)
 
 // Bulk Observation Dialog Refs
 const openBulkObservationDialog = ref<boolean>(false)
@@ -105,6 +106,7 @@ const handleManageLocations = (id: number): void => {
 
 const handleDailyObservations = (id: number): void => {
   plantingIdForObservations.value = id
+  plantingForObservations.value = plantings.value?.results.find((p) => p.id === id) ?? null
   openObservationSheet.value = true
 }
 
@@ -200,9 +202,10 @@ watchDebounced(
 
     <!-- Daily Observation Sheet -->
     <PlantingDailyObservationSheet
-      v-if="plantingIdForObservations"
+      v-if="plantingIdForObservations && plantingForObservations"
       v-model:open="openObservationSheet"
       :plantingId="plantingIdForObservations"
+      :planting="plantingForObservations"
     />
 
     <!-- Bulk Daily Observation Dialog -->

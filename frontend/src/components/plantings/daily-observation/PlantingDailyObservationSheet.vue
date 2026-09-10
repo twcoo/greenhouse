@@ -34,12 +34,13 @@ import PlantingDailyObservationUpdateDialog from "./PlantingDailyObservationUpda
 import PlantingDailyObservationViewDialog from "./PlantingDailyObservationViewDialog.vue"
 import { usePlantingDailyObservations } from "@/composables/usePlantingDailyObservations"
 import type { PlantingDailyObservation, HealthStatus } from "@/types/plantingDailyObservation"
+import type { Planting } from "@/types/planting"
 import type { PlantingDailyObservationForm } from "@/schemas/plantingDailyObservation.schemas"
 import { formatDate } from "@/utils/formatting"
 import { HEALTH_BADGE_VARIANT, HEALTH_LABEL } from "./constants"
 
 const open = defineModel<boolean>("open")
-const { plantingId } = defineProps<{ plantingId: number }>()
+const { plantingId, planting } = defineProps<{ plantingId: number; planting: Planting }>()
 
 const pagination = ref({ pageIndex: 0, pageSize: 10 })
 
@@ -255,6 +256,7 @@ const hasObservations = computed(() => (observations.value?.results?.length ?? 0
   <!-- Create Dialog -->
   <PlantingDailyObservationCreateDialog
     v-model:open="openCreateDialog"
+    :planting="planting"
     :isLoading="isLoading"
     :isCreateSuccess="isCreateSuccess"
     @submit="handleCreate"
