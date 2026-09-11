@@ -57,6 +57,10 @@ class PlantingDailyObservation(models.Model):
     )
     fertilizer_detail = models.CharField(max_length=200, blank=True, default="")
 
+    # Flowering & Fruiting
+    flowering_started = models.BooleanField(default=False)
+    fruiting_started = models.BooleanField(default=False)
+
     notes = models.TextField(blank=True)
     image = models.ImageField(upload_to="observations/", null=True, blank=True)
     observation_date = models.DateField(
