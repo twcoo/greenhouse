@@ -15,6 +15,8 @@ export interface PlantingDailyObservation {
   fertilizerDetail: string
   pruned: boolean
   pruningDetail: string
+  floweringStarted: boolean
+  fruitingStarted: boolean
   notes: string
   image: string | null
   observationDate: string
@@ -31,6 +33,8 @@ export interface PlantingDailyObservationPayload {
   fertilizerDetail?: string
   pruned: boolean
   pruningDetail?: string
+  floweringStarted: boolean
+  fruitingStarted: boolean
   notes?: string
   image?: File | null
   observationDate?: string

@@ -14,6 +14,8 @@ export const plantingDailyObservationSchema = z.object({
   fertilizerDetail: z.string().optional(),
   pruned: z.preprocess((v) => v ?? false, z.boolean()),
   pruningDetail: z.string().optional(),
+  floweringStarted: z.preprocess((v) => v ?? false, z.boolean()),
+  fruitingStarted: z.preprocess((v) => v ?? false, z.boolean()),
   notes: z.string().optional(),
   image: z.instanceof(File).nullable().optional(),
 })
