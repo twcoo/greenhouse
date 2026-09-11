@@ -124,6 +124,26 @@ const closePreview = (): void => {
           </div>
         </div>
 
+        <!-- Flowering & Fruiting -->
+        <div v-if="observation.floweringStarted || observation.fruitingStarted">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+              >Flowering & Fruiting</span
+            >
+            <div class="flex-1 h-px bg-border" />
+          </div>
+          <div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm mt-2">
+            <template v-if="observation.floweringStarted">
+              <span class="text-muted-foreground">Flowering</span>
+              <span>Started</span>
+            </template>
+            <template v-if="observation.fruitingStarted">
+              <span class="text-muted-foreground">Fruiting</span>
+              <span>Started</span>
+            </template>
+          </div>
+        </div>
+
         <!-- Fertilization -->
         <div v-if="observation.fertilizerType !== 'NONE'">
           <div class="flex items-center gap-2">
