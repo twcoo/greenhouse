@@ -68,6 +68,15 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
         ),
     )
 
+    flowering_started = serializers.BooleanField(
+        default=False,
+        help_text="Whether flowering was first observed on this date.",
+    )
+    fruiting_started = serializers.BooleanField(
+        default=False,
+        help_text="Whether fruiting was first observed on this date.",
+    )
+
     notes = serializers.CharField(
         required=False,
         allow_blank=True,
@@ -126,6 +135,8 @@ class PlantingDailyObservationSerializer(serializers.ModelSerializer):
             "fertilizer_detail",
             "pruned",
             "pruning_detail",
+            "flowering_started",
+            "fruiting_started",
             "notes",
             "image",
             "observation_date",
@@ -179,6 +190,14 @@ class PlantingDailyObservationBulkCreateSerializer(serializers.Serializer):
         required=False,
         allow_blank=True,
         help_text="Optional detail about the fertilizer used.",
+    )
+    flowering_started = serializers.BooleanField(
+        default=False,
+        help_text="Whether flowering was first observed on this date.",
+    )
+    fruiting_started = serializers.BooleanField(
+        default=False,
+        help_text="Whether fruiting was first observed on this date.",
     )
     notes = serializers.CharField(
         required=False,
