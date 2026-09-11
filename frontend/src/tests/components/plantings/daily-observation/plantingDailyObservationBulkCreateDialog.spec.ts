@@ -113,10 +113,10 @@ describe("PlantingDailyObservationBulkCreateDialog.vue", () => {
       expect(selects).toHaveLength(4)
     })
 
-    it("renders the disease symptoms and pruned checkboxes", () => {
+    it("renders the disease symptoms, pruned, flowering started, and fruiting started checkboxes", () => {
       const wrapper = mountComponent()
 
-      expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(2)
+      expect(wrapper.findAll('input[type="checkbox"]')).toHaveLength(4)
     })
 
     it("renders the notes textarea", () => {
@@ -188,6 +188,20 @@ describe("PlantingDailyObservationBulkCreateDialog.vue", () => {
       const selects = wrapper.findAll('[data-stub="select"]')
       expect((selects[3].element as HTMLInputElement).value).toBe("NONE")
     })
+
+    it("defaults floweringStarted checkbox to unchecked", () => {
+      const wrapper = mountComponent()
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[2].element as HTMLInputElement
+      expect(checkbox.checked).toBe(false)
+    })
+
+    it("defaults fruitingStarted checkbox to unchecked", () => {
+      const wrapper = mountComponent()
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[3].element as HTMLInputElement
+      expect(checkbox.checked).toBe(false)
+    })
   })
 
   describe("submission", () => {
@@ -209,6 +223,44 @@ describe("PlantingDailyObservationBulkCreateDialog.vue", () => {
         pruned: false,
       })
       expect(submittedPayload.wateringEvent).toBeUndefined()
+    })
+
+    it("emits submit with floweringStarted = false by default", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.floweringStarted).toBe(false)
+    })
+
+    it("emits submit with fruitingStarted = false by default", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.fruitingStarted).toBe(false)
+    })
+
+    it("emits submit with floweringStarted = true when checked", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[2].setValue(true)
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.floweringStarted).toBe(true)
+    })
+
+    it("emits submit with fruitingStarted = true when checked", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][0] as Record<string, unknown>
+      expect(payload.fruitingStarted).toBe(true)
     })
 
     it("emits submit with updated healthStatus when changed", async () => {

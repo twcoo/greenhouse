@@ -61,6 +61,8 @@ const baseInitialState: PlantingDailyObservationForm = {
   fertilizerDetail: "",
   pruned: false,
   pruningDetail: "",
+  floweringStarted: false,
+  fruitingStarted: false,
   notes: "Original notes",
   image: undefined,
 }
@@ -182,6 +184,38 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
       expect(input.value).toBe("worm castings")
     })
 
+    it("reflects floweringStarted = false from observationFormInitialState", () => {
+      const wrapper = mountComponent()
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[2].element as HTMLInputElement
+      expect(checkbox.checked).toBe(false)
+    })
+
+    it("reflects floweringStarted = true from observationFormInitialState", () => {
+      const wrapper = mountComponent({
+        observationFormInitialState: { ...baseInitialState, floweringStarted: true },
+      })
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[2].element as HTMLInputElement
+      expect(checkbox.checked).toBe(true)
+    })
+
+    it("reflects fruitingStarted = false from observationFormInitialState", () => {
+      const wrapper = mountComponent()
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[3].element as HTMLInputElement
+      expect(checkbox.checked).toBe(false)
+    })
+
+    it("reflects fruitingStarted = true from observationFormInitialState", () => {
+      const wrapper = mountComponent({
+        observationFormInitialState: { ...baseInitialState, fruitingStarted: true },
+      })
+
+      const checkbox = wrapper.findAll('input[type="checkbox"]')[3].element as HTMLInputElement
+      expect(checkbox.checked).toBe(true)
+    })
+
     it("does not render pruningDetail input when pruned is false", () => {
       const wrapper = mountComponent()
 
@@ -268,6 +302,26 @@ describe("PlantingDailyObservationUpdateDialog.vue", () => {
 
       const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
       expect(payload.fertilizerType).toBe("SYNTHETIC")
+    })
+
+    it("emits submit with floweringStarted = true when toggled on", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[2].setValue(true)
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
+      expect(payload.floweringStarted).toBe(true)
+    })
+
+    it("emits submit with fruitingStarted = true when toggled on", async () => {
+      const wrapper = mountComponent()
+
+      await wrapper.findAll('input[type="checkbox"]')[3].setValue(true)
+      await wrapper.find("form").trigger("submit.prevent")
+
+      const payload = wrapper.emitted("submit")![0][1] as Record<string, unknown>
+      expect(payload.fruitingStarted).toBe(true)
     })
 
     it("emits submit with pruningDetail when pruned and detail provided", async () => {

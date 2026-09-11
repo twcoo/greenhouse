@@ -24,6 +24,8 @@ const baseObservation: PlantingDailyObservation = {
   fertilizerDetail: "",
   pruned: false,
   pruningDetail: "",
+  floweringStarted: false,
+  fruitingStarted: false,
   notes: "Healthy today",
   image: null,
   observationDate: "2024-03-01",
@@ -203,6 +205,64 @@ describe("PlantingDailyObservationViewDialog.vue", () => {
 
       // Only the section Type row renders — no detail value text present
       expect(wrapper.text()).not.toContain("fermented swamp fertilizer")
+    })
+  })
+
+  describe("flowering & fruiting section", () => {
+    it("hides the section when both floweringStarted and fruitingStarted are false", () => {
+      const wrapper = mountComponent({
+        ...baseObservation,
+        floweringStarted: false,
+        fruitingStarted: false,
+      })
+
+      expect(wrapper.text()).not.toContain("Flowering & Fruiting")
+    })
+
+    it("shows the section header when floweringStarted is true", () => {
+      const wrapper = mountComponent({ ...baseObservation, floweringStarted: true })
+
+      expect(wrapper.text()).toContain("Flowering & Fruiting")
+    })
+
+    it("shows the section header when fruitingStarted is true", () => {
+      const wrapper = mountComponent({ ...baseObservation, fruitingStarted: true })
+
+      expect(wrapper.text()).toContain("Flowering & Fruiting")
+    })
+
+    it("shows Flowering Started when floweringStarted is true", () => {
+      const wrapper = mountComponent({ ...baseObservation, floweringStarted: true })
+
+      expect(wrapper.text()).toContain("Flowering")
+      expect(wrapper.text()).toContain("Started")
+    })
+
+    it("shows Fruiting Started when fruitingStarted is true", () => {
+      const wrapper = mountComponent({ ...baseObservation, fruitingStarted: true })
+
+      expect(wrapper.text()).toContain("Fruiting")
+      expect(wrapper.text()).toContain("Started")
+    })
+
+    it("does not show Flowering row when floweringStarted is false", () => {
+      const wrapper = mountComponent({
+        ...baseObservation,
+        fruitingStarted: true,
+        floweringStarted: false,
+      })
+
+      expect(wrapper.text()).not.toContain("FloweringStarted")
+    })
+
+    it("does not show Fruiting row when fruitingStarted is false", () => {
+      const wrapper = mountComponent({
+        ...baseObservation,
+        floweringStarted: true,
+        fruitingStarted: false,
+      })
+
+      expect(wrapper.text()).not.toContain("FruitingStarted")
     })
   })
 
