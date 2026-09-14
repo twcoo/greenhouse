@@ -1,5 +1,6 @@
 import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
+import { today as getToday, getLocalTimeZone } from "@internationalized/date"
 import PlantingDailyObservationCreateDialog from "@/components/plantings/daily-observation/PlantingDailyObservationCreateDialog.vue"
 
 const stubs = {
@@ -113,7 +114,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
   describe("default form state", () => {
     it("defaults observationDate to today's date", () => {
-      const today = new Date().toISOString().split("T")[0]
+      const today = getToday(getLocalTimeZone()).toString()
       const wrapper = mountComponent()
 
       const datePicker = wrapper.find('[data-stub="date-picker"]').element as HTMLInputElement
@@ -186,7 +187,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
   describe("submission", () => {
     it("emits submit with default payload when form is valid", async () => {
-      const today = new Date().toISOString().split("T")[0]
+      const today = getToday(getLocalTimeZone()).toString()
       const wrapper = mountComponent()
 
       await wrapper.find("form").trigger("submit.prevent")
@@ -461,7 +462,7 @@ describe("PlantingDailyObservationCreateDialog.vue", () => {
 
   describe("form reset", () => {
     it("resets observationDate to today when dialog is closed and reopened", async () => {
-      const today = new Date().toISOString().split("T")[0]
+      const today = getToday(getLocalTimeZone()).toString()
       const wrapper = mountComponent()
 
       await wrapper.find('[data-stub="date-picker"]').setValue("2020-01-01")

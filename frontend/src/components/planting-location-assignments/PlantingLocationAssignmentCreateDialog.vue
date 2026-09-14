@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue"
+import { today, getLocalTimeZone } from "@internationalized/date"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -47,18 +48,18 @@ const { locations } = usePlantingLocations(locationPagination)
 const isPotType = (location: PlantingLocation): boolean =>
   location.locationType === "NURSERYPOT" || location.locationType === "POT"
 
-const formInitialState: PlantingLocationAssignmentForm = {
+const getFormInitialState = (): PlantingLocationAssignmentForm => ({
   plantingLocation: 0,
-  startDate: "",
+  startDate: today(getLocalTimeZone()).toString(),
   endDate: undefined,
-}
+})
 
-const form = reactive<PlantingLocationAssignmentForm>({ ...formInitialState })
+const form = reactive<PlantingLocationAssignmentForm>(getFormInitialState())
 const selectedLocationId = ref<string>("")
 const errors = ref<Record<string, string>>({})
 
 const resetForm = (): void => {
-  Object.assign(form, formInitialState)
+  Object.assign(form, getFormInitialState())
   selectedLocationId.value = ""
   errors.value = {}
 }
