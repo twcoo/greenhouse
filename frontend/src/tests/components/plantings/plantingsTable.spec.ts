@@ -166,4 +166,31 @@ describe("PlantingsTable.vue", () => {
     expect(emittedIds).toContain(mockPlantings[0].id)
     expect(emittedIds).toContain(mockPlantings[1].id)
   })
+
+  it("clears selection when page changes", async () => {
+    const wrapper = mountComponent({ pagination: { pageIndex: 0, pageSize: 1 }, rowCount: 2 })
+
+    const rowCheckbox = wrapper.findAll("tbody input[type='checkbox']")[0]
+    ;(rowCheckbox.element as HTMLInputElement).checked = true
+    await rowCheckbox.trigger("change")
+    expect(wrapper.text()).toContain("1 selected")
+
+    const nextBtn = wrapper.findAll("button").find((b) => b.text() === "Next")
+    await nextBtn!.trigger("click")
+
+    expect(wrapper.text()).not.toContain("selected")
+  })
+
+  it("clears selection when resetSelection is called", async () => {
+    const wrapper = mountComponent()
+
+    const rowCheckbox = wrapper.findAll("tbody input[type='checkbox']")[0]
+    ;(rowCheckbox.element as HTMLInputElement).checked = true
+    await rowCheckbox.trigger("change")
+    expect(wrapper.text()).toContain("1 selected")
+    ;(wrapper.vm as unknown as { resetSelection: () => void }).resetSelection()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.text()).not.toContain("selected")
+  })
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, watch, useTemplateRef } from "vue"
 import { watchDebounced } from "@vueuse/core"
 import AppLayout from "@/layouts/AppLayout.vue"
 import PlantingsTable from "@/components/plantings/PlantingsTable.vue"
@@ -42,6 +42,7 @@ const plantingForObservations = ref<Planting | null>(null)
 // Bulk Observation Dialog Refs
 const openBulkObservationDialog = ref<boolean>(false)
 const selectedPlantingsForBulk = ref<Planting[]>([])
+const plantingsTableRef = useTemplateRef<InstanceType<typeof PlantingsTable>>("plantingsTableRef")
 
 // Planting Composable
 const {
@@ -60,6 +61,10 @@ const {
   isPending: isBulkPending,
   isSuccess: isBulkCreateSuccess,
 } = useBulkCreateObservation()
+
+watch(isBulkCreateSuccess, (success) => {
+  if (success) plantingsTableRef.value?.resetSelection()
+})
 
 const handlePaginationChange = (newState: { pageIndex: number; pageSize: number }): void => {
   pagination.value = newState
@@ -176,6 +181,7 @@ watchDebounced(
     </div>
 
     <PlantingsTable
+      ref="plantingsTableRef"
       v-else-if="plantings"
       :data="plantings.results"
       :rowCount="plantings.count"
