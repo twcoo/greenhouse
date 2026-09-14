@@ -27,6 +27,7 @@ import {
   type PlantingDailyObservationForm,
 } from "@/schemas/plantingDailyObservation.schemas"
 import type { APIErrorResponse } from "@/types/api"
+import type { Planting } from "@/types/planting"
 import { apiToFormErrors, zodToFormErrors } from "@/utils/formErrors"
 import { AxiosError } from "axios"
 import {
@@ -39,9 +40,10 @@ import DatePicker from "@/components/DatePicker.vue"
 import { today, getLocalTimeZone } from "@internationalized/date"
 
 const open = defineModel<boolean>("open")
-const { isLoading, isCreateSuccess } = defineProps<{
+const { isLoading, isCreateSuccess, planting } = defineProps<{
   isLoading: boolean
   isCreateSuccess: boolean
+  planting: Planting
 }>()
 
 const emit = defineEmits<{
@@ -127,7 +129,11 @@ watch(open, (isOpen) => {
       <DialogContent class="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Log Observation</DialogTitle>
-          <DialogDescription>Record a new daily observation for this planting.</DialogDescription>
+          <DialogDescription
+            >Record a new daily observation for {{ planting.cropName }} ({{
+              planting.varietyName
+            }}).</DialogDescription
+          >
         </DialogHeader>
 
         <FieldGroup>

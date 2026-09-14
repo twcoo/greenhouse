@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import PlantingDailyObservationSheet from "@/components/plantings/daily-observation/PlantingDailyObservationSheet.vue"
 import { createTestingPinia } from "@pinia/testing"
+import type { Planting } from "@/types/planting"
 
 vi.mock("@/composables/usePlantingDailyObservations", () => ({
   usePlantingDailyObservations: vi.fn(),
@@ -102,8 +103,9 @@ const stubs = {
   },
   PlantingDailyObservationCreateDialog: {
     name: "PlantingDailyObservationCreateDialog",
-    template: "<div data-test='create-dialog' :data-open='open' />",
-    props: ["open", "isLoading", "isCreateSuccess"],
+    template:
+      "<div data-test='create-dialog' :data-open='open' :data-planting-id='planting?.id' />",
+    props: ["open", "isLoading", "isCreateSuccess", "planting"],
     emits: ["submit", "update:open"],
   },
   PlantingDailyObservationUpdateDialog: {
@@ -125,9 +127,18 @@ const stubs = {
   IconEye: { template: "<span />" },
 }
 
+const mockPlanting: Planting = {
+  id: 1,
+  crop: 1,
+  cropName: "Tomato",
+  variety: 1,
+  varietyName: "Sun Gold",
+  createdAt: "2024-01-01T00:00:00Z",
+}
+
 const mountComponent = (props = {}) =>
   mount(PlantingDailyObservationSheet, {
-    props: { open: true, plantingId: 1, ...props },
+    props: { open: true, plantingId: 1, planting: mockPlanting, ...props },
     global: {
       plugins: [createTestingPinia({ createSpy: vi.fn })],
       stubs,
@@ -196,6 +207,15 @@ describe("PlantingDailyObservationSheet.vue", () => {
       await addButton!.trigger("click")
 
       expect(wrapper.find('[data-test="create-dialog"]').attributes("data-open")).toBe("true")
+    })
+
+    it("passes the planting prop to the create dialog", async () => {
+      const wrapper = mountComponent()
+
+      const addButton = wrapper.findAll("button").find((b) => b.text().includes("Add Observation"))
+      await addButton!.trigger("click")
+
+      expect(wrapper.find('[data-test="create-dialog"]').attributes("data-planting-id")).toBe("1")
     })
 
     it("calls createObservation when create dialog emits submit", async () => {

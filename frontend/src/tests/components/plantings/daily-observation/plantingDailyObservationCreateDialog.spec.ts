@@ -2,6 +2,7 @@ import { mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { today as getToday, getLocalTimeZone } from "@internationalized/date"
 import PlantingDailyObservationCreateDialog from "@/components/plantings/daily-observation/PlantingDailyObservationCreateDialog.vue"
+import type { Planting } from "@/types/planting"
 
 const stubs = {
   Dialog: { template: "<div><slot /></div>" },
@@ -51,12 +52,22 @@ const stubs = {
   },
 }
 
+const mockPlanting: Planting = {
+  id: 1,
+  crop: 1,
+  cropName: "Tomato",
+  variety: 1,
+  varietyName: "Sun Gold",
+  createdAt: "2024-01-01T00:00:00Z",
+}
+
 const mountComponent = (props = {}) =>
   mount(PlantingDailyObservationCreateDialog, {
     props: {
       open: true,
       isLoading: false,
       isCreateSuccess: false,
+      planting: mockPlanting,
       ...props,
     },
     global: { stubs },
@@ -68,6 +79,12 @@ beforeEach(() => {
 
 describe("PlantingDailyObservationCreateDialog.vue", () => {
   describe("rendering", () => {
+    it("shows the planting name in the description", () => {
+      const wrapper = mountComponent()
+
+      expect(wrapper.text()).toContain("Tomato (Sun Gold)")
+    })
+
     it("renders the observation date picker", () => {
       const wrapper = mountComponent()
 
