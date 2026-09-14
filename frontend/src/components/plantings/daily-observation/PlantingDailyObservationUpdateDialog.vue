@@ -243,6 +243,23 @@ watch(
             </FieldError>
           </Field>
 
+          <!-- Flowering & Fruiting -->
+          <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">
+            Flowering & Fruiting
+          </p>
+          <Field>
+            <div class="flex items-center gap-2">
+              <Checkbox id="floweringStarted" v-model="form.floweringStarted" />
+              <FieldLabel for="floweringStarted" class="mb-0">Flowering started</FieldLabel>
+            </div>
+          </Field>
+          <Field>
+            <div class="flex items-center gap-2">
+              <Checkbox id="fruitingStarted" v-model="form.fruitingStarted" />
+              <FieldLabel for="fruitingStarted" class="mb-0">Fruiting started</FieldLabel>
+            </div>
+          </Field>
+
           <!-- Fertilization -->
           <p class="text-xs font-semibold uppercase text-muted-foreground tracking-wide mt-2">
             Fertilization

@@ -516,6 +516,45 @@ class PlantingDailyObservationCreateApiViewTests(
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_create_observation_flowering_started_defaults_false(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertFalse(response_data["flowering_started"])
+
+    def test_create_observation_fruiting_started_defaults_false(self):
+        self.authenticate()
+
+        data = {"health_status": "GOOD", "watering_event": "SKIPPED_WET"}
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertFalse(response_data["fruiting_started"])
+
+    def test_create_observation_with_flowering_and_fruiting_started(self):
+        self.authenticate()
+
+        data = {
+            "health_status": "GOOD",
+            "watering_event": "SKIPPED_WET",
+            "flowering_started": True,
+            "fruiting_started": True,
+        }
+        response = self.client.post(self.url, data, format="multipart")
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response_data["flowering_started"])
+        self.assertTrue(response_data["fruiting_started"])
+
 
 class PlantingDailyObservationDetailApiViewTests(
     RequiredAuthTestsMixin, ResponseUtilsMixin, APITestCase
@@ -809,6 +848,46 @@ class PlantingDailyObservationDetailApiViewTests(
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_sets_flowering_started_true(self):
+        self.authenticate()
+
+        observation = PlantingDailyObservationFactory(
+            planting=self.planting, flowering_started=False
+        )
+        url = reverse(
+            "planting-daily-observation-detail",
+            args=[self.planting.id, observation.id],
+        )
+
+        response = self.client.patch(
+            url, {"flowering_started": True}, format="multipart"
+        )
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response_data["flowering_started"])
+
+    def test_update_sets_fruiting_started_true(self):
+        self.authenticate()
+
+        observation = PlantingDailyObservationFactory(
+            planting=self.planting, fruiting_started=False
+        )
+        url = reverse(
+            "planting-daily-observation-detail",
+            args=[self.planting.id, observation.id],
+        )
+
+        response = self.client.patch(
+            url, {"fruiting_started": True}, format="multipart"
+        )
+
+        _, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response_data["fruiting_started"])
 
 
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
@@ -1141,3 +1220,19 @@ class PlantingDailyObservationBulkCreateApiViewTests(
             message,
             {"health_status": ['"UNKNOWN" is not a valid choice.']},
         )
+
+    def test_bulk_create_flowering_and_fruiting_started(self):
+        self.authenticate()
+
+        data = self._base_data()
+        data["flowering_started"] = True
+        data["fruiting_started"] = True
+        response = self._post(data)
+
+        response_status, response_data, _ = self.get_response_data(response)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response_status, "success")
+        for obs in response_data:
+            self.assertTrue(obs["flowering_started"])
+            self.assertTrue(obs["fruiting_started"])

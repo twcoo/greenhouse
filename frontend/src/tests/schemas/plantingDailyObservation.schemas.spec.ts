@@ -210,6 +210,76 @@ describe("plantingDailyObservationSchema", () => {
     })
   })
 
+  describe("floweringStarted field", () => {
+    it("defaults floweringStarted to false when omitted", () => {
+      const result = plantingDailyObservationSchema.safeParse(validBase)
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.floweringStarted).toBe(false)
+      }
+    })
+
+    it("defaults floweringStarted to false when null", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        floweringStarted: null,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.floweringStarted).toBe(false)
+      }
+    })
+
+    it("passes floweringStarted = true correctly", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        floweringStarted: true,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.floweringStarted).toBe(true)
+      }
+    })
+  })
+
+  describe("fruitingStarted field", () => {
+    it("defaults fruitingStarted to false when omitted", () => {
+      const result = plantingDailyObservationSchema.safeParse(validBase)
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.fruitingStarted).toBe(false)
+      }
+    })
+
+    it("defaults fruitingStarted to false when null", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        fruitingStarted: null,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.fruitingStarted).toBe(false)
+      }
+    })
+
+    it("passes fruitingStarted = true correctly", () => {
+      const result = plantingDailyObservationSchema.safeParse({
+        ...validBase,
+        fruitingStarted: true,
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.fruitingStarted).toBe(true)
+      }
+    })
+  })
+
   describe("fertilizerType field", () => {
     it("defaults fertilizerType to NONE when omitted", () => {
       const result = plantingDailyObservationSchema.safeParse(validBase)
