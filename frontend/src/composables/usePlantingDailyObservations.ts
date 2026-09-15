@@ -60,6 +60,7 @@ export function usePlantingDailyObservations(
       queryClient.invalidateQueries({
         queryKey: ["planting-daily-observations", plantingId],
       })
+      queryClient.invalidateQueries({ queryKey: ["plantings"] })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err
