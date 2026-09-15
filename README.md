@@ -454,9 +454,10 @@ Interactive API docs (ReDoc): `http://localhost:8000/api/v1/docs`
 - **Variety management** — varieties scoped per crop with growth habit tracking
 - **Planting locations** — manage ground beds, pots, and nursery pots with dimensions and an optional image
 - **Plantings** — link a crop and variety together; track which planting location they're assigned to over time
-- **Location assignments** — assign a planting to a physical location with a start date and optional end date; full history of where each planting has lived
+- **Location assignments** — assign a planting to a physical location with a start date (pre-filled to today) and optional end date; full history of where each planting has lived
 - **Location status tracking** — record status changes for each location (Available, In Use, Damaged, Destroyed, Retired) with optional notes and image; prevents status updates while a location is in use
-- **Daily observations** — log comprehensive daily observations per planting: health status, pest pressure, disease symptoms, growth metrics (height, leaf count), environmental readings (temperature, humidity, light hours), soil metrics (moisture, pH, EC), free-text notes, and an optional photo
+- **Daily observations** — log comprehensive daily observations per planting: health status, pest pressure, disease symptoms, growth metrics (height, leaf count), environmental readings (temperature, humidity, light hours), soil metrics (moisture, pH, EC), flowering and fruiting status, free-text notes, and an optional photo
+- **Bulk daily observations** — select multiple plantings from the plantings table and submit a single observation that applies to all of them at once
 - **Search** — all list endpoints support full-text search
 - **Pagination** — all list endpoints are paginated
 - **User isolation** — all data is scoped per authenticated user with no cross-user data leakage
@@ -497,7 +498,9 @@ uv run python backend/manage.py migrate
 
 ## AI Assistance
 
-Parts of this codebase — including feature implementations and test suites — were developed with the assistance of [Claude Code](https://claude.ai/code) by Anthropic. All AI-generated code has been reviewed and integrated by the project author.
+Parts of this codebase — including feature implementations and test suites — were developed with AI assistance. All AI-generated code has been reviewed and integrated by the project author.
+
+This project is transitioning away from [Claude Code](https://claude.ai/code) toward pay-per-use LLMs accessed via API key, using [opencode](https://github.com/anomalyco/opencode) as the AI coding harness.
 
 ---
 
