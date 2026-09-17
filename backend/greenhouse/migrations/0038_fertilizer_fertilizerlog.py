@@ -10,45 +10,145 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('greenhouse', '0037_plantingdailyobservation_flowering_started_and_more'),
+        (
+            "greenhouse",
+            "0037_plantingdailyobservation_flowering_started_and_more",
+        ),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Fertilizer',
+            name="Fertilizer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('type', models.CharField(choices=[('SWAMP', 'Swamp'), ('COMPOST', 'Compost'), ('OTHER', 'Other')], default='SWAMP', max_length=20)),
-                ('status', models.CharField(choices=[('BREWING', 'Brewing'), ('READY', 'Ready'), ('USED', 'Used'), ('DISCARDED', 'Discarded')], default='BREWING', max_length=20)),
-                ('start_date', models.DateField(default=django.utils.timezone.localdate, help_text='The date this fertilizer batch was started.')),
-                ('ingredients', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=100), blank=True, default=list)),
-                ('log_added_ingredients', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=100), blank=True, default=list)),
-                ('notes', models.TextField(blank=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fertilizers', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("SWAMP", "Swamp"),
+                            ("COMPOST", "Compost"),
+                            ("OTHER", "Other"),
+                        ],
+                        default="SWAMP",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("BREWING", "Brewing"),
+                            ("READY", "Ready"),
+                            ("USED", "Used"),
+                            ("DISCARDED", "Discarded"),
+                        ],
+                        default="BREWING",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "start_date",
+                    models.DateField(
+                        default=django.utils.timezone.localdate,
+                        help_text="The date this fertilizer batch was started.",
+                    ),
+                ),
+                (
+                    "ingredients",
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.CharField(max_length=100),
+                        blank=True,
+                        default=list,
+                    ),
+                ),
+                (
+                    "log_added_ingredients",
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.CharField(max_length=100),
+                        blank=True,
+                        default=list,
+                    ),
+                ),
+                ("notes", models.TextField(blank=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="fertilizers",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='FertilizerLog',
+            name="FertilizerLog",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('event_type', models.CharField(choices=[('ADDED_INGREDIENT', 'Added Ingredient'), ('ADDED_WATER', 'Added Water'), ('STIRRED', 'Stirred'), ('OTHER', 'Other')], default='OTHER', max_length=20)),
-                ('item_added', models.CharField(blank=True, default='', max_length=100)),
-                ('quantity', models.CharField(blank=True, default='', max_length=50)),
-                ('notes', models.TextField(blank=True)),
-                ('log_date', models.DateField(default=django.utils.timezone.localdate, help_text='The date this log entry was recorded.')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('fertilizer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='logs', to='greenhouse.fertilizer')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "event_type",
+                    models.CharField(
+                        choices=[
+                            ("ADDED_INGREDIENT", "Added Ingredient"),
+                            ("ADDED_WATER", "Added Water"),
+                            ("STIRRED", "Stirred"),
+                            ("OTHER", "Other"),
+                        ],
+                        default="OTHER",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "item_added",
+                    models.CharField(blank=True, default="", max_length=100),
+                ),
+                (
+                    "quantity",
+                    models.CharField(blank=True, default="", max_length=50),
+                ),
+                ("notes", models.TextField(blank=True)),
+                (
+                    "log_date",
+                    models.DateField(
+                        default=django.utils.timezone.localdate,
+                        help_text="The date this log entry was recorded.",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "fertilizer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="logs",
+                        to="greenhouse.fertilizer",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-log_date', '-pk'],
+                "ordering": ["-log_date", "-pk"],
             },
         ),
     ]
