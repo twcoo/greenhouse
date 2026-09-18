@@ -3,7 +3,14 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import AppSidebar from "@/components/AppSidebar.vue"
 import { createTestingPinia } from "@pinia/testing"
 import { useAuthStore } from "@/stores/authStore"
-import { IconDashboard, IconPlant, IconMap2, IconSeeding, IconGrowth } from "@tabler/icons-vue"
+import {
+  IconDashboard,
+  IconPlant,
+  IconMap2,
+  IconSeeding,
+  IconGrowth,
+  IconLeaf,
+} from "@tabler/icons-vue"
 import { createAuthStoreMock } from "../utils/test-utils"
 import { mockPush } from "../setup"
 
@@ -63,7 +70,7 @@ describe("AppSidebar.vue", () => {
 
     const items = navMain.props("items")
 
-    expect(items).toHaveLength(5)
+    expect(items).toHaveLength(6)
 
     expect(items).toEqual([
       expect.objectContaining({
@@ -90,6 +97,11 @@ describe("AppSidebar.vue", () => {
         title: "Plantings",
         to: { name: "plantings" },
         icon: IconGrowth,
+      }),
+      expect.objectContaining({
+        title: "Fertilizers",
+        to: { name: "fertilizers" },
+        icon: IconLeaf,
       }),
     ])
   })

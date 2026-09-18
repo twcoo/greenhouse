@@ -1,5 +1,8 @@
 from .auth import LoginView, LogoutView
 from .crops import CropDetailAPIView, CropListAPIView, CropUploadImageAPIView
+from .fertilizer import FertilizerDetailApiView, FertilizerListApiView
+from .fertilizer_log import (FertilizerLogDetailApiView,
+                             FertilizerLogListApiView)
 from .planting import PlantingDetailApiView, PlantingListApiView
 from .planting_daily_observation import (
     PlantingDailyObservationBulkCreateApiView,
@@ -21,6 +24,10 @@ __all__ = [
     "CropDetailAPIView",
     "CropListAPIView",
     "CropUploadImageAPIView",
+    "FertilizerListApiView",
+    "FertilizerDetailApiView",
+    "FertilizerLogListApiView",
+    "FertilizerLogDetailApiView",
     "PlantingLocationListApiView",
     "PlantingLocationDetailAPIView",
     "VarietyListApiView",

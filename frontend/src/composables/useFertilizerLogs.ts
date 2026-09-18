@@ -1,40 +1,42 @@
 import { computed, type Ref } from "vue"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query"
-import { plantingDailyObservationService } from "@/api/services/plantingDailyObservationService"
-import type { PlantingDailyObservationPayload } from "@/types/plantingDailyObservation"
+import { fertilizerLogService } from "@/api/services/fertilizerLogService"
+import type { FertilizerLogPayload } from "@/types/fertilizerLog"
 import type { APIErrorResponse } from "@/types/api"
 import type { AxiosError } from "axios"
 
-export function usePlantingDailyObservations(
-  plantingId: Ref<number>,
+export function useFertilizerLogs(
+  fertilizerId: Ref<number>,
   pagination?: Ref<{ pageIndex: number; pageSize: number }>,
 ) {
   const queryClient = useQueryClient()
 
   const {
-    data: observations,
+    data: logs,
     isLoading: isQueryLoading,
     isFetching,
     isError: isQueryError,
     refetch,
   } = useQuery({
-    queryKey: ["planting-daily-observations", plantingId, pagination],
+    queryKey: ["fertilizer-logs", fertilizerId, pagination],
     queryFn: () => {
       const page = pagination?.value ? pagination.value.pageIndex + 1 : 1
       const size = pagination?.value ? pagination.value.pageSize : 10
-      return plantingDailyObservationService.getAll(plantingId.value, page, size)
+      return fertilizerLogService.getAll(fertilizerId.value, page, size)
     },
-    enabled: computed(() => plantingId.value > 0),
+    enabled: computed(() => fertilizerId.value > 0),
   })
 
   const createMutation = useMutation({
-    mutationFn: (payload: PlantingDailyObservationPayload) =>
-      plantingDailyObservationService.create(plantingId.value, payload),
+    mutationFn: (payload: FertilizerLogPayload) =>
+      fertilizerLogService.create(fertilizerId.value, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["planting-daily-observations", plantingId],
+        queryKey: ["fertilizer-logs", fertilizerId],
       })
-      queryClient.invalidateQueries({ queryKey: ["plantings"] })
+      queryClient.invalidateQueries({
+        queryKey: ["fertilizers"],
+      })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err
@@ -42,11 +44,14 @@ export function usePlantingDailyObservations(
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: PlantingDailyObservationPayload }) =>
-      plantingDailyObservationService.update(plantingId.value, id, payload),
+    mutationFn: ({ id, payload }: { id: number; payload: FertilizerLogPayload }) =>
+      fertilizerLogService.update(fertilizerId.value, id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["planting-daily-observations", plantingId],
+        queryKey: ["fertilizer-logs", fertilizerId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ["fertilizers"],
       })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
@@ -55,12 +60,14 @@ export function usePlantingDailyObservations(
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => plantingDailyObservationService.delete(plantingId.value, id),
+    mutationFn: (id: number) => fertilizerLogService.delete(fertilizerId.value, id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["planting-daily-observations", plantingId],
+        queryKey: ["fertilizer-logs", fertilizerId],
       })
-      queryClient.invalidateQueries({ queryKey: ["plantings"] })
+      queryClient.invalidateQueries({
+        queryKey: ["fertilizers"],
+      })
     },
     onError: (err: AxiosError<APIErrorResponse>) => {
       throw err
@@ -78,7 +85,7 @@ export function usePlantingDailyObservations(
 
   return {
     // Data
-    observations,
+    logs,
 
     // Status States
     isLoading,
@@ -93,9 +100,9 @@ export function usePlantingDailyObservations(
     isDeleteSuccess: deleteMutation.isSuccess,
 
     // Actions
-    createObservation: createMutation.mutateAsync,
-    updateObservation: updateMutation.mutateAsync,
-    deleteObservation: deleteMutation.mutateAsync,
-    fetchObservations: refetch,
+    createLog: createMutation.mutateAsync,
+    updateLog: updateMutation.mutateAsync,
+    deleteLog: deleteMutation.mutateAsync,
+    fetchLogs: refetch,
   }
 }

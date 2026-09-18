@@ -145,4 +145,13 @@ describe("usePlantingDailyObservations", () => {
 
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ["plantings"] })
   })
+
+  it("deleteObservation invalidates the plantings query", async () => {
+    const { result, queryClient } = mountComposable(ref(5))
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries")
+
+    await result.deleteObservation(3)
+
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["plantings"] })
+  })
 })

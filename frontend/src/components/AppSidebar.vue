@@ -6,6 +6,7 @@ import {
   IconHomeEco,
   IconSeeding,
   IconGrowth,
+  IconLeaf,
 } from "@tabler/icons-vue"
 
 import NavMain from "@/components/NavMain.vue"
@@ -51,6 +52,11 @@ const data = {
       title: "Plantings",
       to: { name: "plantings" },
       icon: IconGrowth,
+    },
+    {
+      title: "Fertilizers",
+      to: { name: "fertilizers" },
+      icon: IconLeaf,
     },
   ],
 }
