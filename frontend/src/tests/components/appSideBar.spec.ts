@@ -3,7 +3,14 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import AppSidebar from "@/components/AppSidebar.vue"
 import { createTestingPinia } from "@pinia/testing"
 import { useAuthStore } from "@/stores/authStore"
-import { IconDashboard, IconPlant, IconMap2, IconSeeding, IconGrowth, IconLeaf } from "@tabler/icons-vue"
+import {
+  IconDashboard,
+  IconPlant,
+  IconMap2,
+  IconSeeding,
+  IconGrowth,
+  IconLeaf,
+} from "@tabler/icons-vue"
 import { createAuthStoreMock } from "../utils/test-utils"
 import { mockPush } from "../setup"
 
