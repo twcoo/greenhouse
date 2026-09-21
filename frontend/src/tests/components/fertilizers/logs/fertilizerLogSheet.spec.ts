@@ -1,5 +1,5 @@
 import { ref } from "vue"
-import { mount } from "@vue/test-utils"
+import { flushPromises, mount } from "@vue/test-utils"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import FertilizerLogSheet from "@/components/fertilizers/logs/FertilizerLogSheet.vue"
 import { createTestingPinia } from "@pinia/testing"
@@ -192,5 +192,136 @@ describe("FertilizerLogSheet.vue", () => {
     await wrapper.vm.$nextTick()
 
     expect(mockDeleteLog).toHaveBeenCalledWith(1)
+  })
+
+  it("passes the fertilizer id ref to the composable", () => {
+    mountComponent()
+
+    const idRef = vi.mocked(useFertilizerLogs).mock.calls[0][0]
+    expect(idRef.value).toBe(1)
+  })
+
+  it("opens the view dialog for the selected log", async () => {
+    const wrapper = mountComponent()
+
+    const iconButtons = wrapper.findAll("button").filter((b) => !b.text())
+    await iconButtons[0].trigger("click")
+    await wrapper.vm.$nextTick()
+
+    const viewDialog = wrapper.find('[data-test="view-dialog"]')
+    expect(viewDialog.exists()).toBe(true)
+    expect(viewDialog.attributes("data-open")).toBe("true")
+  })
+
+  it("opens the update dialog for the selected log", async () => {
+    const wrapper = mountComponent()
+
+    const iconButtons = wrapper.findAll("button").filter((b) => !b.text())
+    await iconButtons[1].trigger("click")
+    await wrapper.vm.$nextTick()
+
+    const updateDialog = wrapper.findComponent({ name: "FertilizerLogUpdateDialog" })
+    expect(updateDialog.exists()).toBe(true)
+    expect(updateDialog.props("id")).toBe(1)
+    expect(updateDialog.attributes("data-open")).toBe("true")
+  })
+
+  it("opens the create dialog when Add Entry is clicked", async () => {
+    const wrapper = mountComponent()
+
+    const addButton = wrapper.findAll("button").find((b) => b.text().includes("Add Entry"))
+    await addButton?.trigger("click")
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-test="create-dialog"]').attributes("data-open")).toBe("true")
+  })
+
+  it("calls onError when createLog rejects", async () => {
+    mockCreateLog.mockRejectedValue(new Error("boom"))
+    const wrapper = mountComponent()
+
+    const onError = vi.fn()
+    const payload = {
+      logDate: "2024-03-01",
+      eventType: "ADDED_WATER",
+      itemAdded: "",
+      quantity: "5 liters",
+      notes: "",
+    }
+    await wrapper
+      .findComponent({ name: "FertilizerLogCreateDialog" })
+      .vm.$emit("submit", payload, onError)
+    await flushPromises()
+
+    expect(onError).toHaveBeenCalled()
+  })
+
+  it("calls updateLog when the update dialog emits submit", async () => {
+    mockUpdateLog.mockResolvedValue(undefined)
+    const wrapper = mountComponent()
+
+    const iconButtons = wrapper.findAll("button").filter((b) => !b.text())
+    await iconButtons[1].trigger("click")
+    await wrapper.vm.$nextTick()
+
+    const payload = {
+      logDate: "2024-03-01",
+      eventType: "STIRRED",
+      itemAdded: "",
+      quantity: "",
+      notes: "",
+    }
+    await wrapper
+      .findComponent({ name: "FertilizerLogUpdateDialog" })
+      .vm.$emit("submit", 1, payload, vi.fn())
+    await flushPromises()
+
+    expect(mockUpdateLog).toHaveBeenCalledWith({ id: 1, payload })
+  })
+
+  it("calls onError when updateLog rejects", async () => {
+    mockUpdateLog.mockRejectedValue(new Error("boom"))
+    const wrapper = mountComponent()
+
+    const iconButtons = wrapper.findAll("button").filter((b) => !b.text())
+    await iconButtons[1].trigger("click")
+    await wrapper.vm.$nextTick()
+
+    const onError = vi.fn()
+    const payload = {
+      logDate: "2024-03-01",
+      eventType: "STIRRED",
+      itemAdded: "",
+      quantity: "",
+      notes: "",
+    }
+    await wrapper
+      .findComponent({ name: "FertilizerLogUpdateDialog" })
+      .vm.$emit("submit", 1, payload, onError)
+    await flushPromises()
+
+    expect(onError).toHaveBeenCalled()
+  })
+
+  it("advances to the next page", async () => {
+    setupMock({ logs: ref({ results: defaultLogs.results, count: 25 }) })
+    const wrapper = mountComponent()
+
+    const nextButton = wrapper.findAll("button").find((b) => b.text() === "Next")
+    await nextButton?.trigger("click")
+
+    expect(wrapper.text()).toContain("Page 2 of 3")
+  })
+
+  it("goes back to the previous page", async () => {
+    setupMock({ logs: ref({ results: defaultLogs.results, count: 25 }) })
+    const wrapper = mountComponent()
+
+    const nextButton = wrapper.findAll("button").find((b) => b.text() === "Next")
+    await nextButton?.trigger("click")
+    const previousButton = wrapper.findAll("button").find((b) => b.text() === "Previous")
+    await previousButton?.trigger("click")
+
+    expect(wrapper.text()).toContain("Page 1 of 3")
   })
 })
