@@ -3,9 +3,10 @@ from django.contrib.auth import get_user_model
 from factory import Faker
 from factory.django import DjangoModelFactory
 
-from ...models import (Crop, Planting, PlantingDailyObservation,
-                       PlantingLocation, PlantingLocationAssignment,
-                       PlantingLocationStatus, Variety)
+from ...models import (Crop, Fertilizer, FertilizerLog, Planting,
+                       PlantingDailyObservation, PlantingLocation,
+                       PlantingLocationAssignment, PlantingLocationStatus,
+                       Variety)
 
 User = get_user_model()
 
@@ -123,3 +124,35 @@ class PlantingLocationAssignmentFactory(DjangoModelFactory):
     )
     start_date = factory.Faker("date_this_decade")
     end_date = None
+
+
+class FertilizerFactory(DjangoModelFactory):
+    class Meta:
+        model = Fertilizer
+
+    user = factory.SubFactory(
+        UserFactory,
+        username=factory.Sequence(lambda n: f"fertilizer_user_{n}"),
+    )
+    name = factory.Sequence(lambda n: f"Fertilizer {n}")
+    type = factory.Iterator([choice[0] for choice in Fertilizer.TYPE_CHOICES])
+    status = factory.Iterator(
+        [choice[0] for choice in Fertilizer.STATUS_CHOICES]
+    )
+    start_date = factory.LazyFunction(
+        lambda: __import__("datetime").date.today()
+    )
+    ingredients = factory.List(["banana peels", "molasses"])
+    notes = ""
+
+
+class FertilizerLogFactory(DjangoModelFactory):
+    class Meta:
+        model = FertilizerLog
+
+    fertilizer = factory.SubFactory(FertilizerFactory)
+    event_type = "ADDED_INGREDIENT"
+    item_added = "banana peels"
+    quantity = "2 kg"
+    notes = ""
+    log_date = factory.LazyFunction(lambda: __import__("datetime").date.today())

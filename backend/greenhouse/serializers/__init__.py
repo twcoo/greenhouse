@@ -1,6 +1,8 @@
 from .auth import (KnoxLoginRequestSerializer, KnoxLoginResponseSerializer,
                    RegisterSerializer)
 from .crops import CropImageSerializer, CropSerializer
+from .fertilizer import FertilizerSerializer
+from .fertilizer_log import FertilizerLogSerializer
 from .planting import PlantingSerializer
 from .planting_daily_observation import (
     PlantingDailyObservationBulkCreateSerializer,
@@ -16,6 +18,8 @@ __all__ = [
     "RegisterSerializer",
     "CropSerializer",
     "CropImageSerializer",
+    "FertilizerSerializer",
+    "FertilizerLogSerializer",
     "PlantingLocationSerializer",
     "PlantingLocationAssignmentSerializer",
     "PlantingDailyObservationSerializer",

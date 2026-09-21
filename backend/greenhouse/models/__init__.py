@@ -1,4 +1,6 @@
 from .crop import Crop
+from .fertilizer import Fertilizer
+from .fertilizer_log import FertilizerLog
 from .planting import Planting
 from .planting_daily_observation import PlantingDailyObservation
 from .planting_growth_stage import PlantingGrowthStage
@@ -9,6 +11,8 @@ from .variety import Variety
 
 __all__ = [
     "Crop",
+    "Fertilizer",
+    "FertilizerLog",
     "Planting",
     "PlantingDailyObservation",
     "PlantingGrowthStage",
