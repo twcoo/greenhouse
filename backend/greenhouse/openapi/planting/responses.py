@@ -4,6 +4,7 @@ from ...serializers import PlantingSerializer
 from ..shared.examples import NO_DATA_RESPONSE_EXAMPLE
 from ..shared.schemas import CustomOpenAPIResponseSchema
 from .examples import (CREATE_PLANTING_RESPONSE_EXAMPLE,
+                       PLANTING_INVALID_STATUS_FILTER_EXAMPLE,
                        PLANTING_NOT_FOUND_RESPONSE_EXAMPLE,
                        PLANTING_REQUIRED_FIELDS_EXAMPLE,
                        PLANTING_VARIETY_CROP_MISMATCH_EXAMPLE,
@@ -16,6 +17,12 @@ PLANTING_LIST_RESPONSE = OpenApiResponse(
         "Paginated list of plantings belonging to the authenticated user."
     ),
     response=PlantingSerializer,
+)
+
+PLANTING_INVALID_STATUS_FILTER_RESPONSE = OpenApiResponse(
+    description="Invalid status filter provided.",
+    response=CustomOpenAPIResponseSchema().get_schema(),
+    examples=[PLANTING_INVALID_STATUS_FILTER_EXAMPLE],
 )
 
 PLANTING_CREATED_RESPONSE = OpenApiResponse(
