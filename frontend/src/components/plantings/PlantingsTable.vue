@@ -36,6 +36,15 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { IconGhost2, IconNotebook } from "@tabler/icons-vue"
 
 const searchTerm = defineModel<string>("searchTerm", { default: "" })
+const statusFilter = defineModel<string>("statusFilter", { default: "ACTIVE" })
+
+const statusOptions = [
+  { value: "all", label: "All" },
+  { value: "ACTIVE", label: "Active" },
+  { value: "HARVESTED", label: "Harvested" },
+  { value: "DEAD", label: "Dead" },
+  { value: "REMOVED", label: "Removed" },
+]
 
 const { data, rowCount, pagination } = defineProps<{
   data: Planting[]
@@ -170,6 +179,19 @@ defineExpose({
       <div class="flex items-center gap-2 w-full sm:w-auto">
         <div class="relative w-80 lg:w-96">
           <Input placeholder="Search..." v-model="searchTerm" class="pr-2 w-full" />
+        </div>
+        <div class="flex items-center gap-2">
+          <Label class="text-sm font-medium">Status</Label>
+          <Select v-model="statusFilter">
+            <SelectTrigger class="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import type { AxiosError } from "axios"
 export function usePlantings(
   pagination?: Ref<{ pageIndex: number; pageSize: number }>,
   searchTerm?: Ref<string>,
+  statusFilter?: Ref<string>,
 ) {
   const queryClient = useQueryClient()
 
@@ -18,13 +19,14 @@ export function usePlantings(
     isError: isQueryError,
     refetch,
   } = useQuery({
-    queryKey: ["plantings", pagination, "search"],
+    queryKey: ["plantings", pagination, "search", statusFilter],
     queryFn: () => {
       const page = pagination?.value ? pagination.value.pageIndex + 1 : 1
       const size = pagination?.value ? pagination.value.pageSize : 10
       const search = searchTerm?.value || ""
+      const status = statusFilter?.value || "ACTIVE"
 
-      return plantingService.getAll(page, size, search)
+      return plantingService.getAll(page, size, search, status)
     },
   })
 
