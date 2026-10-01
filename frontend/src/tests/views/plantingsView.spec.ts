@@ -67,8 +67,16 @@ const stubs = {
   AppLayout: { template: "<div><slot /></div>" },
   [PlantingsTable.__name ?? "PlantingsTable"]: {
     template: "<div data-stub='plantings-table' />",
-    props: ["data", "rowCount", "pagination", "searchTerm"],
-    emits: ["delete", "update", "pagination-change", "update:searchTerm", "bulk-observe", "action"],
+    props: ["data", "rowCount", "pagination", "searchTerm", "statusFilter"],
+    emits: [
+      "delete",
+      "update",
+      "pagination-change",
+      "update:searchTerm",
+      "update:statusFilter",
+      "bulk-observe",
+      "action",
+    ],
   },
   [PlantingCreateDialog.__name ?? "PlantingCreateDialog"]: {
     template: "<div data-stub='create-dialog' />",
