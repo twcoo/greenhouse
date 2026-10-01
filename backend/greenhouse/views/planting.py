@@ -4,6 +4,7 @@ from typing import Any
 from django.db.models import Case, Exists, IntegerField, OuterRef, Value, When
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins
+from rest_framework.exceptions import ValidationError
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -13,13 +14,14 @@ from ..models import Planting, PlantingDailyObservation
 from ..openapi.planting.examples import (
     CREATE_PLANTING_REQUEST_EXAMPLE, PARTIAL_UPDATE_PLANTING_REQUEST_EXAMPLE,
     UPDATE_PLANTING_REQUEST_EXAMPLE)
-from ..openapi.planting.parameters import PLANTING_ID_PARAM
+from ..openapi.planting.parameters import (PLANTING_ID_PARAM,
+                                           PLANTING_STATUS_PARAM)
 from ..openapi.planting.responses import (
     PLANTING_CREATE_VALIDATION_RESPONSE, PLANTING_CREATED_RESPONSE,
-    PLANTING_DELETE_RESPONSE, PLANTING_LIST_RESPONSE,
-    PLANTING_NOT_FOUND_RESPONSE, PLANTING_PARTIAL_UPDATE_VALIDATION_RESPONSE,
-    PLANTING_RETRIEVE_RESPONSE, PLANTING_UPDATE_RESPONSE,
-    PLANTING_UPDATE_VALIDATION_RESPONSE)
+    PLANTING_DELETE_RESPONSE, PLANTING_INVALID_STATUS_FILTER_RESPONSE,
+    PLANTING_LIST_RESPONSE, PLANTING_NOT_FOUND_RESPONSE,
+    PLANTING_PARTIAL_UPDATE_VALIDATION_RESPONSE, PLANTING_RETRIEVE_RESPONSE,
+    PLANTING_UPDATE_RESPONSE, PLANTING_UPDATE_VALIDATION_RESPONSE)
 from ..serializers import PlantingSerializer
 from ..utils.api import CustomAuthentication
 
@@ -33,8 +35,10 @@ from ..utils.api import CustomAuthentication
             "with the currently authenticated user. Results are "
             "scoped per user."
         ),
+        parameters=PLANTING_STATUS_PARAM,
         responses={
             200: PLANTING_LIST_RESPONSE,
+            400: PLANTING_INVALID_STATUS_FILTER_RESPONSE,
         },
     ),
     post=extend_schema(
@@ -63,8 +67,10 @@ class PlantingListApiView(
 
     serializer_class = PlantingSerializer
 
+    VALID_STATUSES = {"ACTIVE", "HARVESTED", "DEAD", "REMOVED"}
+
     def get_queryset(self):
-        return (
+        queryset = (
             Planting.objects.filter(user=self.request.user)
             .prefetch_related("locations__planting_location")
             .annotate(
@@ -80,8 +86,24 @@ class PlantingListApiView(
                     )
                 ),
             )
-            .order_by("status_order", "-created_at")
         )
+
+        status = str(self.request.query_params.get("status", "ACTIVE")).upper()
+        if status == "ALL":
+            pass
+        elif status in self.VALID_STATUSES:
+            queryset = queryset.filter(status=status)
+        else:
+            raise ValidationError(
+                {
+                    "status": [
+                        "Invalid status filter. Use one of ACTIVE, "
+                        "HARVESTED, DEAD, REMOVED, or all."
+                    ]
+                }
+            )
+
+        return queryset.order_by("status_order", "-created_at")
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

@@ -93,6 +93,12 @@ describe("PlantingsTable.vue", () => {
     expect(wrapper.text()).toContain("No data available.")
   })
 
+  it("renders a status filter control", () => {
+    const wrapper = mountComponent()
+
+    expect(wrapper.text()).toContain("Status")
+  })
+
   it("renders a checkbox in each data row", () => {
     const wrapper = mountComponent()
 

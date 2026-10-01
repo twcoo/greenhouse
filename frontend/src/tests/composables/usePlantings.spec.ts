@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { defineComponent } from "vue"
+import { defineComponent, ref, type Ref } from "vue"
 import { mount, flushPromises } from "@vue/test-utils"
 import { VueQueryPlugin, QueryClient } from "@tanstack/vue-query"
 import { usePlantings } from "@/composables/usePlantings"
@@ -15,7 +15,7 @@ vi.mock("@/api/services/plantingService", () => ({
 
 import { plantingService } from "@/api/services/plantingService"
 
-function mountComposable() {
+function mountComposable(statusFilter?: Ref<string>) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   })
@@ -25,7 +25,7 @@ function mountComposable() {
   mount(
     defineComponent({
       setup() {
-        result = usePlantings()
+        result = usePlantings(undefined, undefined, statusFilter)
         return {}
       },
       template: "<div />",
@@ -84,5 +84,19 @@ describe("usePlantings", () => {
     await result.deletePlanting(1)
 
     expect(plantingService.delete).toHaveBeenCalledWith(1)
+  })
+
+  it("passes default ACTIVE status to getAll", async () => {
+    mountComposable()
+    await flushPromises()
+
+    expect(plantingService.getAll).toHaveBeenCalledWith(1, 10, "", "ACTIVE")
+  })
+
+  it("passes a custom statusFilter to getAll", async () => {
+    mountComposable(ref("DEAD"))
+    await flushPromises()
+
+    expect(plantingService.getAll).toHaveBeenCalledWith(1, 10, "", "DEAD")
   })
 })

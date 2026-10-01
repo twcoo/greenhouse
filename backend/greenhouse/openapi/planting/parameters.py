@@ -10,3 +10,17 @@ PLANTING_ID_PARAM = [
         required=True,
     )
 ]
+
+PLANTING_STATUS_PARAM = [
+    OpenApiParameter(
+        name="status",
+        type=OpenApiTypes.STR,
+        location=OpenApiParameter.QUERY,
+        description=(
+            "Filter plantings by status. Use 'all' to return every "
+            "status. Defaults to 'ACTIVE'."
+        ),
+        required=False,
+        enum=["ACTIVE", "HARVESTED", "DEAD", "REMOVED", "all"],
+    )
+]
