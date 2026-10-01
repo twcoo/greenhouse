@@ -161,18 +161,20 @@ class PlantingListApiViewTests(
 
         self.assertEqual([p["status"] for p in plantings], ["DEAD"])
 
-    def test_list_invalid_status_defaults_to_active(self):
+    def test_list_invalid_status_returns_400(self):
         self.authenticate()
 
-        active_planting = PlantingFactory(user=self.user, status="ACTIVE")
+        PlantingFactory(user=self.user, status="ACTIVE")
         PlantingFactory(user=self.user, status="DEAD")
 
         response = self.client.get(self.url, {"status": "INVALID"})
 
-        _, _, plantings, _ = self.get_response_data_many(response)
+        response_status, data, message = self.get_response_data(response)
 
-        self.assertEqual([p["status"] for p in plantings], ["ACTIVE"])
-        self.assertEqual(plantings[0]["id"], active_planting.id)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response_status, "error")
+        self.assertIsNone(data)
+        self.assertIn("status", message)
 
     def test_list_search_by_crop_name(self):
         self.authenticate()
