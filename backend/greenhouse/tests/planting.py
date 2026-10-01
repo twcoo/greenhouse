@@ -97,26 +97,82 @@ class PlantingListApiViewTests(
             another_user_data=self.another_user_plantings,
         )
 
-    def test_list_active_plantings_sorted_first(self):
+    def test_list_defaults_to_active_plantings_only(self):
         self.authenticate()
 
-        harvested_planting = PlantingFactory(user=self.user, status="HARVESTED")
         active_planting = PlantingFactory(user=self.user, status="ACTIVE")
+        PlantingFactory(user=self.user, status="HARVESTED")
+        PlantingFactory(user=self.user, status="DEAD")
+        PlantingFactory(user=self.user, status="REMOVED")
 
         response = self.client.get(self.url)
 
         _, _, plantings, _ = self.get_response_data_many(response)
 
-        statuses = [p["status"] for p in plantings]
-        first_non_active = next(
-            (i for i, s in enumerate(statuses) if s != "ACTIVE"), len(statuses)
-        )
-        self.assertTrue(
-            all(s == "ACTIVE" for s in statuses[:first_non_active]),
-            "All ACTIVE plantings should appear before non-ACTIVE ones",
-        )
+        self.assertEqual([p["status"] for p in plantings], ["ACTIVE"])
         self.assertEqual(plantings[0]["id"], active_planting.id)
-        self.assertEqual(plantings[-1]["id"], harvested_planting.id)
+
+    def test_list_status_all_returns_every_status_sorted_active_first(self):
+        self.authenticate()
+
+        active_planting = PlantingFactory(user=self.user, status="ACTIVE")
+        harvested_planting = PlantingFactory(user=self.user, status="HARVESTED")
+        dead_planting = PlantingFactory(user=self.user, status="DEAD")
+        removed_planting = PlantingFactory(user=self.user, status="REMOVED")
+
+        response = self.client.get(self.url, {"status": "all"})
+
+        _, data, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual(data["count"], 4)
+        self.assertEqual(plantings[0]["id"], active_planting.id)
+        self.assertEqual(
+            {p["id"] for p in plantings},
+            {
+                active_planting.id,
+                harvested_planting.id,
+                dead_planting.id,
+                removed_planting.id,
+            },
+        )
+
+    def test_list_status_dead_returns_only_dead(self):
+        self.authenticate()
+
+        dead_planting = PlantingFactory(user=self.user, status="DEAD")
+        PlantingFactory(user=self.user, status="ACTIVE")
+
+        response = self.client.get(self.url, {"status": "DEAD"})
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual([p["status"] for p in plantings], ["DEAD"])
+        self.assertEqual(plantings[0]["id"], dead_planting.id)
+
+    def test_list_status_filter_is_case_insensitive(self):
+        self.authenticate()
+
+        PlantingFactory(user=self.user, status="DEAD")
+        PlantingFactory(user=self.user, status="ACTIVE")
+
+        response = self.client.get(self.url, {"status": "dead"})
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual([p["status"] for p in plantings], ["DEAD"])
+
+    def test_list_invalid_status_defaults_to_active(self):
+        self.authenticate()
+
+        active_planting = PlantingFactory(user=self.user, status="ACTIVE")
+        PlantingFactory(user=self.user, status="DEAD")
+
+        response = self.client.get(self.url, {"status": "INVALID"})
+
+        _, _, plantings, _ = self.get_response_data_many(response)
+
+        self.assertEqual([p["status"] for p in plantings], ["ACTIVE"])
+        self.assertEqual(plantings[0]["id"], active_planting.id)
 
     def test_list_search_by_crop_name(self):
         self.authenticate()
