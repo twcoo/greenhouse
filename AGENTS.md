@@ -7,6 +7,17 @@
 - If a task requires a change to `backend/core/settings.py`, stop and tell the user what is needed and why instead of editing it.
 - Avoid em-dashes (and en-dashes) in prose and copy in this repository, including user-facing strings.
 
+## Section context
+
+- Per-section full-stack reference docs live in `docs/agents/`. Before working on a feature, read the relevant file. After finishing a change, you MUST update that section's file in the same change to reflect any new or changed structure, endpoints, fields, or behavior.
+- Index:
+  - `docs/agents/dashboard.md` - read-only aggregation view at `/dashboard`
+  - `docs/agents/crops.md` - crop CRUD at `api/{VERSION}/crops/`
+  - `docs/agents/varieties.md` - variety CRUD (belongs to crop)
+  - `docs/agents/planting-locations.md` - locations, statuses, and assignments
+  - `docs/agents/plantings.md` - plantings + daily observations + bulk create
+  - `docs/agents/fertilizers.md` - fertilizer batches + nested logs
+
 ## Commands
 
 - Dev servers: `make dev-backend` (Django + Postgres via Docker Compose; needs a `.env` at repo root, live-mounts `backend/`) and `make dev-frontend` (Vite, http://localhost:5173; needs `frontend/.env` with `VITE_API_URL`).
