@@ -9,7 +9,7 @@
 
 ## Section context
 
-- Per-section full-stack reference docs live in `docs/agents/`. Read the relevant file before working on a feature and update it in the same change when the feature's structure, endpoints, or behavior change.
+- Per-section full-stack reference docs live in `docs/agents/`. Before working on a feature, read the relevant file. After finishing a change, you MUST update that section's file in the same change to reflect any new or changed structure, endpoints, fields, or behavior.
 - Index:
   - `docs/agents/dashboard.md` - read-only aggregation view at `/dashboard`
   - `docs/agents/crops.md` - crop CRUD at `api/{VERSION}/crops/`
