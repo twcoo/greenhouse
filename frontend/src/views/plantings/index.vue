@@ -18,6 +18,7 @@ import Button from "@/components/ui/button/Button.vue"
 
 // Search Refs
 const searchTerm = ref<string>("")
+const statusFilter = ref<string>("ACTIVE")
 
 // Pagination Refs
 const pagination = ref({ pageIndex: 0, pageSize: 10 })
@@ -54,7 +55,7 @@ const {
   updatePlanting,
   deletePlanting,
   fetchPlantings,
-} = usePlantings(pagination, searchTerm)
+} = usePlantings(pagination, searchTerm, statusFilter)
 
 const {
   bulkCreate,
@@ -186,6 +187,7 @@ watchDebounced(
       :data="plantings.results"
       :rowCount="plantings.count"
       v-model:searchTerm="searchTerm"
+      v-model:statusFilter="statusFilter"
       :pagination="pagination"
       @pagination-change="handlePaginationChange"
       @delete="handleDeletePlanting"

@@ -40,7 +40,7 @@ describe("plantingService", () => {
       const result = await plantingService.getAll()
 
       expect(apiClient.get).toHaveBeenCalledWith("/plantings/", {
-        params: { page: 1, page_size: 10, search: undefined },
+        params: { page: 1, page_size: 10, search: undefined, status: "ACTIVE" },
       })
       expect(result).toEqual(paginatedResponse.data.data)
     })
@@ -51,7 +51,7 @@ describe("plantingService", () => {
       await plantingService.getAll(2, 25, "tomato")
 
       expect(apiClient.get).toHaveBeenCalledWith("/plantings/", {
-        params: { page: 2, page_size: 25, search: "tomato" },
+        params: { page: 2, page_size: 25, search: "tomato", status: "ACTIVE" },
       })
     })
 
@@ -61,7 +61,17 @@ describe("plantingService", () => {
       await plantingService.getAll(1, 10, "")
 
       expect(apiClient.get).toHaveBeenCalledWith("/plantings/", {
-        params: { page: 1, page_size: 10, search: undefined },
+        params: { page: 1, page_size: 10, search: undefined, status: "ACTIVE" },
+      })
+    })
+
+    it("passes a custom status param", async () => {
+      vi.mocked(apiClient.get).mockResolvedValue(paginatedResponse)
+
+      await plantingService.getAll(1, 10, "", "DEAD")
+
+      expect(apiClient.get).toHaveBeenCalledWith("/plantings/", {
+        params: { page: 1, page_size: 10, search: undefined, status: "DEAD" },
       })
     })
   })

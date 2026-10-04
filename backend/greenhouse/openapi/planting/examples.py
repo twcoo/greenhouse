@@ -140,6 +140,26 @@ PLANTING_REQUIRED_FIELDS_EXAMPLE = OpenApiExample(
     },
 )
 
+PLANTING_INVALID_STATUS_FILTER_EXAMPLE = OpenApiExample(
+    name="Invalid status filter",
+    summary="Invalid status filter value",
+    description=(
+        "Example response returned when the status query parameter "
+        "is not a valid planting status."
+    ),
+    status_codes=["400"],
+    value={
+        "status": "error",
+        "data": None,
+        "message": {
+            "status": [
+                "Invalid status filter. Use one of ACTIVE, "
+                "HARVESTED, DEAD, REMOVED, or all."
+            ],
+        },
+    },
+)
+
 PLANTING_VARIETY_CROP_MISMATCH_EXAMPLE = OpenApiExample(
     name="Variety does not belong to crop",
     summary="Cross-field validation error",

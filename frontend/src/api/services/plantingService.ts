@@ -7,12 +7,14 @@ export const plantingService = {
     page: number = 1,
     pageSize: number = 10,
     search: string = "",
+    status: string = "ACTIVE",
   ): Promise<PaginatedResponse<Planting>> {
     const response = await apiClient.get<PaginatedAPIResponse<Planting>>("/plantings/", {
       params: {
         page,
         page_size: pageSize,
         search: search || undefined,
+        status,
       },
     })
 
